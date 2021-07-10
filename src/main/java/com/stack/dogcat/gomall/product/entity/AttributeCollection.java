@@ -29,6 +29,10 @@ public class AttributeCollection implements Serializable {
     private Integer id;
 
     /**
+     * 商家id
+     */
+    private Integer storeId;
+    /**
      * 属性集合名
      */
     private String name;
