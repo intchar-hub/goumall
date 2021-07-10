@@ -79,6 +79,7 @@ public class Product implements Serializable {
      */
     private BigDecimal highestPrice;
 
+
     /**
      * 商品最低价格（规格不同，价格不同）
      */

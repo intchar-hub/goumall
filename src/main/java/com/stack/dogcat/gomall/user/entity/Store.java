@@ -27,6 +27,8 @@ public class Store implements Serializable {
 
     private String userName;
 
+    private String avatarPath;
+
     private String password;
 
     private String email;
@@ -41,6 +43,8 @@ public class Store implements Serializable {
     private String shipAddress;
 
     private Integer fansNum;
+
+    private String  description;
 
     /**
      * 0是待审核，1是审核通过，2是审核不通过，3是已封禁
