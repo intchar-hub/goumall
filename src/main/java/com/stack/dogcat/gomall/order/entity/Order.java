@@ -70,6 +70,11 @@ public class Order implements Serializable {
     private Integer status;
 
     /**
+     * 收货地址id
+     */
+    private Integer receiveAddressId;
+
+    /**
      * 创建时间
      */
     private LocalDateTime gmtCreate;
@@ -81,10 +86,7 @@ public class Order implements Serializable {
     @TableField(value = "is_deleted")
     private Integer deleted;
 
-    /**
-     * 收货地址id
-     */
-    private Integer receiveAddressId;
+
 
 
 }

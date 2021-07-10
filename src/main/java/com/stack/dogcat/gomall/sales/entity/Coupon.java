@@ -50,6 +50,11 @@ public class Coupon implements Serializable {
     private LocalDateTime gmtCreate;
 
     /**
+     * 优惠券开始生效时间
+     */
+    private LocalDateTime startTime;
+
+    /**
      * 过期时间
      */
     private LocalDateTime deadline;

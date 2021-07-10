@@ -49,7 +49,7 @@ public class AttributeName implements Serializable {
     private Integer selectType;
 
     /**
-     * 属性录入方式
+     * 属性录入方式：0->手工录入；1->从列表中选取
      */
     private Integer inputType;
 

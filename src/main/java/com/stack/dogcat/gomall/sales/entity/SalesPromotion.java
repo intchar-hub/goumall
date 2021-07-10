@@ -55,6 +55,11 @@ public class SalesPromotion implements Serializable {
     private LocalDateTime gmtCreate;
 
     /**
+     * 开始时间
+     */
+    private LocalDateTime startTime;
+
+    /**
      * 结束时间
      */
     private LocalDateTime deadline;

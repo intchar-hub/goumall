@@ -39,6 +39,10 @@ public class Comment implements Serializable {
     private Integer storeId;
 
     /**
+     * 评分星级,1-5
+     */
+    private Integer level;
+    /**
      * 商品id
      */
     private Integer productId;
