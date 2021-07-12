@@ -66,7 +66,7 @@ public class StoreController {
         try {
             storeService.sendEmailCode(email);
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             return SysResult.error("验证码发送失败");
         }
         return SysResult.success();
