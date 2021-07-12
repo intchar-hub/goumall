@@ -1,7 +1,9 @@
-package com.newbee.user.vo;
+package com.stack.dogcat.gomall.utils;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**

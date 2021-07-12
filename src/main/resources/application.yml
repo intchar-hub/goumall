@@ -3,7 +3,7 @@ Server:
 
 spring:
   application:
-    name: market
+    name: gomall
   aop:
     proxy-target-class: true
 
