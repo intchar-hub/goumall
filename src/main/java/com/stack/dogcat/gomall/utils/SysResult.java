@@ -23,7 +23,6 @@ public class SysResult {
    //携带的各种数据
    private Object data;
 
-
    /**
     * 返回状态
     * @param status 200成功，其他失败
