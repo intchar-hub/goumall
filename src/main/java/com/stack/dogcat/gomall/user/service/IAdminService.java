@@ -1,10 +1,9 @@
 package com.stack.dogcat.gomall.user.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.stack.dogcat.gomall.user.entity.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.vo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 
 import java.util.List;
 
@@ -18,6 +17,6 @@ import java.util.List;
  */
 public interface IAdminService extends IService<Admin> {
 
-    IPage<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize);
+    PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize);
 
 }

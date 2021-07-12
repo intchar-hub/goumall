@@ -1,10 +1,9 @@
 package com.stack.dogcat.gomall.user.service.impl;
 
-import ch.qos.logback.core.pattern.ConverterUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
@@ -12,6 +11,7 @@ import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.user.vo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,7 @@ import java.util.List;
  * </p>
  *
  * @author xrm
+ * @update kxy
  * @since 2021-07-08
  */
 @Service
@@ -34,12 +35,17 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     @Autowired
     private AdminMapper adminMapper;
 
+    /**
+     * 管理员查看所有商家信息
+     */
     @Override
-    public IPage<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize){
+    public PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize){
 
         Page<Store> page = new Page<>(pageNum,pageSize);
         IPage<Store> storePage = storeMapper.selectPage(page,null);
-        return storePage.convert();
+        PageResponseVo<StoreInfoResponseVo> storePageResponseVo = new PageResponseVo(storePage);
+        storePageResponseVo.setData(CopyUtil.copyList(storePageResponseVo.getData(), StoreInfoResponseVo.class));
+        return storePageResponseVo;
 
     }
 
