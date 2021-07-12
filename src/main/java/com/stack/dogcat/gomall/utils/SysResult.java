@@ -1,8 +1,8 @@
 package com.stack.dogcat.gomall.utils;
 
 
-import lombok.Data;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
@@ -22,7 +22,6 @@ public class SysResult {
    private String msg;
    //携带的各种数据
    private Object data;
-
 
    /**
     * 返回状态
