@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -84,6 +85,36 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         }
         if(!correctCode.equals(registerRequestVo.getVerifyCode())) {
             throw new RuntimeException("验证码错误");
+        }
+
+        /**
+         * 判断用户名是否唯一
+         */
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("user_name", registerRequestVo.getUserName());
+        List<Store> storeDB = storeMapper.selectList(wrapper);
+        if(storeDB != null && storeDB.size() > 0) {
+            throw new RuntimeException("用户名已存在");
+        }
+
+        /**
+         * 判断邮箱是否唯一
+         */
+        wrapper = new QueryWrapper();
+        wrapper.eq("email", registerRequestVo.getEmail());
+        storeDB = storeMapper.selectList(wrapper);
+        if(storeDB != null && storeDB.size() > 0) {
+            throw new RuntimeException("邮箱已注册");
+        }
+
+        /**
+         * 判断店铺名是否唯一
+         */
+        wrapper = new QueryWrapper();
+        wrapper.eq("store_name", registerRequestVo.getStoreName());
+        storeDB = storeMapper.selectList(wrapper);
+        if(storeDB != null && storeDB.size() > 0) {
+            throw new RuntimeException("店铺名已存在");
         }
 
         Store store = new Store();
@@ -206,6 +237,11 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         storeMapper.updateById(store);
     }
 
+    /**
+     * 商家查询个人信息
+     * @param id
+     * @return
+     */
     @Override
     public StoreInfoQueryResponseVo getStoreInfo(Integer id) {
 
