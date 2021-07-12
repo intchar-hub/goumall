@@ -87,4 +87,14 @@ public class PageResponseVo<T> {
     public PageResponseVo() {
     }
 
+    @Override
+    public String toString() {
+        return "PageResponseVo{" +
+                "currentPage=" + currentPage +
+                ", totalPage=" + totalPage +
+                ", totalCount=" + totalCount +
+                ", pageSize=" + pageSize +
+                ", data=" + data +
+                '}';
+    }
 }
