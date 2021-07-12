@@ -1,12 +1,11 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
-import com.stack.dogcat.gomall.user.vo.StoreInfoResponseVo;
-import com.stack.dogcat.gomall.utils.SysResult;
+import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,19 +27,43 @@ public class AdminController {
     @Autowired
     private IAdminService adminService;
 
+
+    /**
+     * 管理员查看所有商家信息
+     */
     @GetMapping("/listStoreInfo")
     public SysResult listStoreInfo(int pageNum,int pageSize){
 
-        SysResult result=new SysResult();
+        SysResult result=null;
         PageResponseVo<StoreInfoResponseVo> storeInfoPage = null;
         try{
             storeInfoPage=adminService.listStoreInfo(pageNum,pageSize);
-            result = SysResult.build(200,"操作成功",storeInfoPage);
+            result = SysResult.success(storeInfoPage);
         }
         catch (Exception e){
-            result = SysResult.error(400, e.getMessage());
+            System.out.println(e.getMessage());
+            result = SysResult.error("获取数据失败");
         }
         return result;
     }
 
+
+    /**
+     * 管理员查看所有商家信息
+     */
+    @GetMapping("/listComplaints")
+    public SysResult listComplaints(int pageNum,int pageSize){
+
+        SysResult result=null;
+        PageResponseVo<ComplaintResponseVo> compliantPage = null;
+        try{
+            compliantPage=adminService.listComplaints(pageNum,pageSize);
+            result = SysResult.success(compliantPage);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            result = SysResult.error("获取数据失败");
+        }
+        return result;
+    }
 }

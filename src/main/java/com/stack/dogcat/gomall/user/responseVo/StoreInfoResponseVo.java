@@ -1,4 +1,4 @@
-package com.stack.dogcat.gomall.user.vo;
+package com.stack.dogcat.gomall.user.responseVo;
 
 import lombok.Data;
 
