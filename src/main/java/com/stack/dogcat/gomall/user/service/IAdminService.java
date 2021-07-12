@@ -18,5 +18,7 @@ public interface IAdminService extends IService<Admin> {
 
     PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize);
     PageResponseVo<ComplaintResponseVo> listComplaints(int pageNum,int pageSize);
+    int solveComplaints(int complaintId,int banned);
+    int examineStoreRegister(int id,int flag);
 
 }
