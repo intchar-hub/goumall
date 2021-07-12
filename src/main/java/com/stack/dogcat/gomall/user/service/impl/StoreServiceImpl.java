@@ -33,12 +33,11 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
      */
     @Override
     public void sendEmailCode(String email) {
-        emailServiceCode = String.format("%04d", new Random().nextInt(9999));
+        emailServiceCode = String.format("04d%", new Random().nextInt(9999));
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject("注册验证码");
         message.setText("验证码：" + emailServiceCode);
-        message.setFrom("1453370940@qq.com");
-        message.setTo(email);
+        message.setFrom("2538632254@qq.com");
         mailSender.send(message);
     }
 }
