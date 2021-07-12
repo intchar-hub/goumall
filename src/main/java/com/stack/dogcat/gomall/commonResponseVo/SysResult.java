@@ -1,4 +1,4 @@
-package com.stack.dogcat.gomall.utils;
+package com.stack.dogcat.gomall.commonResponseVo;
 
 
 import lombok.AllArgsConstructor;
@@ -34,14 +34,11 @@ public class SysResult {
       return new SysResult(status, msg, data);
    }
 
-
    /**
-    * 状态
-    *
     * @return 成功
     */
    public static SysResult success() {
-      return new SysResult(200, null, null);
+      return new SysResult(200, "操作成功", null);
    }
 
    /**
@@ -60,7 +57,7 @@ public class SysResult {
     * @return vo
     */
    public static SysResult success(Object data) {
-      return new SysResult(200, null, data);
+      return new SysResult(200, "操作成功", data);
    }
 
    /**
@@ -68,15 +65,15 @@ public class SysResult {
     *
     * @return 失败
     */
-   public static SysResult error(int status,String msg) {
-      return new SysResult(status, msg, null);
+   public static SysResult error(String msg) {
+      return new SysResult(400, msg, null);
    }
    /**
     * 状态
     *
     * @return 失败
     */
-   public static SysResult error(int status,String msg,Object data) {
-      return new SysResult(status, msg, data);
+   public static SysResult error(String msg,Object data) {
+      return new SysResult(400, msg, data);
    }
 }
