@@ -7,9 +7,9 @@ spring:
   aop:
     proxy-target-class: true
   mail:
-    username: w741008w@163.com
-    password: CEKENZOIQRJBTAPX
-    host: smtp.163.com
+    username: 1453370940@qq.com
+    password: brrhcbetrzixifde
+    host: smtp.qq.com
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource

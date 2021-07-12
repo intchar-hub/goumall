@@ -1,18 +1,15 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
-import cn.hutool.captcha.CaptchaUtil;
-import cn.hutool.captcha.LineCaptcha;
-import com.stack.dogcat.gomall.user.service.IStoreService;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
+import com.stack.dogcat.gomall.user.service.IStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 
 /**
@@ -31,29 +28,20 @@ public class StoreController {
     @Autowired
     IStoreService storeService;
 
-    LineCaptcha lineCaptcha;
-
     /**
      * 商家获取图片验证码
      * @param request
      * @param response
-     * @throws IOException
      */
     @GetMapping("/getStringCode")
-    public SysResult getStringCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getStringCode(HttpServletRequest request, HttpServletResponse response, String userName) {
         try {
-            lineCaptcha = CaptchaUtil.createLineCaptcha(90, 40);
-            request.getSession().setAttribute("CAPTCHA_KEY", lineCaptcha.getCode());
-            response.setContentType("image/png");
-            response.setHeader("Pragma", "No-cache");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setDateHeader("Expire", 0);
-            lineCaptcha.write(response.getOutputStream());
+            storeService.getStringCode(request, response, userName);
         }catch (Exception e){
             e.printStackTrace();
-            return SysResult.error("验证码生成失败");
+//            return SysResult.error("验证码生成失败");
         }
-        return SysResult.success();
+//        return SysResult.success();
     }
 
     /**
@@ -62,12 +50,29 @@ public class StoreController {
      * @return
      */
     @GetMapping("/getEmailCode")
-    public SysResult getEmailCode(String email) {
+    public SysResult getEmailCode(HttpServletRequest request, String email) {
         try {
-            storeService.sendEmailCode(email);
+            storeService.sendEmailCode(request, email);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+            System.out.println(e);
             return SysResult.error("验证码发送失败");
+        }
+        return SysResult.success();
+    }
+
+    /**
+     * 商家注册
+     * @param registerRequestVo
+     * @return
+     */
+    @PostMapping("/register")
+    public SysResult register(HttpServletRequest request, @Valid @RequestBody StoreRegisterRequestVo registerRequestVo) {
+        try {
+            storeService.register(request, registerRequestVo);
+        } catch (Exception e) {
+            System.out.println(e);
+            return SysResult.error("注册失败");
         }
         return SysResult.success();
     }
