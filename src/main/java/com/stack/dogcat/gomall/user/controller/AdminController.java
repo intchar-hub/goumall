@@ -1,6 +1,12 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.service.IAdminService;
+import com.stack.dogcat.gomall.utils.SysResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -16,5 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user/admin")
 public class AdminController {
+
+    @Autowired
+    private IAdminService adminService;
+
+    @GetMapping("/listStoreInfo")
+    public SysResult listStoreInfo(int pageNum,int pageSize){
+
+        SysResult result=new SysResult();
+        IPage<Store> storePage = null;
+        try{
+            storePage=adminService.listStoreInfo(pageNum,pageSize);
+            result = SysResult.build(200,"操作成功",storePage);
+        }
+        catch (Exception e){
+            result = SysResult.error(400, e.getMessage());
+        }
+        return result;
+
+    }
 
 }
