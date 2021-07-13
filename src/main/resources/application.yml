@@ -3,7 +3,7 @@ Server:
 
 spring:
   application:
-    name: market
+    name: gomall
   aop:
     proxy-target-class: true
   mail:
@@ -49,3 +49,4 @@ logging:
     classpath: logback.xml
 
 logging.level.org.springframework.baoot.autoconfigure: ERROR
+
