@@ -1,10 +1,14 @@
 package com.stack.dogcat.gomall.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -16,5 +20,34 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements ICustomerService {
+
+    @Resource
+    private CustomerMapper customerMapper;
+
+    @Override
+    public Customer queryCustomerByCustomerId(String customerid) {
+        Customer customer = null;
+        //1)构建QueryWrapper条件封装器
+        QueryWrapper<Customer> wrapper = new QueryWrapper<Customer>();
+        wrapper.eq("id", customerid);
+        //2)userMapper执行查询
+        customer = customerMapper.selectOne(wrapper);
+        //3)返回结果
+        return customer;
+
+
+    }
+
+    @Override
+    public Customer queryCustomerByOpenid(String openid) {
+        Customer customer = null;
+        //1)构建QueryWrapper条件封装器
+        QueryWrapper<Customer> wrapper = new QueryWrapper<Customer>();
+        wrapper.eq("open_id", openid);
+        //2)userMapper执行查询
+        customer = customerMapper.selectOne(wrapper);
+        //3)返回结果
+        return customer;
+    }
 
 }
