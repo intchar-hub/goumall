@@ -1,10 +1,25 @@
 package com.stack.dogcat.gomall.sales.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
+import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
+import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.sales.service.ISalesPromotionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.user.service.impl.StoreServiceImpl;
+import com.stack.dogcat.gomall.utils.CopyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +32,100 @@ import org.springframework.stereotype.Service;
 @Service
 public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper, SalesPromotion> implements ISalesPromotionService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(StoreServiceImpl.class);
+
+    @Autowired
+    SalesPromotionMapper salesPromotionMapper;
+
+    /**
+     * 发布秒杀活动
+     * @param requestVo
+     */
+    @Override
+    public void savePromotion(SalesPromotionSaveRequestVo requestVo) {
+
+        //判断活动起止时间是否合理
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = requestVo.getStartTime();
+        LocalDateTime deadline = requestVo.getDeadline();
+        if(deadline.isBefore(now) || startTime.isBefore(now)
+                || startTime.isAfter(deadline) || startTime.isEqual(deadline)) {
+            LOG.error("活动起止时间不合理");
+            throw new RuntimeException();
+        }
+
+        SalesPromotion salesPromotion = CopyUtil.copy(requestVo, SalesPromotion.class);
+        salesPromotion.setGmtCreate(LocalDateTime.now());
+        salesPromotionMapper.insert(salesPromotion);
+    }
+
+    /**
+     * 商家查看店铺内秒杀活动
+     * @param storeId
+     * @param screenCondition
+     * @return
+     */
+    @Override
+    public PageResponseVo<SalesPromotionQueryResponseVo> listPromotionByStore(Integer pageNum, Integer pageSize, Integer storeId, Integer screenCondition) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("store_id", storeId);
+        LocalDateTime now = LocalDateTime.now();
+        if (screenCondition < 0 || screenCondition > 2) {
+            LOG.error("筛选条件有误");
+            throw new RuntimeException();
+        }
+        if(screenCondition == 1) { //1：查询已失效
+            queryWrapper.lt("deadline", now);
+        } else if(screenCondition == 2) { //2：查询未失效
+            queryWrapper.gt("deadline", now);
+        }
+
+        Page<SalesPromotion> page = new Page(pageNum,pageSize);
+        IPage<SalesPromotion> salesPromotionIPage = salesPromotionMapper.selectPage(page, queryWrapper);
+        PageResponseVo<SalesPromotionQueryResponseVo> pageResponseVo = new PageResponseVo(salesPromotionIPage);
+        pageResponseVo.setData(CopyUtil.copyList(salesPromotionIPage.getRecords(), SalesPromotionQueryResponseVo.class));
+
+        return pageResponseVo;
+    }
+
+    /**
+     * 顾客查看秒杀活动
+     * @param screenCondition
+     * @return
+     */
+    @Override
+    public List<SalesPromotionQueryResponseVo> listPromotion(Integer screenCondition) {
+        List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(null);
+        List<SalesPromotionQueryResponseVo> responseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
+        LocalDateTime now = LocalDateTime.now();
+        if (screenCondition < 0 || screenCondition > 3) {
+            LOG.error("筛选条件有误");
+            throw new RuntimeException();
+        }
+        List<SalesPromotionQueryResponseVo> filterList = new ArrayList<>();
+        if(screenCondition == 1) { //1：查询已失效，则剔除未失效
+            for (SalesPromotionQueryResponseVo vo : responseVos) {
+                if(vo.getDeadline().isAfter(now)) {
+                    filterList.add(vo);
+                }
+            }
+            responseVos.removeAll(filterList);
+        } else if(screenCondition == 2) { //2：查询进行中
+            for (SalesPromotionQueryResponseVo vo : responseVos) {
+                if(!(vo.getStartTime().isBefore(now) && vo.getDeadline().isAfter(now))) {
+                    filterList.add(vo);
+                }
+            }
+            responseVos.removeAll(filterList);
+        } else if(screenCondition == 3) { //3：查询即将开始（一天）
+            for (SalesPromotionQueryResponseVo vo : responseVos) {
+                if(!(vo.getStartTime().isAfter(now)
+                        && (vo.getStartTime().minusDays(1).isBefore(now) || vo.getStartTime().minusDays(1).isEqual(now)))) {
+                    filterList.add(vo);
+                }
+            }
+            responseVos.removeAll(filterList);
+        }
+        return responseVos;
+    }
 }

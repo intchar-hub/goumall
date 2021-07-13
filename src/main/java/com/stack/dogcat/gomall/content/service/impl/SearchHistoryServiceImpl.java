@@ -64,6 +64,11 @@ public class SearchHistoryServiceImpl extends ServiceImpl<SearchHistoryMapper, S
         searchHistoryMapper.delete(queryWrapper);
     }
 
+    /**
+     * 顾客查询搜素历史
+     * @param customerId
+     * @return
+     */
     @Override
     public List<SearchHistoryQueryResponseVo> listSearchHistoryByCustomer(Integer customerId) {
         QueryWrapper queryWrapper = new QueryWrapper();
