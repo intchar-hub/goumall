@@ -13,10 +13,9 @@ import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
 import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
-import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
+import com.stack.dogcat.gomall.content.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +48,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     private StoreMapper storeMapper;
 
     @Autowired
-    private CustomerMapper customerMapper;
-
-    @Autowired
-    private ComplaintMapper complaintMapper;
-
-    @Autowired
     private AdminMapper adminMapper;
 
     @Autowired
@@ -75,44 +68,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         storePageResponseVo.setData(CopyUtil.copyList(storePageResponseVo.getData(), StoreInfoResponseVo.class));
         return storePageResponseVo;
 
-    }
-
-    /**
-     * 管理员查看所有投诉
-     */
-    @Override
-    public PageResponseVo<ComplaintResponseVo> listComplaints(int pageNum, int pageSize){
-
-        Page<Complaint> page = new Page<>(pageNum,pageSize);
-        IPage<Complaint> complaintPage = complaintMapper.selectPage(page,null);
-        //封装vo
-        PageResponseVo<ComplaintResponseVo> complaintPageResponseVo = new PageResponseVo(complaintPage);
-        List<ComplaintResponseVo> complaintVos=CopyUtil.copyList(complaintPageResponseVo.getData(), ComplaintResponseVo.class);
-
-        //获取用户名和店铺名
-        for (ComplaintResponseVo complaintVo:complaintVos) {
-            complaintVo.setCustomerName(customerMapper.selectById(complaintVo.getCustomerId()).getUserName());
-            complaintVo.setStoreName(storeMapper.selectById(complaintVo.getStoreId()).getStoreName());
-        }
-        complaintPageResponseVo.setData(complaintVos);
-        return complaintPageResponseVo;
-
-    }
-
-    /**
-     * 管理员处理投诉
-     */
-    @Override
-    public int solveComplaints(int complaintId,int banned){
-        if(banned==0){
-            return 1;
-        }
-        else {
-            int storeId=complaintMapper.selectById(complaintId).getStoreId();
-            UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id",storeId).set("status",3);
-            return storeMapper.update(null,updateWrapper);
-        }
     }
 
     /**

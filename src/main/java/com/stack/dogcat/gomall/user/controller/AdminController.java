@@ -1,11 +1,8 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
-import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
-import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
@@ -14,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
 
 /**
  * <p>
@@ -52,53 +47,6 @@ public class AdminController {
         catch (Exception e){
             System.out.println(e.getMessage());
             result = SysResult.error("获取数据失败");
-        }
-        return result;
-    }
-
-
-    /**
-     * 管理员查看所有投诉
-     * @param pageNum
-     * @param pageSize
-     */
-    @GetMapping("/listComplaints")
-    public SysResult listComplaints(int pageNum,int pageSize){
-
-        SysResult result=null;
-        PageResponseVo<ComplaintResponseVo> compliantPage = null;
-        try{
-            compliantPage=adminService.listComplaints(pageNum,pageSize);
-            result = SysResult.success(compliantPage);
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            result = SysResult.error("获取数据失败");
-        }
-        return result;
-    }
-
-    /**
-     * 管理员处理投诉
-     * @param complaintId
-     * @param banned
-     */
-    @PostMapping("/solveComplaints")
-    public SysResult solveComplaints(int complaintId,int banned){
-
-        SysResult result=null;
-        try{
-            int flag=adminService.solveComplaints(complaintId,banned);
-            if(flag==1){
-                result = SysResult.success();
-            }
-            else{
-                result = SysResult.error("封禁店铺失败");
-            }
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            result = SysResult.error("发生未知异常");
         }
         return result;
     }
