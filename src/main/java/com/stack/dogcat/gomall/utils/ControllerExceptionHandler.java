@@ -40,6 +40,6 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public SysResult validExceptionHandler(Exception e) {
         LOG.error("系统异常：", e);
-        return SysResult.error("出现错误");
+        return SysResult.error("出现未知错误");
     }
 }
