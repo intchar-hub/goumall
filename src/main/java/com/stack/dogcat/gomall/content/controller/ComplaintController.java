@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.content.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.content.responseVo.ComplaintQueryResponseVo;
 import com.stack.dogcat.gomall.content.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.content.service.IComplaintService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -71,6 +74,58 @@ public class ComplaintController {
             result = SysResult.error("发生未知异常");
         }
         return result;
+    }
+
+    /**
+     * 顾客投诉商家
+     * @param customerId
+     * @param storeId
+     * @param content
+     * @return
+     */
+    @PostMapping("/saveComplaint")
+    public SysResult saveComplaint(Integer customerId, Integer storeId, String content) {
+        try {
+            complaintService.saveComplaint(customerId, storeId, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("投诉失败");
+        }
+        return SysResult.success();
+    }
+
+    /**
+     * 顾客查看投诉
+     * @param customerId
+     * @return
+     */
+    @GetMapping("/listComplaintsByCustomer")
+    public SysResult listComplaintsByCustomer(Integer customerId) {
+        List<ComplaintQueryResponseVo> responseVos = null;
+        try {
+            responseVos = complaintService.listComplaintsByCustomer(customerId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("投诉信息获取失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
+    /**
+     * 顾客撤销投诉
+     * @param customerId
+     * @param complaintId
+     * @return
+     */
+    @PostMapping("/deleteComplaint")
+    public SysResult deleteComplaint(Integer customerId, Integer complaintId) {
+        try {
+            complaintService.deleteComplaint(customerId, complaintId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("撤销投诉失败");
+        }
+        return SysResult.success();
     }
 
 }
