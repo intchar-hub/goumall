@@ -1,9 +1,10 @@
 package com.stack.dogcat.gomall.user.service;
 
-import com.stack.dogcat.gomall.user.entity.Admin;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
+import com.stack.dogcat.gomall.user.entity.Admin;
+import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,9 +19,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface IAdminService extends IService<Admin> {
 
-    PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize);
-    int examineStoreRegister(int id,int flag);
-    int sendEmailCode(HttpServletRequest request, String email);
+    PageResponseVo<StoreInfoResponseVo> listStoreInfo(Integer pageNum, Integer pageSize);
+    Integer examineStoreRegister(Integer id,Integer flag);
+    Integer sendEmailCode(HttpServletRequest request, String email);
     void getStringCode(HttpServletRequest request, HttpServletResponse response);
+    AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode);
+    AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString);
 
 }

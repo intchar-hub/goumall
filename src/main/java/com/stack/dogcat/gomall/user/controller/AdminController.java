@@ -1,13 +1,15 @@
 package com.stack.dogcat.gomall.user.controller;
 
-
-import cn.hutool.captcha.LineCaptcha;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.user.service.IAdminService;
-import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.user.service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,8 +29,6 @@ public class AdminController {
     @Autowired
     private IAdminService adminService;
 
-    LineCaptcha lineCaptcha;
-
 
     /**
      * 管理员查看所有商家信息
@@ -36,13 +36,13 @@ public class AdminController {
      * @param pageSize
      */
     @GetMapping("/listStoreInfo")
-    public SysResult listStoreInfo(int pageNum,int pageSize){
+    public SysResult listStoreInfo(Integer pageNum,Integer pageSize){
 
         SysResult result=null;
-        PageResponseVo<StoreInfoResponseVo> storeInfoPage = null;
+        PageResponseVo<StoreInfoResponseVo> responseVo = null;
         try{
-            storeInfoPage=adminService.listStoreInfo(pageNum,pageSize);
-            result = SysResult.success(storeInfoPage);
+            responseVo=adminService.listStoreInfo(pageNum,pageSize);
+            result = SysResult.success(responseVo);
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -50,18 +50,18 @@ public class AdminController {
         }
         return result;
     }
-
+    
     /**
      * 管理员审核商家注册申请
      *@param id
      *@param flag
      */
     @PostMapping("/examineStoreRegister")
-    public SysResult examineStoreRegister(int id,int flag){
+    public SysResult examineStoreRegister(Integer id,Integer flag){
 
         SysResult result=null;
         try{
-            int i=adminService.examineStoreRegister(id,flag);
+            Integer i=adminService.examineStoreRegister(id,flag);
             if(i==1){
                 result = SysResult.success();
             }
@@ -98,7 +98,7 @@ public class AdminController {
     @GetMapping("/getEmailCode")
     public SysResult getEmailCode(HttpServletRequest request, String email) {
         try {
-            int flag=adminService.sendEmailCode(request, email);
+            Integer flag=adminService.sendEmailCode(request, email);
             if(flag==0){
                 return SysResult.error("改邮箱未注册");
             }
@@ -109,6 +109,43 @@ public class AdminController {
             e.printStackTrace();
             return SysResult.error("验证码发送失败");
         }
+    }
+
+    /**
+     * 管理员邮箱验证码登录
+     * @param email
+     * @param request
+     * @param verifyCode
+     */
+    @PostMapping("/emailLogin")
+    public SysResult emailLogin(HttpServletRequest request, String email, String verifyCode) {
+        AdminLoginResponseVo responseVo = null;
+        try {
+            responseVo = adminService.emailLogin(request,email,verifyCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success(responseVo);
+    }
+
+    /**
+     * 管理员密码登录
+     * @param request
+     * @param verifyString
+     * @param password
+     * @param userName
+     */
+    @PostMapping("/pwdLogin")
+    public SysResult pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+        AdminLoginResponseVo responseVo = null;
+        try {
+            responseVo = adminService.pwdLogin(request,userName,password,verifyString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success(responseVo);
     }
 
 }

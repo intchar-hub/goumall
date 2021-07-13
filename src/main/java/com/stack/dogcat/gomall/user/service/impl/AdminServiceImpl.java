@@ -5,19 +5,18 @@ import cn.hutool.captcha.LineCaptcha;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.content.entity.Complaint;
-import com.stack.dogcat.gomall.content.mapper.ComplaintMapper;
 import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
-import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
-import com.stack.dogcat.gomall.user.service.IAdminService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.stack.dogcat.gomall.content.responseVo.ComplaintResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.stack.dogcat.gomall.utils.CopyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -27,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +42,8 @@ import java.util.TimerTask;
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AdminServiceImpl.class);
+
     @Autowired
     private StoreMapper storeMapper;
 
@@ -59,7 +59,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * 管理员查看所有商家信息
      */
     @Override
-    public PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize){
+    public PageResponseVo<StoreInfoResponseVo> listStoreInfo(Integer pageNum, Integer pageSize){
 
         Page<Store> page = new Page<>(pageNum,pageSize);
         IPage<Store> storePage = storeMapper.selectPage(page,null);
@@ -74,7 +74,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * 管理员审核商家注册
      */
     @Override
-    public int examineStoreRegister(int id,int flag){
+    public Integer examineStoreRegister(Integer id,Integer flag){
         //审核不通过
         if(flag==0){
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
@@ -94,7 +94,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @param email
      */
     @Override
-    public int sendEmailCode(HttpServletRequest request, String email) {
+    public Integer sendEmailCode(HttpServletRequest request, String email) {
         String adminString = adminMapper.selectById(1).getEmail();
         if(!email.equals(adminString)){
             System.out.println(email);
@@ -162,6 +162,68 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
                 timer.cancel();
             }
         }, 60 * 1000);
+    }
+
+    /**
+     * 管理员邮箱登录
+     * @param request
+     * @param email
+     * @param verifyCode
+     * @return
+     */
+    @Override
+    public AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode) {
+
+        //判断邮箱验证码是否正确
+        HttpSession session = request.getSession();
+        String correctCode = (String)session.getAttribute("admin");
+        LOG.info("管理员" + email + "验证码：" + correctCode);
+        if(correctCode == null || correctCode.isEmpty()) {
+            throw new RuntimeException("验证码已失效或邮箱错误");
+        }
+        if(!correctCode.equals(verifyCode)) {
+            throw new RuntimeException("验证码错误");
+        }
+
+        Admin adminDB = adminMapper.selectById(1);
+
+        if(adminDB != null) {
+            AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
+            return responseVo;
+        } else {
+            throw new RuntimeException("邮箱错误");
+        }
+    }
+
+    /**
+     * 管理员密码登录
+     * @param userName
+     * @param password
+     * @param verifyString
+     * @return
+     */
+    @Override
+    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+
+        //判断字符验证码是否正确
+        HttpSession session = request.getSession();
+        String correctCode = (String)session.getAttribute("admin");
+        LOG.info("管理员" + userName + "验证码：" + correctCode);
+        if(correctCode == null || correctCode.isEmpty()) {
+            throw new RuntimeException("验证码已失效");
+        }
+        if(!correctCode.equals(verifyString)) {
+            throw new RuntimeException("验证码错误");
+        }
+
+        Admin adminDB = adminMapper.selectById(1);
+
+        if(adminDB != null && adminDB.getPassword().equals(password)) {
+            AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
+            return responseVo;
+        } else {
+            throw new RuntimeException("用户名或密码错误");
+        }
     }
 
 }
