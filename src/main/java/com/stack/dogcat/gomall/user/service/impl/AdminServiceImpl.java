@@ -2,6 +2,7 @@ package com.stack.dogcat.gomall.user.service.impl;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,11 +15,15 @@ import com.stack.dogcat.gomall.user.mapper.AdminMapper;
 import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
+import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreLoginResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.utils.CopyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -44,6 +49,8 @@ import java.util.TimerTask;
  */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements IAdminService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AdminServiceImpl.class);
 
     @Autowired
     private StoreMapper storeMapper;
@@ -104,9 +111,11 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      */
     @Override
     public int solveComplaints(int complaintId,int banned){
+        //不封禁
         if(banned==0){
             return 1;
         }
+        //封禁
         else {
             int storeId=complaintMapper.selectById(complaintId).getStoreId();
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
@@ -207,6 +216,68 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
                 timer.cancel();
             }
         }, 60 * 1000);
+    }
+
+    /**
+     * 管理员邮箱登录
+     * @param request
+     * @param email
+     * @param verifyCode
+     * @return
+     */
+    @Override
+    public AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode) {
+
+        //判断邮箱验证码是否正确
+        HttpSession session = request.getSession();
+        String correctCode = (String)session.getAttribute("admin");
+        LOG.info("管理员" + email + "验证码：" + correctCode);
+        if(correctCode == null || correctCode.isEmpty()) {
+            throw new RuntimeException("验证码已失效或邮箱错误");
+        }
+        if(!correctCode.equals(verifyCode)) {
+            throw new RuntimeException("验证码错误");
+        }
+
+        Admin adminDB = adminMapper.selectById(1);
+
+        if(adminDB != null) {
+            AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
+            return responseVo;
+        } else {
+            throw new RuntimeException("邮箱错误");
+        }
+    }
+
+    /**
+     * 管理员密码登录
+     * @param userName
+     * @param password
+     * @param verifyString
+     * @return
+     */
+    @Override
+    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+
+        //判断字符验证码是否正确
+        HttpSession session = request.getSession();
+        String correctCode = (String)session.getAttribute("admin");
+        LOG.info("管理员" + userName + "验证码：" + correctCode);
+        if(correctCode == null || correctCode.isEmpty()) {
+            throw new RuntimeException("验证码已失效");
+        }
+        if(!correctCode.equals(verifyString)) {
+            throw new RuntimeException("验证码错误");
+        }
+
+        Admin adminDB = adminMapper.selectById(1);
+
+        if(adminDB != null && adminDB.getPassword().equals(password)) {
+            AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
+            return responseVo;
+        } else {
+            throw new RuntimeException("用户名或密码错误");
+        }
     }
 
 }

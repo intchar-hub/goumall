@@ -1,10 +1,8 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
-import cn.hutool.captcha.CaptchaUtil;
-import cn.hutool.captcha.LineCaptcha;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
+import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
@@ -14,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
 
 /**
  * <p>
@@ -32,8 +28,6 @@ public class AdminController {
     @Autowired
     private IAdminService adminService;
 
-    LineCaptcha lineCaptcha;
-
 
     /**
      * 管理员查看所有商家信息
@@ -44,10 +38,10 @@ public class AdminController {
     public SysResult listStoreInfo(int pageNum,int pageSize){
 
         SysResult result=null;
-        PageResponseVo<StoreInfoResponseVo> storeInfoPage = null;
+        PageResponseVo<StoreInfoResponseVo> responseVo = null;
         try{
-            storeInfoPage=adminService.listStoreInfo(pageNum,pageSize);
-            result = SysResult.success(storeInfoPage);
+            responseVo=adminService.listStoreInfo(pageNum,pageSize);
+            result = SysResult.success(responseVo);
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -66,10 +60,10 @@ public class AdminController {
     public SysResult listComplaints(int pageNum,int pageSize){
 
         SysResult result=null;
-        PageResponseVo<ComplaintResponseVo> compliantPage = null;
+        PageResponseVo<ComplaintResponseVo> responseVo = null;
         try{
-            compliantPage=adminService.listComplaints(pageNum,pageSize);
-            result = SysResult.success(compliantPage);
+            responseVo=adminService.listComplaints(pageNum,pageSize);
+            result = SysResult.success(responseVo);
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -161,6 +155,43 @@ public class AdminController {
             e.printStackTrace();
             return SysResult.error("验证码发送失败");
         }
+    }
+
+    /**
+     * 管理员邮箱验证码登录
+     * @param email
+     * @param request
+     * @param verifyCode
+     */
+    @PostMapping("/emailLogin")
+    public SysResult emailLogin(HttpServletRequest request, String email, String verifyCode) {
+        AdminLoginResponseVo responseVo = null;
+        try {
+            responseVo = adminService.emailLogin(request,email,verifyCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success(responseVo);
+    }
+
+    /**
+     * 管理员密码登录
+     * @param request
+     * @param verifyString
+     * @param password
+     * @param userName
+     */
+    @PostMapping("/pwdLogin")
+    public SysResult pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+        AdminLoginResponseVo responseVo = null;
+        try {
+            responseVo = adminService.pwdLogin(request,userName,password,verifyString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success(responseVo);
     }
 
 }
