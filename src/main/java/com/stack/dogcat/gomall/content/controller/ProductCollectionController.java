@@ -6,11 +6,7 @@ import com.stack.dogcat.gomall.content.entity.ProductCollection;
 import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IProductCollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,6 +49,18 @@ public class ProductCollectionController {
             return SysResult.error("未知异常");
         }
         return SysResult.success(responseVos);
+    }
+
+    @DeleteMapping("/deleteProductCollection")
+    public SysResult deleteProductCollection(Integer productCollectionId){
+        try{
+            productCollectionService.deleteProductCollection(productCollectionId);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success();
     }
 
 }

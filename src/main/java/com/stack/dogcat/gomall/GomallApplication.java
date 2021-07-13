@@ -1,6 +1,6 @@
 package com.stack.dogcat.gomall;
 
-import com.stack.dogcat.gomall.utils.CurrentUserHandlerMethodArgReslover;
+//import com.stack.dogcat.gomall.utils.CurrentUserHandlerMethodArgReslover;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

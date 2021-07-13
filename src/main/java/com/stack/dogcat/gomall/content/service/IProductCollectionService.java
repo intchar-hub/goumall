@@ -18,5 +18,6 @@ public interface IProductCollectionService extends IService<ProductCollection> {
 
     void saveProductCollection(Integer customerId,Integer productId);
     List<ProductCollectionResponseVo> listProductCollection(Integer customerId);
+    void deleteProductCollection(Integer productCollectionId);
 
 }

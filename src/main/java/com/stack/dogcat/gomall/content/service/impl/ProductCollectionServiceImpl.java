@@ -33,19 +33,16 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
 
     @Override
     public void saveProductCollection(Integer customerId,Integer productId){
-
         ProductCollection productCollection=new ProductCollection();
         productCollection.setCustomerId(customerId);
         productCollection.setProductId(productId);
         productCollection.setGmtCreate(LocalDateTime.now());
         //插入数据库
         productCollectionMapper.insert(productCollection);
-
     }
 
     @Override
     public List<ProductCollectionResponseVo> listProductCollection(Integer customerId){
-
         QueryWrapper wrapper=new QueryWrapper();
         wrapper.eq("customer_id",customerId);
         List<ProductCollection> collections=productCollectionMapper.selectList(wrapper);
@@ -61,7 +58,15 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
             collectionResponseVos.add(responseVo);
         }
         return collectionResponseVos;
+    }
 
+    @Override
+    public void deleteProductCollection(Integer productCollectionId){
+        ProductCollection productCollection = productCollectionMapper.selectById(productCollectionId);
+        if (productCollection == null) {
+            throw new RuntimeException("该收藏已取消");
+        }
+        productCollectionMapper.deleteById(productCollectionId);
     }
 
 }

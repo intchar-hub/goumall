@@ -2,6 +2,9 @@ package com.stack.dogcat.gomall.content.service;
 
 import com.stack.dogcat.gomall.content.entity.StoreCollection;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IStoreCollectionService extends IService<StoreCollection> {
 
+    void saveStoreCollection(Integer customerId,Integer storeId);
+    List<StoreCollectionResponseVo> listStoreCollection(Integer customerId);
+    void deleteStoreCollection(Integer storeCollectionId);
 }
