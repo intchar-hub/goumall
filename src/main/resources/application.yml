@@ -6,6 +6,11 @@ spring:
     name: gomall
   aop:
     proxy-target-class: true
+  mail:
+    username: w741008w@163.com
+    password: CEKENZOIQRJBTAPX
+    host: smtp.163.com
+    default-encoding: utf-8
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
