@@ -50,4 +50,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return customer;
     }
 
+    @Override
+    public void insertCustomer(String openid,String sessionKey,String userName,String avatarPath,Integer gender){
+        Customer customer =new Customer();
+        customer.setOpenId(openid);
+        customer.setSessionKey(sessionKey);
+        customer.setUserName(userName);
+        customer.setAvatorPath(avatarPath);
+        customer.setGender(gender);
+        customer.setDeleted(0);
+
+        customerMapper.insert(customer);
+
+    }
+
 }

@@ -1,16 +1,14 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.user.entity.Customer;
 import com.stack.dogcat.gomall.user.service.ICustomerService;
-import com.stack.dogcat.gomall.user.service.ITokenService;
 import com.stack.dogcat.gomall.user.service.impl.TokenServiceImpl;
 import com.stack.dogcat.gomall.utils.AppConst;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -32,8 +30,7 @@ import java.util.Map;
 public class CustomerController {
     @Autowired
     ICustomerService customerService;
-    @Autowired
-    ITokenService tokenService;
+
 
     @Resource
     private RestTemplate restTemplate;
@@ -56,11 +53,17 @@ public class CustomerController {
         String session_key=jsonObject.getString("session_key");
 
         try{
+            Customer customer = customerService.queryCustomerByOpenid(openId);
             //用户已经授权过信息
-            if (customerService.queryCustomerByOpenid(openId)!=null){
+            if (customer!=null){
                 //自定义方法用openId和session_key换取token(login_key)
+                TokenServiceImpl tokenService =new TokenServiceImpl();
                 String loginKey= tokenService.getToken(openId,session_key);
-                SysResult result = SysResult.build(200,"登录成功",loginKey);
+                Integer id = customer.getId();
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("id",id);
+                map.put("loginKey",loginKey);
+                SysResult result = SysResult.build(200,"登录成功",map);
                 return result;
             }
             else{
@@ -76,6 +79,47 @@ public class CustomerController {
         }
     }
 
+    @PostMapping ("/saveCustomerInfo")
+    @ResponseBody
+    @Token.PassToken
+    //用户授权
+    public SysResult saveCustomerInfo(String userInfo,String code){
+
+        String url ="https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={js_code}&grant_type=authorization_code";
+        Map<String, String> requestMap = new HashMap<>();
+        requestMap.put("appid", AppConst.App_id);
+        requestMap.put("secret", AppConst.App_secret);
+        requestMap.put("code", code);
+
+        try{
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class,requestMap);
+            JSONObject jsonObject=JSONObject.parseObject(responseEntity.getBody());
+            String openId=jsonObject.getString("openid");
+            String session_key=jsonObject.getString("session_key");
+
+            JSONObject info = JSONObject.parseObject(userInfo);
+            String userName = info.getString("nickName");
+            String avatarPath = info.getString("avatarUrl");
+            Integer gender = info.getIntValue("gender");
+
+            customerService.insertCustomer(openId,session_key,userName,avatarPath,gender);
+            SysResult result =SysResult.success();
+            return result;
+        }
+        catch (Exception ex) {
+            SysResult result = SysResult.error(ex.getMessage());
+            return result;
+        }
+    }
+
+    /**
+    @GetMapping("/getCustomerInfo")
+    @ResponseBody
+    @Token.UserLoginToken
+    //用户获取个人信息
+    public SysResult getCustomerInfo(){
+
+    }**/
 
 
 
