@@ -61,7 +61,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customer.setDeleted(0);
 
         customerMapper.insert(customer);
-
     }
 
+    @Override
+    public void updateCustomerInfoById(Customer customer){
+        customerMapper.updateById(customer);
+
+    }
 }
