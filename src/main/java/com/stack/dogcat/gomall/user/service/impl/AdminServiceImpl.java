@@ -2,25 +2,18 @@ package com.stack.dogcat.gomall.user.service.impl;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
-import com.stack.dogcat.gomall.content.entity.Complaint;
-import com.stack.dogcat.gomall.content.mapper.ComplaintMapper;
 import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
-import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
-import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
-import com.stack.dogcat.gomall.user.responseVo.StoreLoginResponseVo;
-import com.stack.dogcat.gomall.user.service.IAdminService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.stack.dogcat.gomall.user.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
+import com.stack.dogcat.gomall.user.service.IAdminService;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,12 +48,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     private StoreMapper storeMapper;
 
     @Autowired
-    private CustomerMapper customerMapper;
-
-    @Autowired
-    private ComplaintMapper complaintMapper;
-
-    @Autowired
     private AdminMapper adminMapper;
 
     @Autowired
@@ -73,7 +59,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * 管理员查看所有商家信息
      */
     @Override
-    public PageResponseVo<StoreInfoResponseVo> listStoreInfo(int pageNum, int pageSize){
+    public PageResponseVo<StoreInfoResponseVo> listStoreInfo(Integer pageNum, Integer pageSize){
 
         Page<Store> page = new Page<>(pageNum,pageSize);
         IPage<Store> storePage = storeMapper.selectPage(page,null);
@@ -85,50 +71,10 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     }
 
     /**
-     * 管理员查看所有投诉
-     */
-    @Override
-    public PageResponseVo<ComplaintResponseVo> listComplaints(int pageNum, int pageSize){
-
-        Page<Complaint> page = new Page<>(pageNum,pageSize);
-        IPage<Complaint> complaintPage = complaintMapper.selectPage(page,null);
-        //封装vo
-        PageResponseVo<ComplaintResponseVo> complaintPageResponseVo = new PageResponseVo(complaintPage);
-        List<ComplaintResponseVo> complaintVos=CopyUtil.copyList(complaintPageResponseVo.getData(), ComplaintResponseVo.class);
-
-        //获取用户名和店铺名
-        for (ComplaintResponseVo complaintVo:complaintVos) {
-            complaintVo.setCustomerName(customerMapper.selectById(complaintVo.getCustomerId()).getUserName());
-            complaintVo.setStoreName(storeMapper.selectById(complaintVo.getStoreId()).getStoreName());
-        }
-        complaintPageResponseVo.setData(complaintVos);
-        return complaintPageResponseVo;
-
-    }
-
-    /**
-     * 管理员处理投诉
-     */
-    @Override
-    public int solveComplaints(int complaintId,int banned){
-        //不封禁
-        if(banned==0){
-            return 1;
-        }
-        //封禁
-        else {
-            int storeId=complaintMapper.selectById(complaintId).getStoreId();
-            UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id",storeId).set("status",3);
-            return storeMapper.update(null,updateWrapper);
-        }
-    }
-
-    /**
      * 管理员审核商家注册
      */
     @Override
-    public int examineStoreRegister(int id,int flag){
+    public Integer examineStoreRegister(Integer id,Integer flag){
         //审核不通过
         if(flag==0){
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
@@ -148,7 +94,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @param email
      */
     @Override
-    public int sendEmailCode(HttpServletRequest request, String email) {
+    public Integer sendEmailCode(HttpServletRequest request, String email) {
         String adminString = adminMapper.selectById(1).getEmail();
         if(!email.equals(adminString)){
             System.out.println(email);
