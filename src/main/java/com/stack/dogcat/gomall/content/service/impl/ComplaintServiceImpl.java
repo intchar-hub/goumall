@@ -17,6 +17,7 @@ import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,15 +69,19 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
      * 管理员处理投诉
      */
     @Override
+    @Transactional
     public Integer solveComplaints(Integer complaintId,Integer banned){
         if(banned==0){
             return 1;
         }
         else {
             Integer storeId=complaintMapper.selectById(complaintId).getStoreId();
-            UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id",storeId).set("status",3);
-            return storeMapper.update(null,updateWrapper);
+            UpdateWrapper<Store> storeUpdateWrapper = new UpdateWrapper<>();
+            storeUpdateWrapper.eq("id",storeId).set("status",3);
+            int i = storeMapper.update(null,storeUpdateWrapper);
+            UpdateWrapper<Complaint> complaintUpdateWrapper = new UpdateWrapper<>();
+            int j = complaintMapper.update(null,complaintUpdateWrapper);
+            return i*j;
         }
     }
 
