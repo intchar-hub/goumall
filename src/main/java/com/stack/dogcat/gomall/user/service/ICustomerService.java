@@ -16,4 +16,5 @@ public interface ICustomerService extends IService<Customer> {
     Customer queryCustomerByCustomerId(String customerid);
     //根据openid查询消费者
     Customer queryCustomerByOpenid(String openid);
+
 }

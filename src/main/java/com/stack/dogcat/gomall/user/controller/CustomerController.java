@@ -1,13 +1,14 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.stack.dogcat.gomall.annotation.Token;
+import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.user.service.ICustomerService;
 import com.stack.dogcat.gomall.user.service.ITokenService;
 import com.stack.dogcat.gomall.user.service.impl.TokenServiceImpl;
 import com.stack.dogcat.gomall.utils.AppConst;
-import com.stack.dogcat.gomall.utils.SysResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,7 @@ public class CustomerController {
             return result;
         }
     }
+
 
 
 
