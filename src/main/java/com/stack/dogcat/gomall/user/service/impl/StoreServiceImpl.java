@@ -10,6 +10,7 @@ import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreQueryResponseVo;
 import com.stack.dogcat.gomall.user.service.IStoreService;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.slf4j.Logger;
@@ -269,6 +270,33 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
             throw new RuntimeException("密码错误");
         }
         storeMapper.deleteById(id);
+    }
+
+    /**
+     * 用户按名字查询店铺(%店%铺%名%)
+     * @param name
+     * @return
+     */
+    @Override
+    public List<StoreQueryResponseVo> listStoresByName(String name) {
+        String likeName = "";
+        if(name != null) {
+            String[] split = name.split("");
+            for (int i = 0; i < split.length; i++) {
+                likeName += split[i];
+                if(i != split.length - 1) {
+                    likeName += "%";
+                }
+            }
+        }
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("store_name", likeName);
+
+        List<Store> storesDB = storeMapper.selectList(queryWrapper);
+        List<StoreQueryResponseVo> responseVos = CopyUtil.copyList(storesDB, StoreQueryResponseVo.class);
+
+        return responseVos;
     }
 
     /**

@@ -6,9 +6,11 @@ import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreQueryResponseVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * <p>
@@ -35,4 +37,6 @@ public interface IStoreService extends IService<Store> {
     StoreInfoQueryResponseVo getStoreInfo(Integer id);
 
     void deleteStore(Integer id, String password);
+
+    List<StoreQueryResponseVo> listStoresByName(String name);
 }
