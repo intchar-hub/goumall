@@ -1,47 +1,37 @@
 package com.stack.dogcat.gomall.user.responseVo;
 
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 商店信息（供商家查询）
+ * 商店信息（供顾客查询）
  */
-public class StoreInfoQueryResponseVo {
+public class StoreQueryResponseVo {
 
     private Integer id;
 
-    private String userName;
-
     private String avatarPath;
-
-    private String email;
 
     private String storeName;
 
-    private String phoneNumber;
-
-    /**
-     * 发货地址
-     */
     private String shipAddress;
 
     private Integer fansNum;
 
     private String  description;
 
-    /**
-     * 创建时间
-     */
     private LocalDateTime gmtCreate;
 
     @Override
     public String toString() {
-        return "StorePwdLoginResponseVo{" +
+        return "StoreQueryResponseVo{" +
                 "id=" + id +
-                ", userName='" + userName + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
-                ", email='" + email + '\'' +
                 ", storeName='" + storeName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
                 ", shipAddress='" + shipAddress + '\'' +
                 ", fansNum=" + fansNum +
                 ", description='" + description + '\'' +
@@ -57,14 +47,6 @@ public class StoreInfoQueryResponseVo {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getAvatarPath() {
         return avatarPath;
     }
@@ -73,28 +55,12 @@ public class StoreInfoQueryResponseVo {
         this.avatarPath = avatarPath;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getStoreName() {
         return storeName;
     }
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getShipAddress() {
