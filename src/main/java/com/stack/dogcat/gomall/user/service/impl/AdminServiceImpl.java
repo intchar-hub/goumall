@@ -2,6 +2,7 @@ package com.stack.dogcat.gomall.user.service.impl;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -185,7 +186,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             throw new RuntimeException("验证码错误");
         }
 
-        Admin adminDB = adminMapper.selectById(1);
+        Admin adminDB = adminMapper.selectOne(new QueryWrapper<Admin>().eq("email",email));
 
         if(adminDB != null) {
             AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
@@ -216,7 +217,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             throw new RuntimeException("验证码错误");
         }
 
-        Admin adminDB = adminMapper.selectById(1);
+        Admin adminDB = adminMapper.selectOne(new QueryWrapper<Admin>().eq("username",userName));
 
         if(adminDB != null && adminDB.getPassword().equals(password)) {
             AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);

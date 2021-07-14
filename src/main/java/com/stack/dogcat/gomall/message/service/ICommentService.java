@@ -2,6 +2,10 @@ package com.stack.dogcat.gomall.message.service;
 
 import com.stack.dogcat.gomall.message.entity.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.message.requestVo.CommentSaveRequestVo;
+import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-07-08
  */
 public interface ICommentService extends IService<Comment> {
+
+    void saveComment(CommentSaveRequestVo commentSaveRequestVo);
+    List<CommentResponseVo> listCommentByProduct(Integer productId);
 
 }
