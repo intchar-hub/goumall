@@ -9,6 +9,7 @@ import com.stack.dogcat.gomall.sales.service.ICouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class CouponController {
      * 商家发布优惠券
      */
     @PostMapping("/saveCoupon")
-    public SysResult saveCoupon(@RequestBody CouponSaveRequestVo requestVo){
+    public SysResult saveCoupon(@Valid @RequestBody CouponSaveRequestVo requestVo){
         try{
             couponService.saveCoupon(requestVo);
         }
