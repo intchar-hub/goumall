@@ -30,7 +30,7 @@ public class CurrentUserHandlerMethodArgReslover implements HandlerMethodArgumen
         //取得HttpServletRequest
         HttpServletRequest request= (HttpServletRequest) nativeWebRequest.getNativeRequest();
         //取出session中的User
-        return (Customer)request.getSession().getAttribute("currentUser");
+        return (Customer)request.getSession().getAttribute("CurrentUser");
     }
 
 
