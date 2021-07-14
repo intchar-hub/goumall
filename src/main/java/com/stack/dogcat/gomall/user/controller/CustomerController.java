@@ -161,7 +161,7 @@ public class CustomerController {
     @Token.UserLoginToken
     public SysResult updateCustomerInfo(Integer id,String userName,Integer gender,String avatarPath,String phoneNumber,Integer age){
         try{
-            Customer customer = null;
+            Customer customer = new Customer();
             customer.setId(id);
             customer.setUserName(userName);
             customer.setGender(gender);
@@ -178,5 +178,13 @@ public class CustomerController {
     }
 
 
+    @GetMapping("/testToken")
+    @ResponseBody
+    @Token.PassToken
+    public String testToken(){
+        TokenServiceImpl tokenService =new TokenServiceImpl();
+        String token = tokenService.getToken("213413","12333");
+        return token;
+    }
 
 }
