@@ -63,6 +63,8 @@ public class CustomerController {
                 TokenServiceImpl tokenService =new TokenServiceImpl();
                 String loginKey= tokenService.getToken(openId,session_key);
                 Integer id = customer.getId();
+                customer.setLoginKey(loginKey);
+                customerService.updateCustomerInfoById(customer);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("id",id);
                 map.put("loginKey",loginKey);
