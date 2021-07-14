@@ -6,6 +6,7 @@ import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreLoginResponseVo;
+import com.stack.dogcat.gomall.user.responseVo.StoreQueryResponseVo;
 import com.stack.dogcat.gomall.user.service.IStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -164,5 +166,22 @@ public class StoreController {
             return SysResult.error(e.getMessage());
         }
         return SysResult.success();
+    }
+
+    /**
+     * 用户按名字查询店铺
+     * @param name
+     * @return
+     */
+    @GetMapping("/listStoresByName")
+    public SysResult listStoresByName(String name) {
+        List<StoreQueryResponseVo> responseVos = null;
+        try {
+            responseVos = storeService.listStoresByName(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("查询店铺失败");
+        }
+        return SysResult.success(responseVos);
     }
 }
