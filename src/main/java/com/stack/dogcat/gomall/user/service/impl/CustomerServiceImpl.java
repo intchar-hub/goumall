@@ -21,8 +21,8 @@ import javax.annotation.Resource;
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements ICustomerService {
 
-    @Resource
-    private CustomerMapper customerMapper;
+    @Autowired
+    CustomerMapper customerMapper;
 
     @Override
     public Customer queryCustomerByCustomerId(String customerid) {

@@ -8,7 +8,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import com.stack.dogcat.gomall.user.service.ICustomerService;
+import com.stack.dogcat.gomall.user.service.impl.CustomerServiceImpl;
 import jdk.nashorn.internal.ir.annotations.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
-    @Reference
+    @Autowired
     ICustomerService customerService;
 
     @Override
@@ -52,6 +54,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 } catch (JWTDecodeException j) {
                     throw new RuntimeException("401");
                 }
+
                 Customer customer = customerService.queryCustomerByOpenid(openId);
                 if (customer == null) {
                     throw new RuntimeException("用户不存在，请重新登录");
