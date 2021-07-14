@@ -39,10 +39,14 @@ public class CustomerController {
     private RestTemplate restTemplate;
 
 
+    /**
+     * 用户自动登录
+     * @param code
+     * @return
+     */
     @PostMapping ("/customerLogin")
     @ResponseBody
     @Token.PassToken
-    //用户自动登录
     public SysResult customerLogin(String code){
         String url ="https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={js_code}&grant_type=authorization_code";
         Map<String, String> requestMap = new HashMap<>();
@@ -84,10 +88,16 @@ public class CustomerController {
         }
     }
 
+
+    /**
+     * 用户授权
+     * @param userInfo
+     * @param code
+     * @return
+     */
     @PostMapping ("/saveCustomerInfo")
     @ResponseBody
     @Token.PassToken
-    //用户授权
     public SysResult saveCustomerInfo(String userInfo,String code){
 
         String url ="https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={js_code}&grant_type=authorization_code";
@@ -118,10 +128,15 @@ public class CustomerController {
     }
 
 
+
+    /**
+     * 用户获取个人信息
+     * @param current_customer
+     * @return
+     */
     @GetMapping("/getCustomerInfo")
     @ResponseBody
     @Token.UserLoginToken
-    //用户获取个人信息
     public SysResult getCustomerInfo(@CurrentUser Customer current_customer){
         try{
             CustomerInfoResponseVo responseVo = CopyUtil.copy(current_customer,CustomerInfoResponseVo.class);
@@ -135,10 +150,15 @@ public class CustomerController {
     }
 
 
+
+    /**
+     * 用户修改个人信息
+     * @param id,userName,gender,avatarPath,phoneNumber,age
+     * @return
+     */
     @PostMapping("/updateCustomerInfo")
     @ResponseBody
     @Token.UserLoginToken
-    //用户修改个人信息
     public SysResult updateCustomerInfo(Integer id,String userName,Integer gender,String avatarPath,String phoneNumber,Integer age){
         try{
             Customer customer = null;
