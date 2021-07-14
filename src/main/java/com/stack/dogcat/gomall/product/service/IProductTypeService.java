@@ -2,6 +2,9 @@ package com.stack.dogcat.gomall.product.service;
 
 import com.stack.dogcat.gomall.product.entity.ProductType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.product.responseVo.ProductTypeQueryResponseVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IProductTypeService extends IService<ProductType> {
 
+    List<ProductTypeQueryResponseVo> listTypes();
 }
