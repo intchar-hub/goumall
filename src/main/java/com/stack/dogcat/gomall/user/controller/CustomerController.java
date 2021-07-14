@@ -2,12 +2,15 @@ package com.stack.dogcat.gomall.user.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.stack.dogcat.gomall.annotation.CurrentUser;
 import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.user.entity.Customer;
+import com.stack.dogcat.gomall.user.responseVo.CustomerInfoResponseVo;
 import com.stack.dogcat.gomall.user.service.ICustomerService;
 import com.stack.dogcat.gomall.user.service.impl.TokenServiceImpl;
 import com.stack.dogcat.gomall.utils.AppConst;
+import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -112,14 +115,45 @@ public class CustomerController {
         }
     }
 
-    /**
+
     @GetMapping("/getCustomerInfo")
     @ResponseBody
     @Token.UserLoginToken
     //用户获取个人信息
-    public SysResult getCustomerInfo(){
+    public SysResult getCustomerInfo(@CurrentUser Customer current_customer){
+        try{
+            CustomerInfoResponseVo responseVo = CopyUtil.copy(current_customer,CustomerInfoResponseVo.class);
+            SysResult result = SysResult.success(responseVo);
+            return result;
+        }catch (Exception ex)
+        {
+            SysResult result =SysResult.error(ex.getMessage());
+            return result;
+        }
+    }
 
-    }**/
+
+    @PostMapping("/updateCustomerInfo")
+    @ResponseBody
+    @Token.UserLoginToken
+    //用户修改个人信息
+    public SysResult updateCustomerInfo(Integer id,String userName,Integer gender,String avatarPath,String phoneNumber,Integer age){
+        try{
+            Customer customer = null;
+            customer.setId(id);
+            customer.setUserName(userName);
+            customer.setGender(gender);
+            customer.setAvatorPath(avatarPath);
+            customer.setPhoneNumber(phoneNumber);
+            customer.setAge(age);
+            customerService.updateCustomerInfoById(customer);
+            SysResult result =SysResult.success();
+            return result;
+        }catch (Exception ex){
+            SysResult result = SysResult.error(ex.getMessage());
+            return result;
+        }
+    }
 
 
 
