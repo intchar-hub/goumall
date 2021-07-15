@@ -70,4 +70,9 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
         List<ReceiveAddressQueryResponseVo>receiveAddress_list =receiveAddressMapper.selectList(queryWrapper);
         return  receiveAddress_list;
     }
+
+    @Override
+    public void deleteReceiveAddressById(Integer receiveAddressId){
+        receiveAddressMapper.deleteById(receiveAddressId);
+    }
 }

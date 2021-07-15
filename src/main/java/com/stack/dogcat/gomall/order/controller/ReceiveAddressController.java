@@ -105,4 +105,25 @@ public class ReceiveAddressController {
         }
     }
 
+
+    /**
+     * 用户删除收货地址
+     * @param receiveAddressId
+     * @return
+     */
+    @DeleteMapping("/deleteReceiveAddress")
+    @ResponseBody
+    @Token.UserLoginToken
+    public SysResult deleteReceiveAddress(Integer receiveAddressId){
+        try{
+            receiveAddressService.deleteReceiveAddressById(receiveAddressId);
+            SysResult result = SysResult.success();
+            return result;
+
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+
+    }
 }
