@@ -1,10 +1,13 @@
 package com.stack.dogcat.gomall.product.controller;
 
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.product.entity.AttributeName;
 import com.stack.dogcat.gomall.product.requestVo.AddAttributeRequestVo;
+import com.stack.dogcat.gomall.product.responseVo.AttributeNameVo;
 import com.stack.dogcat.gomall.product.service.IAttributeNameService;
+import com.stack.dogcat.gomall.product.service.impl.AttributeNameServiceImpl;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -79,5 +82,27 @@ public class AttributeNameController {
         }
     }
 
+
+    /**
+     * 商家按属性集合查看所有商品属性
+     * @param collectionId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/listAttributeByCollection")
+    @ResponseBody
+    public SysResult listAttributeByCollection(Integer collectionId,Integer pageNum,Integer pageSize){
+
+        PageResponseVo<AttributeNameVo> responseVos;
+        try{
+            responseVos = attributeNameService.listAttributeByCollection(collectionId,pageNum,pageSize);
+
+        }catch (Exception e){
+            SysResult result = SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(responseVos);
+    }
 
 }
