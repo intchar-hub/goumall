@@ -92,5 +92,9 @@ public class Product implements Serializable {
     @TableField(value = "is_deleted")
     private Integer deleted;
 
+    /**
+     * 是否参加秒杀活动：0->不参加， 1->参加
+     */
+    private Integer isOnsale;
 
 }

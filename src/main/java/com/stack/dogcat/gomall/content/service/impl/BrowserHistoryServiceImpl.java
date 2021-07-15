@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.stack.dogcat.gomall.content.entity.BrowserHistory;
 import com.stack.dogcat.gomall.content.mapper.BrowserHistoryMapper;
 import com.stack.dogcat.gomall.content.responseVo.BrowserHistoryQueryResponseVo;
@@ -11,6 +12,7 @@ import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,12 +41,23 @@ public class BrowserHistoryServiceImpl extends ServiceImpl<BrowserHistoryMapper,
      * @param productId
      */
     @Override
+    @Transactional
     public void saveBrowserHistory(Integer customerId, Integer productId) {
+        /**
+         * 保存浏览历史
+         */
         BrowserHistory browserHistory = new BrowserHistory();
         browserHistory.setCustomerId(customerId);
         browserHistory.setProductId(productId);
         browserHistory.setGmtCreate(LocalDateTime.now());
         browserHistoryMapper.insert(browserHistory);
+
+        /**
+         * 商品的点击次数 +1
+         */
+        Product productDB = productMapper.selectById(productId);
+        productDB.setClickNum(productDB.getClickNum() + 1);
+        productMapper.updateById(productDB);
     }
 
     /**
