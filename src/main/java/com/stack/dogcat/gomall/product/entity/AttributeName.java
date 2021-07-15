@@ -44,7 +44,7 @@ public class AttributeName implements Serializable {
     private Integer attributeCollectionId;
 
     /**
-     * 检索类型
+     * 检索类型 没用
      */
     private Integer selectType;
 
@@ -66,7 +66,7 @@ public class AttributeName implements Serializable {
     private Integer deleted;
 
     /**
-     * 所属分类id
+     * 所属分类id 没用
      */
     private Integer typeId;
 
