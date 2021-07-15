@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.product.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.entity.Sku;
@@ -11,6 +12,7 @@ import com.stack.dogcat.gomall.product.mapper.AttributeValueMapper;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.product.mapper.SkuMapper;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
+import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithAttrbutes;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import org.slf4j.Logger;
@@ -101,7 +103,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         JSONArray dataJSONArray = parse.getJSONArray("data");
         List<ProductWithAttrbutes> data = dataJSONArray.toJavaList(ProductWithAttrbutes.class);
 
-        List<Sku> skus = new ArrayList<>();
         for (ProductWithAttrbutes datum : data) {
             List<Integer> valueArray = datum.getValueArray();
             List<String> attrValues = new ArrayList<>(); //属性值的value
@@ -155,5 +156,98 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Override
     public void deleteProductById(Integer id) {
         productMapper.deleteById(id);
+    }
+
+    /**
+     * 商家修改商品信息
+     * @param requestVo
+     */
+    @Override
+    public void updateProducts(ProductUpdateRequestVo requestVo) {
+
+        Product productDB = productMapper.selectById(requestVo.getProductId());
+
+        LocalDateTime gmtCreate = productDB.getGmtCreate();
+
+        // 商品的最高、低价格
+        BigDecimal highestPrice = BigDecimal.valueOf(0.0);
+        BigDecimal lowestPrice = BigDecimal.valueOf(Double.MAX_VALUE);
+
+        // 商品的库存
+        Integer stockNum = 0;
+
+        /**
+         * sku表
+         */
+        //先将该产品对应的sku删除，再重新添加新的sku信息
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", requestVo.getProductId());
+        skuMapper.delete(queryWrapper);
+
+        //"{\"attrNameIdArray\":[1, 2],\"data\": [{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]},{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]}]}";
+        String skusString = requestVo.getSkusString();
+        JSONObject parse = JSON.parseObject(skusString);
+
+        // 获取attrNameIdArray
+        JSONArray attrNameIdJSONArray = parse.getJSONArray("attrNameIdArray");
+        List<Integer> attrNameIdArray = attrNameIdJSONArray.toJavaList(Integer.class);
+        List<String> attrNames = new ArrayList<>(); //属性名的name
+        for (Integer id : attrNameIdArray) {
+            attrNames.add(attributeNameMapper.selectById(id).getName());
+        }
+
+        // 获取data
+        JSONArray dataJSONArray = parse.getJSONArray("data");
+        List<ProductWithAttrbutes> data = dataJSONArray.toJavaList(ProductWithAttrbutes.class);
+
+        for (ProductWithAttrbutes datum : data) {
+            List<Integer> valueArray = datum.getValueArray();
+            List<String> attrValues = new ArrayList<>(); //属性值的value
+            for (Integer valueId : valueArray) {
+                attrValues.add(attributeValueMapper.selectById(valueId).getValue());
+            }
+
+            Sku sku = new Sku();
+            sku.setPrice(datum.getPrice());
+            sku.setProductId(requestVo.getProductId());
+            sku.setStockNum(datum.getStockNum());
+            sku.setGmtCreate(gmtCreate);
+
+            String productAttribute = "";
+            productAttribute += "{";
+
+            for (int i = 0; i < attrValues.size(); i++) {
+                productAttribute += (attrNames.get(i) + ":" + attrValues.get(i));
+                if(i != attrValues.size() - 1) {
+                    productAttribute += ",";
+                }
+            }
+
+            productAttribute += "}";
+
+            sku.setProductAttribute(productAttribute);
+
+            skuMapper.insert(sku);
+
+            // 获取商品的最高、低价
+            highestPrice = (datum.getPrice().compareTo(highestPrice) == 1)? datum.getPrice(): highestPrice;
+            lowestPrice = (datum.getPrice().compareTo(lowestPrice) == -1)? datum.getPrice(): lowestPrice;
+
+            // 获取商品库存
+            stockNum += datum.getStockNum();
+
+        }
+
+        /**
+         * 商品表
+         */
+        productDB.setDescription(requestVo.getDescription());
+        productDB.setImagePath(requestVo.getImagePath());
+        productDB.setName(requestVo.getName());
+        productDB.setTypeId(requestVo.getTypeId());
+        productDB.setHighestPrice(highestPrice);
+        productDB.setLowestPrice(lowestPrice);
+        productDB.setStockNum(stockNum);
+        productMapper.updateById(productDB);
     }
 }

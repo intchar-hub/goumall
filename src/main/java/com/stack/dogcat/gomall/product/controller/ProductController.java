@@ -3,9 +3,12 @@ package com.stack.dogcat.gomall.product.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
+import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -28,12 +31,28 @@ public class ProductController {
      * @return
      */
     @PostMapping("/saveProduct")
-    public SysResult saveProduct(@RequestBody ProductSaveRequestVo requestVo) {
+    public SysResult saveProduct(@Valid @RequestBody ProductSaveRequestVo requestVo) {
         try {
             productService.saveProduct(requestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("商品上架失败");
+        }
+        return SysResult.success();
+    }
+
+    /**
+     * 商家修改商品信息
+     * @param requestVo
+     * @return
+     */
+    @PostMapping("/updateProducts")
+    public SysResult updateProducts(@Valid @RequestBody ProductUpdateRequestVo requestVo) {
+        try {
+            productService.updateProducts(requestVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("商品信息修改失败");
         }
         return SysResult.success();
     }
