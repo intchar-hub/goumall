@@ -44,7 +44,7 @@ public class AttributeValue implements Serializable {
     private Integer attributeNameId;
 
     /**
-     * 商品id
+     * 商品id,没什么用，就放着吧
      */
     private Integer productId;
 
