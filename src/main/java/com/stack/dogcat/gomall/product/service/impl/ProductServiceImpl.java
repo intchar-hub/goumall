@@ -147,4 +147,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         productMapper.updateById(productDB);
 
     }
+
+    /**
+     * 商家下架商品
+     * @param id
+     */
+    @Override
+    public void deleteProductById(Integer id) {
+        productMapper.deleteById(id);
+    }
 }

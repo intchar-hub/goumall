@@ -15,4 +15,6 @@ import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 public interface IProductService extends IService<Product> {
 
     void saveProduct(ProductSaveRequestVo requestVo);
+
+    void deleteProductById(Integer id);
 }
