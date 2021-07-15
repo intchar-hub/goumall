@@ -1,6 +1,12 @@
 package com.stack.dogcat.gomall.product.controller;
 
 
+import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
+import com.stack.dogcat.gomall.product.service.IProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -16,5 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/product/product")
 public class ProductController {
+
+    @Autowired
+    IProductService productService;
+
+    /**
+     * 商家上架商品
+     * @param requestVo
+     * @return
+     */
+    @PostMapping("/saveProduct")
+    public SysResult saveProduct(@RequestBody ProductSaveRequestVo requestVo) {
+        try {
+            productService.saveProduct(requestVo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("商品上架失败");
+        }
+        return SysResult.success();
+    }
 
 }

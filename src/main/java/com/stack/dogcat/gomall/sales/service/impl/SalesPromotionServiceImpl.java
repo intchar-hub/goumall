@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
+import com.stack.dogcat.gomall.product.entity.Product;
+import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,11 +40,15 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
     @Autowired
     SalesPromotionMapper salesPromotionMapper;
 
+    @Autowired
+    ProductMapper productMapper;
+
     /**
      * 发布秒杀活动
      * @param requestVo
      */
     @Override
+    @Transactional
     public void savePromotion(SalesPromotionSaveRequestVo requestVo) {
 
         //判断活动起止时间是否合理
@@ -54,9 +61,20 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
             throw new RuntimeException();
         }
 
+        /**
+         * 秒杀活动表
+         */
         SalesPromotion salesPromotion = CopyUtil.copy(requestVo, SalesPromotion.class);
         salesPromotion.setGmtCreate(LocalDateTime.now());
         salesPromotionMapper.insert(salesPromotion);
+
+        /**
+         * 商品表
+         */
+        Product productDB = productMapper.selectById(requestVo.getProductId());
+        productDB.setIsOnsale(1);
+        productMapper.updateById(productDB);
+
     }
 
     /**
