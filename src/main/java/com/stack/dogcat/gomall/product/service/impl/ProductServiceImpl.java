@@ -4,17 +4,27 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.entity.Sku;
 import com.stack.dogcat.gomall.product.mapper.AttributeNameMapper;
 import com.stack.dogcat.gomall.product.mapper.AttributeValueMapper;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.product.mapper.SkuMapper;
+import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
+import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithAttrbutes;
+import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
+import com.stack.dogcat.gomall.product.responseVo.StoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
+import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.mapper.StoreMapper;
+import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +54,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     SkuMapper skuMapper;
+
+    @Autowired
+    StoreMapper storeMapper;
 
     @Autowired
     AttributeNameMapper attributeNameMapper;
@@ -249,5 +262,136 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         productDB.setLowestPrice(lowestPrice);
         productDB.setStockNum(stockNum);
         productMapper.updateById(productDB);
+    }
+
+    /**
+     * 商家查看商品信息
+     * @param id
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResponseVo<ProductQueryResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("store_id", id);
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
+        responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
+        return responseVo;
+    }
+
+    /**
+     * 商家筛选查看商品
+     * @param requestVo
+     * @return
+     */
+    @Override
+    public PageResponseVo<ProductQueryResponseVo> screenProducts(ScreenProductsRequestVo requestVo) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("store_id", requestVo.getStoreId());
+
+        if(requestVo.getName() != null) {
+            String likeName = "";
+            String[] split = requestVo.getName().split("");
+            for (int i = 0; i < split.length; i++) {
+                likeName += split[i];
+                if(i != split.length - 1) {
+                    likeName += "%";
+                }
+            }
+            queryWrapper.like("name", likeName);
+        }
+
+        if(requestVo.getTypeId() != null) {
+            queryWrapper.eq("type_id", requestVo.getTypeId());
+        }
+
+        if(requestVo.getStockNum() != null) {
+            queryWrapper.gt("stock_num", requestVo.getStockNum());
+        }
+
+        Page<Product> page = new Page<>(requestVo.getPageNum(), requestVo.getPageSize());
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
+        responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
+        return responseVo;
+    }
+
+    /**
+     * 顾客按分类查看商品
+     * @param typeId
+     * @return
+     */
+    @Override
+    public List<ProductQueryResponseVo> listProductsByType(Integer typeId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("type_id", typeId);
+        List<Product> productsDB = productMapper.selectList(queryWrapper);
+        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
+        return responseVos;
+    }
+
+    /**
+     * 顾客按商品名搜索商品
+     * @param name
+     * @return
+     */
+    @Override
+    public List<ProductQueryResponseVo> listProductsByProductName(String name) {
+        String likeName = "";
+        String[] split = name.split("");
+        for (int i = 0; i < split.length; i++) {
+            likeName += split[i];
+            if(i != split.length - 1) {
+                likeName += "%";
+            }
+        }
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("name", likeName);
+        List<Product> productsDB = productMapper.selectList(queryWrapper);
+        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
+        return responseVos;
+    }
+
+    /**
+     * 顾客按商店搜索商品
+     * @param storeId
+     * @return
+     */
+    @Override
+    public List<ProductQueryResponseVo> listProductsByStoreId(Integer storeId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.like("store_id", storeId);
+        List<Product> productsDB = productMapper.selectList(queryWrapper);
+        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
+        return responseVos;
+    }
+
+    /**
+     * 顾客按商品id查看商品（和店铺）信息
+     * @param id 商品id
+     * @return
+     */
+    @Override
+    public ProductWithStoreQueryResponseVo getProductWithStoreById(Integer id) {
+        ProductWithStoreQueryResponseVo responseVo = new ProductWithStoreQueryResponseVo();
+
+        Product productDB = productMapper.selectById(id);
+        if(productDB == null) {
+            LOG.error("商品不存在");
+            throw new RuntimeException();
+        }
+        ProductQueryResponseVo product = CopyUtil.copy(productDB, ProductQueryResponseVo.class);
+
+        Store storeDB = storeMapper.selectById(productDB.getStoreId());
+        StoreQueryResponseVo store = CopyUtil.copy(storeDB, StoreQueryResponseVo.class);
+
+        responseVo.setProduct(product);
+        responseVo.setStore(store);
+
+        return responseVo;
     }
 }
