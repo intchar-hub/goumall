@@ -133,7 +133,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productAttribute += "{";
 
             for (int i = 0; i < attrValues.size(); i++) {
-                productAttribute += (attrNames.get(i) + ":" + attrValues.get(i));
+                productAttribute += ("\"" + attrNames.get(i) + "\"" + ":" + "\"" + attrValues.get(i) + "\"");
                 if(i != attrValues.size() - 1) {
                     productAttribute += ",";
                 }
@@ -230,7 +230,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             productAttribute += "{";
 
             for (int i = 0; i < attrValues.size(); i++) {
-                productAttribute += (attrNames.get(i) + ":" + attrValues.get(i));
+                productAttribute += ("\"" + attrNames.get(i) + "\"" + ":" + "\"" + attrValues.get(i) + "\"");
                 if(i != attrValues.size() - 1) {
                     productAttribute += ",";
                 }
