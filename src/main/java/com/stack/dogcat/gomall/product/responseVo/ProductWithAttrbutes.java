@@ -7,7 +7,8 @@ import java.util.List;
 /**
  * @Author Yang Jie
  * @Date 2021/7/15 19:04
- * @Descrition 用于上架商品时的JSON字符串解析
+ * @Descrition 用于上架商品、修改商品信息时的JSON字符串解析，示例如下
+ * "{\"attrNameIdArray\":[1, 2],\"data\": [{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]},{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]}]}";
  */
 public class ProductWithAttrbutes implements Serializable {
 
