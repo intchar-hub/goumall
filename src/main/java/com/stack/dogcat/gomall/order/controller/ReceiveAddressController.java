@@ -34,16 +34,17 @@ public class ReceiveAddressController {
      * 用户添加收货地址
      * @param current_customer
      * @param address
+     * @param phoneNumber
      * @return
      */
     @PostMapping("/saveReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String address)
+    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String address,String phoneNumber)
     {
         try{
             Integer customerId =current_customer.getId();
-            receiveAddressService.insertReceiveAddressByCustomerId(customerId,address);
+            receiveAddressService.insertReceiveAddressByCustomerId(customerId,address,phoneNumber);
             SysResult result =SysResult.success();
             return  result;
         }catch (Exception e){
@@ -58,17 +59,21 @@ public class ReceiveAddressController {
      * @param receiveAddressId
      * @param address
      * @param defaultAddress
+     * @param phoneNumber
      * @return
      */
     @PostMapping("/updateReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult updateReceiveAddress(Integer receiveAddressId,String address,Integer defaultAddress){
+    public SysResult updateReceiveAddress(Integer receiveAddressId,String address,String phoneNumber,Integer defaultAddress){
 
         try{
             ReceiveAddress receiveAddress=receiveAddressService.queryReceiveAddressByReceiveAddressId(receiveAddressId);
             if(address!=null){
                 receiveAddress.setAddress(address);
+            }
+            if(phoneNumber!=null){
+                receiveAddress.setPhoneNumber(phoneNumber);
             }
             if(defaultAddress!=null){
                 receiveAddress.setDefaultAddress(defaultAddress);

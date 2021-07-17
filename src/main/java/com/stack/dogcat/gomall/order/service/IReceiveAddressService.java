@@ -17,17 +17,17 @@ import java.util.List;
 public interface IReceiveAddressService extends IService<ReceiveAddress> {
 
     //添加收货地址
-    public void insertReceiveAddressByCustomerId(Integer customerId,String address);
+    void insertReceiveAddressByCustomerId(Integer customerId,String address,String phoneNumber);
 
     //修改收货地址
-    public void updateReceiveAddressById(ReceiveAddress receiveAddress);
+    void updateReceiveAddressById(ReceiveAddress receiveAddress);
 
     //用id查询收货地址
-    public ReceiveAddress queryReceiveAddressByReceiveAddressId(Integer receiveAddressId);
+    ReceiveAddress queryReceiveAddressByReceiveAddressId(Integer receiveAddressId);
 
     //查询所有收货地址
-    public List<ReceiveAddressQueryResponseVo> queryReceiveAddressByCustomerId(Integer customerId);
+    List<ReceiveAddressQueryResponseVo> queryReceiveAddressByCustomerId(Integer customerId);
 
     //根据ReceiveAddressId删除收货地址
-    public void deleteReceiveAddressById(Integer receiveAddressId);
+    void deleteReceiveAddressById(Integer receiveAddressId);
 }
