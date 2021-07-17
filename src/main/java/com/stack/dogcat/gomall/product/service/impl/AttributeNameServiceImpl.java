@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.product.service.impl;
 
+import com.alibaba.druid.sql.ast.statement.SQLCreateViewStatement;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -114,5 +115,45 @@ public class AttributeNameServiceImpl extends ServiceImpl<AttributeNameMapper, A
         PageResponseVo<AttributeNameVo> pageResponseVo=new PageResponseVo(attributeNamePage);
         pageResponseVo.setData(attributeNameVoList);
         return pageResponseVo;
+    }
+
+    @Override
+    @Transactional
+    public AttributeNameVo listAttributeValueByName(Integer attributeNameId){
+
+        AttributeNameVo responseVo =new AttributeNameVo();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id", attributeNameId);
+        AttributeName attributeName=attributeNameMapper.selectOne(queryWrapper);
+
+        responseVo.setAttributeNameId(attributeNameId);
+        responseVo.setAttributeName(attributeName.getName());
+        responseVo.setAttributeCollectionId(attributeName.getAttributeCollectionId());
+        responseVo.setInputType(attributeName.getInputType());
+        responseVo.setGmtCreate(attributeName.getGmtCreate());
+
+        QueryWrapper queryWrapper2 = new QueryWrapper();
+        queryWrapper2.eq("attribute_name_id", attributeNameId);
+        List<AttributeValue> attributeValueList;
+        attributeValueList = attributeValueMapper.selectList(queryWrapper2);
+        ArrayList<String> attributeValueStrList=new ArrayList<>();
+        for(int j =0;j<attributeValueList.size();j++){
+            attributeValueStrList.add(attributeValueList.get(j).getValue());
+        }
+        responseVo.setAttributeValueList(attributeValueStrList);
+
+        return responseVo;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttributeNameById(Integer attributeNameId){
+
+        attributeNameMapper.deleteById(attributeNameId);
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("attribute_name_id", attributeNameId);
+        attributeValueMapper.delete(queryWrapper);
+
     }
 }
