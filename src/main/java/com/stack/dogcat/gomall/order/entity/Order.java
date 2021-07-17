@@ -52,7 +52,7 @@ public class Order implements Serializable {
     /**
      * 订单编号
      */
-    private Integer orderNumber;
+    private String orderNumber;
 
     /**
      * 商品数
@@ -73,6 +73,21 @@ public class Order implements Serializable {
      * 收货地址id
      */
     private Integer receiveAddressId;
+
+    /**
+     * 优惠券id
+     */
+    private Integer couponId;
+
+    /**
+     * 优惠券金额
+     */
+    private BigDecimal couponDiscount;
+
+    /**
+     * 总价
+     */
+    private BigDecimal totalPrice;
 
     /**
      * 创建时间
