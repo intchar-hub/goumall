@@ -5,14 +5,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.sales.entity.Coupon;
+import com.stack.dogcat.gomall.sales.entity.UserCoupon;
 import com.stack.dogcat.gomall.sales.mapper.CouponMapper;
+import com.stack.dogcat.gomall.sales.mapper.UserCouponMapper;
 import com.stack.dogcat.gomall.sales.requestVo.CouponSaveRequestVo;
 import com.stack.dogcat.gomall.sales.responseVo.CouponInfoResponseVo;
 import com.stack.dogcat.gomall.sales.service.ICouponService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.user.entity.Customer;
+import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +37,14 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
     @Autowired
     CouponMapper couponMapper;
 
+    @Autowired
+    UserCouponMapper userCouponMapper;
+
+    @Autowired
+    CustomerMapper customerMapper;
+
     @Override
+    @Transactional
     public void saveCoupon(CouponSaveRequestVo requestVo) {
         Coupon coupon = new Coupon();
         coupon.setStoreId(requestVo.getStoreId());
@@ -44,7 +56,18 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
 
         int i = couponMapper.insert(coupon);
         if(i==0){
-            throw new RuntimeException("插入失败");
+            throw new RuntimeException("插入优惠券失败");
+        }
+
+        List<Customer> customers = customerMapper.selectList(new QueryWrapper<Customer>().select("id"));
+        for (Customer customer:customers) {
+            UserCoupon userCoupon = new UserCoupon();
+            userCoupon.setCustomerId(customer.getId());
+            userCoupon.setCouponId(coupon.getId());
+            i = userCouponMapper.insert(userCoupon);
+            if(i==0){
+                throw new RuntimeException("优惠券发送给顾客失败");
+            }
         }
     }
 
@@ -52,9 +75,11 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
     public PageResponseVo<CouponInfoResponseVo> listCouponByStore(Integer storeId, Integer screenCondition, Integer pageNum, Integer pageSize) {
         Page<Coupon> page = new Page<>(pageNum,pageSize);
         IPage<Coupon> couponPage =new Page<>();
+        //查询全部
         if(screenCondition==0){
             couponPage = couponMapper.selectPage(page,null);
         }
+        //查询不能使用
         else if(screenCondition==1){
             couponPage = couponMapper.selectPage(page,new QueryWrapper<Coupon>()
                     .eq("store_id",storeId)
@@ -62,6 +87,7 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
                     .or()
                     .gt("start_time",LocalDateTime.now()));
         }
+        //查询可使用
         else {
             couponPage = couponMapper.selectPage(page,new QueryWrapper<Coupon>()
                     .eq("store_id",storeId)
@@ -80,27 +106,48 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
     }
 
     @Override
-    public List<CouponInfoResponseVo> listCoupon(Integer screenCondition) {
-        List<Coupon> coupons=new ArrayList<>();
+    public PageResponseVo<CouponInfoResponseVo> listCoupon(Integer  customerId,Integer screenCondition, Integer pageNum, Integer pageSize) {
+        List<CouponInfoResponseVo> responseVos = new ArrayList<>();
+        Page<UserCoupon> page = new Page<>(pageNum,pageSize);
+        //查看可使用的
         if(screenCondition==0){
-            coupons=couponMapper.selectList(null);
+            IPage<UserCoupon> couponPage = userCouponMapper.selectPage(page,new QueryWrapper<UserCoupon>().eq("customer_id",customerId).eq("status",0));
+            List<UserCoupon> userCoupons = couponPage.getRecords();
+            for (UserCoupon userCoupon:userCoupons) {
+                CouponInfoResponseVo responseVo=new CouponInfoResponseVo();
+                Coupon coupon=couponMapper.selectById(userCoupon.getCouponId());
+                responseVo.setId(userCoupon.getCouponId());
+                responseVo.setStoreId(coupon.getStoreId());
+                responseVo.setTargetPrice(coupon.getTargetPrice());
+                responseVo.setDiscount(coupon.getDiscount());
+                responseVo.setGmtCreate(coupon.getGmtCreate());
+                responseVo.setStartTime(coupon.getStartTime());
+                responseVo.setDeadline(coupon.getDeadline());
+                responseVos.add(responseVo);
+            }
+            PageResponseVo<CouponInfoResponseVo> couponInfoResponsePage=new PageResponseVo(couponPage);
+            couponInfoResponsePage.setData(responseVos);
+            return couponInfoResponsePage;
         }
-        else if(screenCondition==1){
-            coupons=couponMapper.selectList(new QueryWrapper<Coupon>().le("deadline",LocalDateTime.now()).
-                    or().gt("start_time",LocalDateTime.now()));
+        //查看已使用的
+        else {
+            IPage<UserCoupon> couponPage = userCouponMapper.selectPage(page,new QueryWrapper<UserCoupon>().eq("customer_id",customerId).eq("status",1));
+            List<UserCoupon> userCoupons = couponPage.getRecords();
+            for (UserCoupon userCoupon:userCoupons) {
+                CouponInfoResponseVo responseVo=new CouponInfoResponseVo();
+                Coupon coupon=couponMapper.selectById(userCoupon.getCouponId());
+                responseVo.setId(userCoupon.getCouponId());
+                responseVo.setStoreId(coupon.getStoreId());
+                responseVo.setTargetPrice(coupon.getTargetPrice());
+                responseVo.setDiscount(coupon.getDiscount());
+                responseVo.setGmtCreate(coupon.getGmtCreate());
+                responseVo.setStartTime(coupon.getStartTime());
+                responseVo.setDeadline(coupon.getDeadline());
+                responseVos.add(responseVo);
+            }
+            PageResponseVo<CouponInfoResponseVo> couponInfoResponsePage=new PageResponseVo(couponPage);
+            couponInfoResponsePage.setData(responseVos);
+            return couponInfoResponsePage;
         }
-        else{
-            coupons=couponMapper.selectList(new QueryWrapper<Coupon>().gt("deadline",LocalDateTime.now())
-                                                                        .le("start_time",LocalDateTime.now()));
-        }
-        if(coupons==null){
-            throw new RuntimeException("查询失败");
-        }
-        List<CouponInfoResponseVo> responseVos=new ArrayList<>();
-        responseVos= CopyUtil.copyList(coupons,CouponInfoResponseVo.class);
-        if(responseVos.size()==0){
-            throw new RuntimeException("转化失败");
-        }
-        return responseVos;
     }
 }

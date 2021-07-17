@@ -20,6 +20,6 @@ public interface ICouponService extends IService<Coupon> {
 
     void saveCoupon(CouponSaveRequestVo requestVo);
     PageResponseVo<CouponInfoResponseVo> listCouponByStore(Integer storeId,Integer screenCondition,Integer pageNum,Integer pageSize);
-    List<CouponInfoResponseVo> listCoupon(Integer screenCondition);
+    PageResponseVo<CouponInfoResponseVo> listCoupon(Integer  customerId,Integer screenCondition, Integer pageNum, Integer pageSize);
 
 }
