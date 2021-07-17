@@ -105,4 +105,45 @@ public class AttributeNameController {
         return SysResult.success(responseVos);
     }
 
+
+    /**
+     * 商家按属性名id查看所有商品属性
+     * @param  attributeNameId
+     * @return
+     */
+    @GetMapping("/listAttributeValueByName")
+    @ResponseBody
+    public SysResult listAttributeValueByName(Integer attributeNameId){
+
+        AttributeNameVo responseVos;
+        try {
+            responseVos = attributeNameService.listAttributeValueByName(attributeNameId);
+
+        }catch (Exception e){
+            SysResult result = SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(responseVos);
+    }
+
+
+    /**
+     * 商家删除属性
+     * @param  attributeNameId
+     * @return
+     */
+    @DeleteMapping("/deleteAttributeNameById")
+    @ResponseBody
+    public SysResult deleteAttributeNameById(Integer attributeNameId){
+
+        try{
+            attributeNameService.deleteAttributeNameById(attributeNameId);
+        }catch (Exception e){
+            SysResult result = SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success();
+    }
+
+
 }
