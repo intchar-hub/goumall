@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.user.controller;
 
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
@@ -174,10 +175,10 @@ public class StoreController {
      * @return
      */
     @GetMapping("/listStoresByName")
-    public SysResult listStoresByName(String name) {
-        List<StoreQueryResponseVo> responseVos = null;
+    public SysResult listStoresByName(String name, Integer pageNum, Integer pageSize) {
+        PageResponseVo<StoreQueryResponseVo> responseVos = null;
         try {
-            responseVos = storeService.listStoresByName(name);
+            responseVos = storeService.listStoresByName(name, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("查询店铺失败");
