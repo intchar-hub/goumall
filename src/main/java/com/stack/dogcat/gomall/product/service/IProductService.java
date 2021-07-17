@@ -31,11 +31,11 @@ public interface IProductService extends IService<Product> {
 
     PageResponseVo<ProductQueryResponseVo> screenProducts(ScreenProductsRequestVo requestVo);
 
-    List<ProductQueryResponseVo> listProductsByType(Integer typeId);
+    PageResponseVo<ProductQueryResponseVo> listProductsByType(Integer typeId, Integer pageNum, Integer pageSize);
 
-    List<ProductQueryResponseVo> listProductsByProductName(String name);
+    PageResponseVo<ProductQueryResponseVo> listProductsByProductName(String name, Integer pageNum, Integer pageSize);
 
-    List<ProductQueryResponseVo> listProductsByStoreId(Integer storeId);
+    PageResponseVo<ProductQueryResponseVo> listProductsByStoreId(Integer storeId, Integer pageNum, Integer pageSize);
 
     ProductWithStoreQueryResponseVo getProductWithStoreById(Integer id);
 }

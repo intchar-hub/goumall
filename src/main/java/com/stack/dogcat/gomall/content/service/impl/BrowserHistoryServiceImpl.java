@@ -1,15 +1,16 @@
 package com.stack.dogcat.gomall.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.BrowserHistory;
 import com.stack.dogcat.gomall.content.mapper.BrowserHistoryMapper;
 import com.stack.dogcat.gomall.content.responseVo.BrowserHistoryQueryResponseVo;
 import com.stack.dogcat.gomall.content.service.IBrowserHistoryService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
-import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,15 +67,17 @@ public class BrowserHistoryServiceImpl extends ServiceImpl<BrowserHistoryMapper,
      * @return
      */
     @Override
-    public List<BrowserHistoryQueryResponseVo> listBrowserHistoryByCustomer(Integer customerId) {
+    public PageResponseVo<BrowserHistoryQueryResponseVo> listBrowserHistoryByCustomer(Integer customerId, Integer pageNum, Integer pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("customer_id", customerId);
-        List<BrowserHistory> browserHistoriesDB = browserHistoryMapper.selectList(queryWrapper);
-        if(browserHistoriesDB == null || browserHistoriesDB.isEmpty()) {
-            return null;
-        }
-        List<BrowserHistoryQueryResponseVo> responseVos = new ArrayList<>();
-        for (BrowserHistory browserHistory : browserHistoriesDB) {
+        queryWrapper.orderByDesc("gmt_create");
+
+        Page<BrowserHistory> page = new Page<>(pageNum, pageSize);
+        IPage<BrowserHistory> browserHistoryIPage = browserHistoryMapper.selectPage(page, queryWrapper);
+
+        PageResponseVo<BrowserHistoryQueryResponseVo> responseVos = new PageResponseVo(browserHistoryIPage);
+        List<BrowserHistoryQueryResponseVo> records = new ArrayList<>();
+        for (BrowserHistory browserHistory : browserHistoryIPage.getRecords()) {
 
             Product product = productMapper.selectById(browserHistory.getProductId());
             if(product == null) {
@@ -82,14 +85,15 @@ public class BrowserHistoryServiceImpl extends ServiceImpl<BrowserHistoryMapper,
             }
             String productName = product.getName();
 
-            BrowserHistoryQueryResponseVo vo = new BrowserHistoryQueryResponseVo();
-            vo.setBrowserHistoryId(browserHistory.getId());
-            vo.setProductId(browserHistory.getProductId());
-            vo.setProductName(productName);
-            vo.setGmtCreate(browserHistory.getGmtCreate());
+            BrowserHistoryQueryResponseVo record = new BrowserHistoryQueryResponseVo();
+            record.setBrowserHistoryId(browserHistory.getId());
+            record.setProductId(browserHistory.getProductId());
+            record.setProductName(productName);
+            record.setGmtCreate(browserHistory.getGmtCreate());
 
-            responseVos.add(vo);
+            records.add(record);
         }
+        responseVos.setData(records);
         return responseVos;
     }
 

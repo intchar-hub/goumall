@@ -120,10 +120,10 @@ public class ProductController {
      * @return
      */
     @GetMapping("/listProductsByType")
-    public SysResult listProductsByType(Integer typeId) {
-        List<ProductQueryResponseVo> responseVos = null;
+    public SysResult listProductsByType(Integer typeId, Integer pageNum, Integer pageSize) {
+        PageResponseVo<ProductQueryResponseVo> responseVos = null;
         try {
-            responseVos = productService.listProductsByType(typeId);
+            responseVos = productService.listProductsByType(typeId, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("分类商品获取失败");
@@ -137,10 +137,10 @@ public class ProductController {
      * @return
      */
     @GetMapping("/listProductsByProductName")
-    public SysResult listProductsByProductName(String name) {
-        List<ProductQueryResponseVo> responseVos = null;
+    public SysResult listProductsByProductName(String name, Integer pageNum, Integer pageSize) {
+        PageResponseVo<ProductQueryResponseVo> responseVos = null;
         try {
-            responseVos = productService.listProductsByProductName(name);
+            responseVos = productService.listProductsByProductName(name, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("按名字获取商品失败");
@@ -154,10 +154,10 @@ public class ProductController {
      * @return
      */
     @GetMapping("/listProductsByStoreId")
-    public SysResult listProductsByStoreId(Integer storeId) {
-        List<ProductQueryResponseVo> responseVos = null;
+    public SysResult listProductsByStoreId(Integer storeId, Integer pageNum, Integer pageSize) {
+        PageResponseVo<ProductQueryResponseVo> responseVos = null;
         try {
-            responseVos = productService.listProductsByStoreId(storeId);
+            responseVos = productService.listProductsByStoreId(storeId, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("按店铺获取商品失败");

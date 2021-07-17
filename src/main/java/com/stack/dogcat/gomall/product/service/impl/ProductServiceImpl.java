@@ -273,6 +273,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      */
     @Override
     public PageResponseVo<ProductQueryResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
+        if(id == null || pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", id);
         Page<Product> page = new Page<>(pageNum, pageSize);
@@ -325,11 +330,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
-    public List<ProductQueryResponseVo> listProductsByType(Integer typeId) {
+    public PageResponseVo<ProductQueryResponseVo> listProductsByType(Integer typeId, Integer pageNum, Integer pageSize) {
+        if(typeId == null || pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("type_id", typeId);
-        List<Product> productsDB = productMapper.selectList(queryWrapper);
-        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVos = new PageResponseVo(productIPage);
+        responseVos.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
+
         return responseVos;
     }
 
@@ -339,7 +353,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
-    public List<ProductQueryResponseVo> listProductsByProductName(String name) {
+    public PageResponseVo<ProductQueryResponseVo> listProductsByProductName(String name, Integer pageNum, Integer pageSize) {
+        if(name == null || pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         String likeName = "";
         String[] split = name.split("");
         for (int i = 0; i < split.length; i++) {
@@ -351,9 +370,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name", likeName);
-        List<Product> productsDB = productMapper.selectList(queryWrapper);
-        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
-        return responseVos;
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
+        responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
+
+        return responseVo;
     }
 
     /**
@@ -362,12 +385,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
-    public List<ProductQueryResponseVo> listProductsByStoreId(Integer storeId) {
+    public PageResponseVo<ProductQueryResponseVo> listProductsByStoreId(Integer storeId, Integer pageNum, Integer pageSize) {
+        if(storeId == null || pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("store_id", storeId);
-        List<Product> productsDB = productMapper.selectList(queryWrapper);
-        List<ProductQueryResponseVo> responseVos = CopyUtil.copyList(productsDB, ProductQueryResponseVo.class);
-        return responseVos;
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
+        return responseVo;
     }
 
     /**
@@ -377,6 +407,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      */
     @Override
     public ProductWithStoreQueryResponseVo getProductWithStoreById(Integer id) {
+        if(id == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         ProductWithStoreQueryResponseVo responseVo = new ProductWithStoreQueryResponseVo();
 
         Product productDB = productMapper.selectById(id);

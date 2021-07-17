@@ -3,7 +3,10 @@ package com.stack.dogcat.gomall.user.service.impl;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
@@ -245,6 +248,10 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
      */
     @Override
     public StoreInfoQueryResponseVo getStoreInfo(Integer id) {
+        if(id == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
 
         Store storeDB = storeMapper.selectById(id);
         if(storeDB == null) {
@@ -278,7 +285,12 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
      * @return
      */
     @Override
-    public List<StoreQueryResponseVo> listStoresByName(String name) {
+    public PageResponseVo<StoreQueryResponseVo> listStoresByName(String name, Integer pageNum, Integer pageSize) {
+        if(name == null || pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         String likeName = "";
         if(name != null) {
             String[] split = name.split("");
@@ -293,10 +305,12 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("store_name", likeName);
 
-        List<Store> storesDB = storeMapper.selectList(queryWrapper);
-        List<StoreQueryResponseVo> responseVos = CopyUtil.copyList(storesDB, StoreQueryResponseVo.class);
+        Page<Store> page = new Page<>(pageNum, pageSize);
+        IPage<Store> storeIPage = storeMapper.selectPage(page, queryWrapper);
+        PageResponseVo<StoreQueryResponseVo> responseVo = new PageResponseVo(storeIPage);
+        responseVo.setData(CopyUtil.copyList(storeIPage.getRecords(), StoreQueryResponseVo.class));
 
-        return responseVos;
+        return responseVo;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.content.controller;
 
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.content.responseVo.BrowserHistoryQueryResponseVo;
 import com.stack.dogcat.gomall.content.service.IBrowserHistoryService;
@@ -48,10 +49,10 @@ public class BrowserHistoryController {
      * @return
      */
     @GetMapping("/listBrowserHistoryByCustomer")
-    public SysResult listBrowserHistoryByCustomer(Integer customerId) {
-        List<BrowserHistoryQueryResponseVo> responseVos;
+    public SysResult listBrowserHistoryByCustomer(Integer customerId, Integer pageNum, Integer pageSize) {
+        PageResponseVo<BrowserHistoryQueryResponseVo> responseVos = null;
         try {
-            responseVos = browserHistoryService.listBrowserHistoryByCustomer(customerId);
+            responseVos = browserHistoryService.listBrowserHistoryByCustomer(customerId, pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("浏览记录获取失败");

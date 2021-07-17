@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.user.service;
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
@@ -38,5 +39,5 @@ public interface IStoreService extends IService<Store> {
 
     void deleteStore(Integer id, String password);
 
-    List<StoreQueryResponseVo> listStoresByName(String name);
+    PageResponseVo<StoreQueryResponseVo> listStoresByName(String name, Integer pageNum, Integer pageSize);
 }

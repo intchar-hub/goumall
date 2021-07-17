@@ -85,6 +85,11 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
      */
     @Override
     public PageResponseVo<SalesPromotionQueryResponseVo> listPromotionByStore(Integer pageNum, Integer pageSize, Integer storeId, Integer screenCondition) {
+        if(pageNum == null || pageSize == null || storeId == null || screenCondition == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", storeId);
         LocalDateTime now = LocalDateTime.now();
@@ -113,6 +118,11 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
      */
     @Override
     public List<SalesPromotionQueryResponseVo> listPromotion(Integer screenCondition) {
+        if(screenCondition == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(null);
         List<SalesPromotionQueryResponseVo> responseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
         LocalDateTime now = LocalDateTime.now();

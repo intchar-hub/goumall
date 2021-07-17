@@ -73,6 +73,11 @@ public class SearchHistoryServiceImpl extends ServiceImpl<SearchHistoryMapper, S
     public List<SearchHistoryQueryResponseVo> listSearchHistoryByCustomer(Integer customerId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("customer_id", customerId);
+
+        // 查看最近10条搜索记录
+        queryWrapper.orderByDesc("gmt_create");
+        queryWrapper.last("limit 10");
+
         List<SearchHistory> searchHistoriesDB = searchHistoryMapper.selectList(queryWrapper);
         if(searchHistoriesDB == null || searchHistoriesDB.isEmpty()) {
             return null;
