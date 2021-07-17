@@ -61,9 +61,9 @@ public class CouponController {
      * 顾客查看所有优惠券
      */
     @GetMapping("/listCoupon")
-    public SysResult listCoupon(Integer screenCondition){
+    public SysResult listCoupon(Integer  customerId,Integer screenCondition, Integer pageNum, Integer pageSize){
         try{
-            List<CouponInfoResponseVo> responseVos=couponService.listCoupon(screenCondition);
+            PageResponseVo<CouponInfoResponseVo> responseVos=couponService.listCoupon(customerId,screenCondition,pageNum,pageSize);
             return SysResult.success(responseVos);
         }
         catch (Exception e){
