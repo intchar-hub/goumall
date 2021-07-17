@@ -22,6 +22,11 @@ public class ReceiveAddressQueryResponseVo {
     private String address;
 
     /**
+     * 收货人电话
+     */
+    private String phoneNumber;
+
+    /**
      * 默认地址，0->不是默认地址，1->是默认地址
      */
     private Integer defaultAddress;
