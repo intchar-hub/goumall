@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.content.service;
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.ProductCollection;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface IProductCollectionService extends IService<ProductCollection> {
 
     void saveProductCollection(Integer customerId,Integer productId);
-    List<ProductCollectionResponseVo> listProductCollection(Integer customerId);
+    PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie);
     void deleteProductCollection(Integer productCollectionId);
 
 }

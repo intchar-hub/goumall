@@ -26,4 +26,10 @@ public interface IAttributeNameService extends IService<AttributeName> {
 
     //（分页）按属性集合查看所有商品属性
     PageResponseVo<AttributeNameVo> listAttributeByCollection(Integer collectionId, Integer pageNum, Integer pageSize);
+
+    //按属性名id查询属性
+    AttributeNameVo  listAttributeValueByName(Integer attributeNameId);
+
+    //按属性名id删除属性
+    void deleteAttributeNameById(Integer attributeNameId);
 }
