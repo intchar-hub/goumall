@@ -1,6 +1,9 @@
 package com.stack.dogcat.gomall.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.ProductCollection;
 import com.stack.dogcat.gomall.content.entity.StoreCollection;
 import com.stack.dogcat.gomall.content.mapper.StoreCollectionMapper;
@@ -44,12 +47,14 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
     }
 
     @Override
-    public List<StoreCollectionResponseVo> listStoreCollection(Integer customerId) {
+    public PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie) {
         QueryWrapper wrapper=new QueryWrapper();
         wrapper.eq("customer_id",customerId);
-        List<StoreCollection> collections=storeCollectionMapper.selectList(wrapper);
+        Page<StoreCollection> page =new Page<>(pageNum,pageSzie);
+        IPage<StoreCollection> collectionPage = storeCollectionMapper.selectPage(page,wrapper);
+        //补充返回vo需要的内容
+        List<StoreCollection> collections=collectionPage.getRecords();
         List<StoreCollectionResponseVo> collectionResponseVos = new ArrayList<>();
-
         for (StoreCollection storeCollection:collections) {
             StoreCollectionResponseVo responseVo= new StoreCollectionResponseVo();
             responseVo.setStoreCollectionId(storeCollection.getId());
@@ -59,7 +64,10 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
             responseVo.setDescription(storeMapper.selectById(storeCollection.getStoreId()).getDescription());
             collectionResponseVos.add(responseVo);
         }
-        return collectionResponseVos;
+        //封装PageResponseVo
+        PageResponseVo<StoreCollectionResponseVo> responseVos=new PageResponseVo(collectionPage);
+        responseVos.setData(collectionResponseVos);
+        return responseVos;
     }
 
     @Override

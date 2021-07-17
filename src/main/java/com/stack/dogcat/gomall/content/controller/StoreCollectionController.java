@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.content.controller;
 
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IStoreCollectionService;
@@ -38,10 +39,10 @@ public class StoreCollectionController {
     }
 
     @GetMapping("/listStoreCollection")
-    public SysResult listStoreCollection(Integer customerId){
-        List<StoreCollectionResponseVo> responseVos=null;
+    public SysResult listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie){
+        PageResponseVo<StoreCollectionResponseVo> responseVos=null;
         try{
-            responseVos = storeCollectionService.listStoreCollection(customerId);
+            responseVos = storeCollectionService.listStoreCollection(customerId,pageNum,pageSzie);
         }
         catch (Exception e){
             e.printStackTrace();

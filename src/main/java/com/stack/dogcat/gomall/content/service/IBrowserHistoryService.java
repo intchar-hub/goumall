@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.content.service;
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.BrowserHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.content.responseVo.BrowserHistoryQueryResponseVo;
@@ -18,7 +19,7 @@ public interface IBrowserHistoryService extends IService<BrowserHistory> {
 
     void saveBrowserHistory(Integer customerId, Integer productId);
 
-    List<BrowserHistoryQueryResponseVo> listBrowserHistoryByCustomer(Integer customerId);
+    PageResponseVo<BrowserHistoryQueryResponseVo> listBrowserHistoryByCustomer(Integer customerId, Integer pageNum, Integer pageSize);
 
     void deleteBrowserHistoryByHistoryId(Integer browserHistoryId);
 

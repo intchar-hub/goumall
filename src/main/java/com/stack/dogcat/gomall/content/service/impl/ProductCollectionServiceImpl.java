@@ -1,7 +1,11 @@
 package com.stack.dogcat.gomall.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.ProductCollection;
+import com.stack.dogcat.gomall.content.entity.StoreCollection;
 import com.stack.dogcat.gomall.content.mapper.ProductCollectionMapper;
 import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IProductCollectionService;
@@ -42,12 +46,14 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
     }
 
     @Override
-    public List<ProductCollectionResponseVo> listProductCollection(Integer customerId){
+    public PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie){
         QueryWrapper wrapper=new QueryWrapper();
         wrapper.eq("customer_id",customerId);
-        List<ProductCollection> collections=productCollectionMapper.selectList(wrapper);
+        Page<ProductCollection> page =new Page<>(pageNum,pageSzie);
+        IPage<ProductCollection> collectionPage=productCollectionMapper.selectPage(page,wrapper);
+        //补充返回vo需要的内容
+        List<ProductCollection> collections = collectionPage.getRecords();
         List<ProductCollectionResponseVo> collectionResponseVos = new ArrayList<>();
-
         for (ProductCollection productCollection:collections) {
             ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
             responseVo.setProductCollectionId(productCollection.getId());
@@ -57,7 +63,10 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
             responseVo.setDescription(productMapper.selectById(productCollection.getProductId()).getDescription());
             collectionResponseVos.add(responseVo);
         }
-        return collectionResponseVos;
+        //封装PageResponseVo
+        PageResponseVo<ProductCollectionResponseVo> responseVos = new PageResponseVo(collectionPage);
+        responseVos.setData(collectionResponseVos);
+        return responseVos;
     }
 
     @Override
