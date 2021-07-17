@@ -8,10 +8,10 @@ import javax.validation.constraints.NotNull;
  * @Date 2021/7/15 14:52
  * @Descrition TODO
  */
-public class ProductSaveRequestVo {
+public class ProductUpdateRequestVo {
 
-    @NotNull(message = "店铺不能为空")
-    private Integer storeId;
+    @NotNull(message = "商品id不能为空")
+    private Integer productId;
 
     @NotNull(message = "分类不能为空")
     private Integer typeId;
@@ -30,8 +30,8 @@ public class ProductSaveRequestVo {
 
     @Override
     public String toString() {
-        return "ProductSaveRequestVo{" +
-                "storeId=" + storeId +
+        return "ProductUpdateRequestVo{" +
+                "productId=" + productId +
                 ", typeId=" + typeId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -40,12 +40,12 @@ public class ProductSaveRequestVo {
                 '}';
     }
 
-    public Integer getStoreId() {
-        return storeId;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setStoreId(Integer storeId) {
-        this.storeId = storeId;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public Integer getTypeId() {
