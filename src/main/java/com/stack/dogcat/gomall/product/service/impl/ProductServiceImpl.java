@@ -429,4 +429,27 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         return responseVo;
     }
+
+    /**
+     * 消费者查看商品（首页，一般用于未登录用户，按销量排序）
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResponseVo<ProductQueryResponseVo> listProductsBySalesNum(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("sales_num");
+        IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
+        responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
+
+        return responseVo;
+    }
 }

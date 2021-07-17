@@ -132,6 +132,24 @@ public class ProductController {
     }
 
     /**
+     * 消费者查看商品（首页，一般用于未登录用户，按销量排序）
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/listProductsBySalesNum")
+    public SysResult listProductsBySalesNum(Integer pageNum, Integer pageSize) {
+        PageResponseVo<ProductQueryResponseVo> responseVos = null;
+        try {
+            responseVos = productService.listProductsBySalesNum(pageNum, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("分类商品获取失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
+    /**
      * 顾客按商品名搜索商品
      * @param name
      * @return
