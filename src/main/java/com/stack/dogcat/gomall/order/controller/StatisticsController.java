@@ -1,15 +1,13 @@
 package com.stack.dogcat.gomall.order.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.order.responseVo.BasicStatisticsInfoQueryResponseVo;
+import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
 import com.stack.dogcat.gomall.order.service.impl.StatisticsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Author Yang Jie
@@ -29,16 +27,33 @@ public class StatisticsController {
      * @param year
      * @return
      */
-    @GetMapping("/listTurnOverByYear")
-    public SysResult listTurnOverByYear(Integer storeId, String year) {
-        List<BigDecimal> turnovers;
+    @GetMapping("/listOrderNumAndIncomeByYear")
+    public SysResult listOrderNumAndIncomeByYear(Integer storeId, String year) {
+        OrderNumAndIncomeQueryResponseVo responseVo;
         try {
-            turnovers = statisticsService.listTurnOverByYear(storeId, year);
+            responseVo = statisticsService.listOrderNumAndIncomeByYear(storeId, year);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("年销售额统计信息获取失败");
         }
-        return SysResult.success(turnovers);
+        return SysResult.success(responseVo);
+    }
+
+    /**
+     * 商家查看各项基本统计信息
+     * @param storeId
+     * @return
+     */
+    @GetMapping("/listBasicStatisticsInfo")
+    public SysResult listBasicStatisticsInfo(Integer storeId) {
+        BasicStatisticsInfoQueryResponseVo responseVo;
+        try {
+            responseVo = statisticsService.listBasicStatisticsInfo(storeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("基本统计信息获取失败");
+        }
+        return SysResult.success(responseVo);
     }
 
 }
