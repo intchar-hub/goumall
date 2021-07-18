@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.order.responseVo;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author Yang Jie
@@ -52,6 +53,11 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     private Integer totalFansNum; // 总粉丝数
 
+    /**
+     * 供商家选择可查看销售情况的年份
+     */
+    private List<String> years; // 店铺中的订单的所有年份（即该店铺从入驻至今）
+
     @Override
     public String toString() {
         return "BasicStatisticsInfoQueryResponseVo{" +
@@ -70,7 +76,16 @@ public class BasicStatisticsInfoQueryResponseVo {
                 ", yesterdayIncreaseFansNum=" + yesterdayIncreaseFansNum +
                 ", thismonthIncreaseFansNum=" + thismonthIncreaseFansNum +
                 ", totalFansNum=" + totalFansNum +
+                ", years=" + years +
                 '}';
+    }
+
+    public List<String> getYears() {
+        return years;
+    }
+
+    public void setYears(List<String> years) {
+        this.years = years;
     }
 
     public Integer getTodayOrderNum() {
