@@ -19,7 +19,7 @@ public class ProductWithStoreQueryResponseVo {
 
     private List<CouponInfoResponseVo> coupons;
 
-    private List<SalesPromotionQueryResponseVo> sales;
+    private SalesPromotionQueryResponseVo sale;
 
     @Override
     public String toString() {
@@ -27,16 +27,15 @@ public class ProductWithStoreQueryResponseVo {
                 "product=" + product +
                 ", store=" + store +
                 ", coupons=" + coupons +
-                ", sales=" + sales +
                 '}';
     }
 
-    public List<SalesPromotionQueryResponseVo> getSales() {
-        return sales;
+    public SalesPromotionQueryResponseVo getSale() {
+        return sale;
     }
 
-    public void setSales(List<SalesPromotionQueryResponseVo> sales) {
-        this.sales = sales;
+    public void setSale(SalesPromotionQueryResponseVo sale) {
+        this.sale = sale;
     }
 
     public List<CouponInfoResponseVo> getCoupons() {
