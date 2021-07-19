@@ -25,8 +25,11 @@ import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseV
 import com.stack.dogcat.gomall.product.responseVo.StoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import com.stack.dogcat.gomall.sales.entity.Coupon;
+import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.stack.dogcat.gomall.sales.mapper.CouponMapper;
+import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
 import com.stack.dogcat.gomall.sales.responseVo.CouponInfoResponseVo;
+import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.utils.CopyUtil;
@@ -77,6 +80,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     CartItemMapper cartItemMapper;
+
+    @Autowired
+    SalesPromotionMapper salesPromotionMapper;
 
     /**
      * 商家上架商品
@@ -472,9 +478,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<Coupon> couponsDB = couponMapper.selectList(queryWrapper);
         List<CouponInfoResponseVo> couponInfoResponseVos = CopyUtil.copyList(couponsDB, CouponInfoResponseVo.class);
 
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", id);
+        List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
+        List<SalesPromotionQueryResponseVo> salesPromotionQueryResponseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
+
         responseVo.setProduct(product);
         responseVo.setStore(store);
         responseVo.setCoupons(couponInfoResponseVos);
+        responseVo.setSales(salesPromotionQueryResponseVos);
 
         return responseVo;
     }

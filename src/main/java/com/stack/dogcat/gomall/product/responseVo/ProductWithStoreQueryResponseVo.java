@@ -2,6 +2,7 @@ package com.stack.dogcat.gomall.product.responseVo;
 
 import com.stack.dogcat.gomall.sales.entity.Coupon;
 import com.stack.dogcat.gomall.sales.responseVo.CouponInfoResponseVo;
+import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 
 import java.util.List;
 
@@ -18,13 +19,24 @@ public class ProductWithStoreQueryResponseVo {
 
     private List<CouponInfoResponseVo> coupons;
 
+    private List<SalesPromotionQueryResponseVo> sales;
+
     @Override
     public String toString() {
         return "ProductWithStoreQueryResponseVo{" +
                 "product=" + product +
                 ", store=" + store +
-                ", coupon=" + coupons +
+                ", coupons=" + coupons +
+                ", sales=" + sales +
                 '}';
+    }
+
+    public List<SalesPromotionQueryResponseVo> getSales() {
+        return sales;
+    }
+
+    public void setSales(List<SalesPromotionQueryResponseVo> sales) {
+        this.sales = sales;
     }
 
     public List<CouponInfoResponseVo> getCoupons() {
