@@ -47,7 +47,7 @@ public class Store implements Serializable {
     private String  description;
 
     /**
-     * 0是待审核，1是审核通过，2是审核不通过，3是已封禁
+     * 0是待审核，1是审核通过，2是审核不通过，3是已封禁，4是已注销
      */
     private Integer status;
 

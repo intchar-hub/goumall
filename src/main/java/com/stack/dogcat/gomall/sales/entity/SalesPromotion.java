@@ -65,6 +65,11 @@ public class SalesPromotion implements Serializable {
     private LocalDateTime deadline;
 
     /**
+     * 0->正常 1->过期
+     */
+    private Integer status;
+
+    /**
      * 逻辑删除，0表示未删除，1表示删除
      */
     @TableLogic

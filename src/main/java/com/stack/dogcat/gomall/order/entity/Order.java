@@ -65,14 +65,20 @@ public class Order implements Serializable {
     private BigDecimal price;
 
     /**
-     * 订单状态，0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单
+     * 订单状态，0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭
      */
     private Integer status;
 
     /**
-     * 收货地址id
+     * 收货人电话
      */
-    private Integer receiveAddressId;
+    private String phoneNumber;
+
+    /**
+     * 收货地址
+     */
+    private String address;
+
 
     /**
      * 优惠券id
@@ -88,6 +94,16 @@ public class Order implements Serializable {
      * 总价
      */
     private BigDecimal totalPrice;
+
+    /**
+     * 商家是否可见0->不可见 1->可见
+     */
+    private Integer storeVisible;
+
+    /**
+     * 消费者是否可见0->不可见 1->可见
+     */
+    private Integer customerVisible;
 
     /**
      * 创建时间
