@@ -5,6 +5,7 @@ import com.stack.dogcat.gomall.order.responseVo.BasicStatisticsInfoQueryResponse
 import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
 import com.stack.dogcat.gomall.order.service.impl.StatisticsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Descrition 处理店铺的统计信息相关请求
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/order/statistics")
 public class StatisticsController {
 

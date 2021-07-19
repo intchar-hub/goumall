@@ -29,6 +29,7 @@ import java.util.Map;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user/customer")
 public class CustomerController {
     @Autowired

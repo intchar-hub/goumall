@@ -20,6 +20,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/cms/browser-history")
 public class BrowserHistoryController {
 

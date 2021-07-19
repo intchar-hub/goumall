@@ -21,6 +21,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/sales/sales-promotion")
 public class SalesPromotionController {
 

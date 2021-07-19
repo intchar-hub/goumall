@@ -19,6 +19,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/cms/search-history")
 public class SearchHistoryController {
 

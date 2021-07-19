@@ -17,6 +17,7 @@ import java.util.List;
  * @since 2021/7/14
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/mms/comment")
 public class CommentController {
 
