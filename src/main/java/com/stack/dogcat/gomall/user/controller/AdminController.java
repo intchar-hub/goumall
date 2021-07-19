@@ -6,10 +6,7 @@ import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user/admin")
 public class AdminController {
 

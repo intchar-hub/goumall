@@ -11,6 +11,7 @@ import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
 import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IStoreCollectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,16 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
         storeCollection.setStoreId(storeId);
         storeCollection.setGmtCreate(LocalDateTime.now());
         //插入数据库
-        storeCollectionMapper.insert(storeCollection);
+        int i = storeCollectionMapper.insert(storeCollection);
+        if(i==0){
+            throw new RuntimeException("收藏失败");
+        }
+        Store store = storeMapper.selectById(storeId);
+        store.setFansNum(store.getFansNum()+1);
+        i = storeMapper.updateById(store);
+        if(i==0){
+            throw new RuntimeException("收藏失败");
+        }
     }
 
     @Override

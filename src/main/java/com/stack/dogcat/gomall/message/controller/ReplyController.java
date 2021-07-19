@@ -5,11 +5,7 @@ import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.message.requestVo.ReplySaveRequestVo;
 import com.stack.dogcat.gomall.message.service.IReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -22,6 +18,7 @@ import javax.validation.Valid;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/mms/reply")
 public class ReplyController {
 

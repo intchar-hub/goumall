@@ -8,11 +8,7 @@ import com.stack.dogcat.gomall.product.responseVo.AttributeCollectionResopnseVo;
 import com.stack.dogcat.gomall.product.responseVo.StoreAttributesListResponseVo;
 import com.stack.dogcat.gomall.product.service.IAttributeCollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +21,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/product/attribute-collection")
 public class AttributeCollectionController {
 

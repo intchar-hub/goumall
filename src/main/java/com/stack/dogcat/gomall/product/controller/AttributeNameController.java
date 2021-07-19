@@ -26,6 +26,7 @@ import java.util.ArrayList;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/product/attribute-name")
 public class AttributeNameController {
 
