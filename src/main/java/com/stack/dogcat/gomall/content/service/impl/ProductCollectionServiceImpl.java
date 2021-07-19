@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +43,11 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
         productCollection.setProductId(productId);
         productCollection.setGmtCreate(LocalDateTime.now());
         //插入数据库
-        productCollectionMapper.insert(productCollection);
+        int i=productCollectionMapper.insert(productCollection);
+        if(i==0){
+            throw new RuntimeException("收藏失败");
+        }
+
     }
 
     @Override
