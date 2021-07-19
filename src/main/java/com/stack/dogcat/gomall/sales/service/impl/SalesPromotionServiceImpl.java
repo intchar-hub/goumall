@@ -61,6 +61,46 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
             throw new RuntimeException();
         }
 
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", requestVo.getProductId());
+        queryWrapper.gt("deadline", requestVo.getDeadline());
+        queryWrapper.lt("start_time", requestVo.getDeadline());
+        List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
+        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+            LOG.info("该商品在该时间段内已参加秒杀活动");
+            throw new RuntimeException();
+        }
+
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", requestVo.getProductId());
+        queryWrapper.gt("deadline", requestVo.getStartTime());
+        queryWrapper.lt("start_time", requestVo.getStartTime());
+        salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
+        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+            LOG.info("该商品在该时间段内已参加秒杀活动");
+            throw new RuntimeException();
+        }
+
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", requestVo.getProductId());
+        queryWrapper.gt("start_time", requestVo.getStartTime());
+        queryWrapper.lt("deadline", requestVo.getDeadline());
+        salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
+        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+            LOG.info("该商品在该时间段内已参加秒杀活动");
+            throw new RuntimeException();
+        }
+
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", requestVo.getProductId());
+        queryWrapper.lt("start_time", requestVo.getStartTime());
+        queryWrapper.gt("deadline", requestVo.getDeadline());
+        salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
+        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+            LOG.info("该商品在该时间段内已参加秒杀活动");
+            throw new RuntimeException();
+        }
+
         /**
          * 秒杀活动表
          */
