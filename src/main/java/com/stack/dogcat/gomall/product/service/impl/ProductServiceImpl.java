@@ -8,20 +8,25 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
+import com.stack.dogcat.gomall.content.mapper.ProductCollectionMapper;
+import com.stack.dogcat.gomall.order.mapper.CartItemMapper;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.entity.Sku;
 import com.stack.dogcat.gomall.product.mapper.AttributeNameMapper;
 import com.stack.dogcat.gomall.product.mapper.AttributeValueMapper;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.product.mapper.SkuMapper;
-import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
+import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithAttrbutes;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.StoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
+import com.stack.dogcat.gomall.sales.entity.Coupon;
+import com.stack.dogcat.gomall.sales.mapper.CouponMapper;
+import com.stack.dogcat.gomall.sales.responseVo.CouponInfoResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import com.stack.dogcat.gomall.utils.CopyUtil;
@@ -63,6 +68,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     AttributeValueMapper attributeValueMapper;
+
+    @Autowired
+    CouponMapper couponMapper;
+
+    @Autowired
+    ProductCollectionMapper productCollectionMapper;
+
+    @Autowired
+    CartItemMapper cartItemMapper;
 
     /**
      * 商家上架商品
@@ -168,7 +182,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      */
     @Override
     public void deleteProductById(Integer id) {
-        productMapper.deleteById(id);
+        if(id == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+        Product productDB = productMapper.selectById(id);
+        productDB.setStatus(0);
+        productMapper.updateById(productDB);
+
+        /**
+         * 删除对应的商品收藏和购物车项
+         */
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", id);
+        productCollectionMapper.delete(queryWrapper);
+        cartItemMapper.delete(queryWrapper);
     }
 
     /**
@@ -195,7 +223,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         //先将该产品对应的sku删除，再重新添加新的sku信息
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("product_id", requestVo.getProductId());
-        skuMapper.delete(queryWrapper);
+        List<Sku> skusDB = skuMapper.selectList(queryWrapper);
+        if(skusDB != null) {
+            for (Sku sku : skusDB) {
+                sku.setStatus(1);
+                skuMapper.updateById(sku);
+            }
+        }
 
         //"{\"attrNameIdArray\":[1, 2],\"data\": [{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]},{\"stockNum\":1,\"price\":11,\"valueArray\":[3,4]}]}";
         String skusString = requestVo.getSkusString();
@@ -280,6 +314,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", id);
+        queryWrapper.eq("status", 1);
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
         PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
@@ -296,6 +331,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public PageResponseVo<ProductQueryResponseVo> screenProducts(ScreenProductsRequestVo requestVo) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", requestVo.getStoreId());
+        queryWrapper.eq("status", 1);
 
         if(requestVo.getName() != null) {
             String likeName = "";
@@ -338,6 +374,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("type_id", typeId);
+        queryWrapper.eq("status", 1);
 
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
@@ -370,6 +407,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("name", likeName);
+        queryWrapper.eq("status", 1);
 
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
@@ -393,6 +431,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("store_id", storeId);
+        queryWrapper.eq("status", 1);
 
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
@@ -419,13 +458,23 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             LOG.error("商品不存在");
             throw new RuntimeException();
         }
+        if(productDB.getStatus() == 0) {
+            LOG.error("商品已下架");
+            throw new RuntimeException();
+        }
         ProductQueryResponseVo product = CopyUtil.copy(productDB, ProductQueryResponseVo.class);
 
         Store storeDB = storeMapper.selectById(productDB.getStoreId());
         StoreQueryResponseVo store = CopyUtil.copy(storeDB, StoreQueryResponseVo.class);
 
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("store_id", storeDB.getId());
+        List<Coupon> couponsDB = couponMapper.selectList(queryWrapper);
+        List<CouponInfoResponseVo> couponInfoResponseVos = CopyUtil.copyList(couponsDB, CouponInfoResponseVo.class);
+
         responseVo.setProduct(product);
         responseVo.setStore(store);
+        responseVo.setCoupons(couponInfoResponseVos);
 
         return responseVo;
     }
@@ -446,6 +495,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         Page<Product> page = new Page<>(pageNum, pageSize);
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.orderByDesc("sales_num");
+        queryWrapper.eq("status", 1);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
         PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
         responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
