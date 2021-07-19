@@ -57,6 +57,11 @@ public class Sku implements Serializable {
     private Integer salesNum;
 
     /**
+     * 0->正常 1->仅历史订单中可见
+     */
+    private Integer status;
+
+    /**
      * 逻辑删除，0表示未删除，1表示删除
      */
     @TableLogic

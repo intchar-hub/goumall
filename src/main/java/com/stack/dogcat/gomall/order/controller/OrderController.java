@@ -3,16 +3,14 @@ package com.stack.dogcat.gomall.order.controller;
 
 import com.stack.dogcat.gomall.annotation.CurrentUser;
 import com.stack.dogcat.gomall.annotation.Token;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
-import com.stack.dogcat.gomall.order.entity.Order;
 import com.stack.dogcat.gomall.order.service.impl.OrderServiceImpl;
-import com.stack.dogcat.gomall.product.responseVo.OrderInfoResponseVo;
+import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 /**
  * <p>
@@ -72,6 +70,33 @@ public class OrderController {
         }
         return SysResult.success(orderInfoResponseVo);
     }
+
+
+    /**
+     * 查询我的订单
+     * @param current_customer
+     * @param status
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/listOrderByCustomer")
+    @ResponseBody
+    @Token.UserLoginToken
+    public SysResult listOrderByCustomer(@CurrentUser Customer current_customer,Integer status,Integer pageNum,Integer pageSize){
+
+        PageResponseVo<OrderInfoResponseVo>orderInfoResponseVoPageResponseVo;
+        try{
+            orderInfoResponseVoPageResponseVo = orderService.listOrderByCustomer(current_customer.getId(),status,pageNum,pageSize);
+
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(orderInfoResponseVoPageResponseVo);
+    }
+
+
 
 
 }

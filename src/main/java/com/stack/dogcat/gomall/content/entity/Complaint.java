@@ -44,7 +44,7 @@ public class Complaint implements Serializable {
     private String content;
 
     /**
-     * 投诉状态，0表示未受理，1表示已受理
+     * 投诉状态，0表示未受理，1表示已受理，2表示已撤销
      */
     private Integer status;
 
