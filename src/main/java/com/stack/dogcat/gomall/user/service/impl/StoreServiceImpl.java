@@ -276,7 +276,8 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         if(!storeDB.getPassword().equals(password)) {
             throw new RuntimeException("密码错误");
         }
-        storeMapper.deleteById(id);
+        storeDB.setStatus(4);
+        storeMapper.updateById(storeDB);
     }
 
     /**
@@ -304,6 +305,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("store_name", likeName);
+        queryWrapper.eq("status", 1);
 
         Page<Store> page = new Page<>(pageNum, pageSize);
         IPage<Store> storeIPage = storeMapper.selectPage(page, queryWrapper);

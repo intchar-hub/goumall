@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.stack.dogcat.gomall.content.mapper.StoreCollectionMapper;
 import com.stack.dogcat.gomall.order.entity.Order;
 import com.stack.dogcat.gomall.order.mapper.OrderMapper;
+import com.stack.dogcat.gomall.order.mapper.StatisticsMapper;
 import com.stack.dogcat.gomall.order.responseVo.BasicStatisticsInfoQueryResponseVo;
 import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
@@ -43,6 +44,9 @@ public class StatisticsServiceImpl {
 
     @Autowired
     StoreCollectionMapper storeCollectionMapper;
+
+    @Autowired
+    StatisticsMapper statisticsMapper;
 
     /**
      * 商家按年份查询每月的销售额
@@ -88,6 +92,10 @@ public class StatisticsServiceImpl {
      * @return
      */
     public BasicStatisticsInfoQueryResponseVo listBasicStatisticsInfo(Integer storeId) {
+        if(storeId == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -196,6 +204,11 @@ public class StatisticsServiceImpl {
         storeCollectionQueryWrapper.likeRight("gmt_create", now.toString().substring(0, 7));
         thismonthIncreaseFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
 
+        /**
+         * 年份
+         */
+        List<String> years = statisticsMapper.listOrderYears(storeId);
+
 
         /**
          * 构造返回值
@@ -220,6 +233,8 @@ public class StatisticsServiceImpl {
         responseVo.setYesterdayIncreaseFansNum(yesterdayIncreaseFansNum);
         responseVo.setThismonthIncreaseFansNum(thismonthIncreaseFansNum);
         responseVo.setTotalFansNum(totalFansNum);
+
+        responseVo.setYears(years);
 
         return responseVo;
     }
