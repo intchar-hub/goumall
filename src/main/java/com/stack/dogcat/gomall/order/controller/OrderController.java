@@ -23,6 +23,7 @@ import javax.validation.Valid;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/order/order")
 public class OrderController {
 

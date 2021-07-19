@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/product/attribute-value")
 public class AttributeValueController {
 
