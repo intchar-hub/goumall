@@ -7,11 +7,7 @@ import com.stack.dogcat.gomall.content.responseVo.ComplaintQueryResponseVo;
 import com.stack.dogcat.gomall.content.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.content.service.IComplaintService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +20,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/cms/complaint")
 public class ComplaintController {
 

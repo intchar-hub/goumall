@@ -24,6 +24,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/product/product")
 public class ProductController {
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/order/order")
 public class OrderController {
 

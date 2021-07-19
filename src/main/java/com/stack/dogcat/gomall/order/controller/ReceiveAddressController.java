@@ -23,6 +23,7 @@ import java.util.List;
  * @since 2021-07-08
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/order/receive-address")
 public class ReceiveAddressController {
 

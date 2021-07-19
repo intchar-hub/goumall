@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
@@ -37,6 +38,15 @@ class GomallApplicationTests {
 //        for (Object object : objects) {
 //            System.out.println(object);
 //        }
+    }
+
+    @Test
+    void testLocalDateTime() {
+        System.out.println("当前时间：" + LocalDateTime.now().toString());
+        System.out.println("当前时间：" + LocalDateTime.now().toLocalDate());
+        System.out.println("当前时间：" + LocalDateTime.now().toLocalTime());
+        System.out.println("当前时间：" + LocalDateTime.now().toLocalTime());
+        System.out.println("当前时间：" + LocalDateTime.now().toLocalTime());
     }
 
 }
