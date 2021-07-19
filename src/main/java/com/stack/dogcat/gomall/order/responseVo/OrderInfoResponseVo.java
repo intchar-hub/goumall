@@ -1,4 +1,4 @@
-package com.stack.dogcat.gomall.product.responseVo;
+package com.stack.dogcat.gomall.order.responseVo;
 
 import lombok.Data;
 
@@ -57,6 +57,11 @@ public class OrderInfoResponseVo {
      * 优惠券金额
      */
     private BigDecimal discount;
+
+    /**
+     * 订单状态，0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单
+     */
+    private Integer status;
 
     /**
      * 订单创建时间

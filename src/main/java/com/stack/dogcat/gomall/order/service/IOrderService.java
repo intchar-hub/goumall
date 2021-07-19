@@ -1,10 +1,11 @@
 package com.stack.dogcat.gomall.order.service;
 
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
 import com.stack.dogcat.gomall.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.stack.dogcat.gomall.product.responseVo.OrderInfoResponseVo;
+import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 
 /**
  * <p>
@@ -21,5 +22,8 @@ public interface IOrderService extends IService<Order> {
 
     /**查询单个订单**/
     OrderInfoResponseVo getOrderInfo(Integer orderId);
+
+    /**分页查询各状态订单**/
+    PageResponseVo<OrderInfoResponseVo>listOrderByCustomer(Integer customerId,Integer status,Integer pageNum,Integer pageSize);
 
 }

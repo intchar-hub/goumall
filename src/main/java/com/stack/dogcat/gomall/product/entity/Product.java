@@ -86,6 +86,11 @@ public class Product implements Serializable {
     private BigDecimal lowestPrice;
 
     /**
+     * 商品上架状态 0->下架 1->上架
+     */
+    private Integer status;
+
+    /**
      * 逻辑删除，0表示未删除，1表示删除
      */
     @TableLogic
