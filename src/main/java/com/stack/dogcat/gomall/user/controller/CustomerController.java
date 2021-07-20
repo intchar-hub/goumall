@@ -72,7 +72,7 @@ public class CustomerController {
                 customerService.updateCustomerInfoById(customer);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("id",id);
-                map.put("loginKey",loginKey);
+                map.put("token",loginKey);
                 SysResult result = SysResult.build(200,"登录成功",map);
                 return result;
             }
