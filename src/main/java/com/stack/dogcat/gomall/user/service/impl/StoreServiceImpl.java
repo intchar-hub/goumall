@@ -71,6 +71,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         request.getSession().setAttribute("store-" + email, emailServiceCode);
         //定时5分钟清除该session
         removeAttrbute(request.getSession(), "store-" + email);
+        System.out.println("发验证码：" + request.getSession().getId());
     }
 
     /**
@@ -82,6 +83,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
         //判断邮箱验证码是否正确
         HttpSession session = request.getSession();
+        System.out.println("注册时：" + session.getId());
         String correctCode = (String)session.getAttribute("store-" + registerRequestVo.getEmail());
         LOG.info("商家" + registerRequestVo.getEmail() + "验证码：" + correctCode);
         if(correctCode == null || correctCode.isEmpty()) {
@@ -163,18 +165,18 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     /**
      * 商家密码登录
-     * @param userName
+     * @param username
      * @param password
      * @param verifyString
      * @return
      */
     @Override
-    public StoreLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public StoreLoginResponseVo pwdLogin(HttpServletRequest request, String username, String password, String verifyString) {
 
         //判断字符验证码是否正确
         HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("store-" + userName);
-        LOG.info("商家" + userName + "验证码：" + correctCode);
+        String correctCode = (String)session.getAttribute("store-" + username);
+        LOG.info("商家" + username + "验证码：" + correctCode);
         if(correctCode == null || correctCode.isEmpty()) {
             throw new RuntimeException("验证码已失效");
         }
@@ -183,7 +185,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         }
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_name", userName);
+        queryWrapper.eq("user_name", username);
         Store storeDB = storeMapper.selectOne(queryWrapper);
         if(storeDB != null && storeDB.getPassword().equals(password)) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);
@@ -329,7 +331,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
                 session.removeAttribute(attrName);
                 timer.cancel();
             }
-        }, 60 * 1000);
+        }, 5 * 60 * 1000);
     }
 
 }
