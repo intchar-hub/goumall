@@ -83,16 +83,16 @@ public class StoreController {
 
     /**
      * 商家密码登录
-     * @param username
+     * @param userName
      * @param password
      * @param verifyString
      * @return
      */
     @PostMapping("/pwdLogin")
-    public SysResult pwdLogin(HttpServletRequest request, String username, String password, String verifyString) {
+    public SysResult pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
         StoreLoginResponseVo responseVo = null;
         try {
-            responseVo= storeService.pwdLogin(request, username, password, verifyString);
+            responseVo= storeService.pwdLogin(request, userName, password, verifyString);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
