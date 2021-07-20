@@ -165,18 +165,18 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     /**
      * 商家密码登录
-     * @param username
+     * @param userName
      * @param password
      * @param verifyString
      * @return
      */
     @Override
-    public StoreLoginResponseVo pwdLogin(HttpServletRequest request, String username, String password, String verifyString) {
+    public StoreLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
 
         //判断字符验证码是否正确
         HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("store-" + username);
-        LOG.info("商家" + username + "验证码：" + correctCode);
+        String correctCode = (String)session.getAttribute("store-" + userName);
+        LOG.info("商家" + userName + "验证码：" + correctCode);
         if(correctCode == null || correctCode.isEmpty()) {
             throw new RuntimeException("验证码已失效");
         }
@@ -185,7 +185,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         }
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_name", username);
+        queryWrapper.eq("user_name", userName);
         Store storeDB = storeMapper.selectOne(queryWrapper);
         if(storeDB != null && storeDB.getPassword().equals(password)) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);

@@ -356,7 +356,25 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
 
         if(requestVo.getStockNum() != null) {
-            queryWrapper.gt("stock_num", requestVo.getStockNum());
+            if(requestVo.getStockNum() == 0) {
+                queryWrapper.eq("stock_num", 0);
+            } else if(requestVo.getStockNum() == 1) {
+                queryWrapper.lt("stock_num", 10);
+                queryWrapper.gt("stock_num", 0);
+            } else if(requestVo.getStockNum() == 2) {
+                queryWrapper.lt("stock_num", 50);
+                queryWrapper.gt("stock_num", 10);
+            } else {
+                queryWrapper.gt("stock_num", 50);
+            }
+        }
+
+        if(requestVo.getColumnName() != null && requestVo.getColumnOrder() != null) {
+            if(requestVo.getColumnOrder().equals("ascending")) {
+                queryWrapper.orderByAsc(requestVo.getColumnName());
+            } else {
+                queryWrapper.orderByDesc(requestVo.getColumnName());
+            }
         }
 
         Page<Product> page = new Page<>(requestVo.getPageNum(), requestVo.getPageSize());

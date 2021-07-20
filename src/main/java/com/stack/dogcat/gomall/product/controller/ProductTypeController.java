@@ -46,4 +46,20 @@ public class ProductTypeController {
         return SysResult.success(responseVos);
     }
 
+    /**
+     * 商家查看分类
+     * @return
+     */
+    @GetMapping("/listTypesByStore")
+    public SysResult listTypesByStore(Integer storeId) {
+        List<ProductTypeQueryResponseVo> responseVos = null;
+        try {
+            responseVos = productTypeService.listTypesByStore(storeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("分类获取失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
 }

@@ -17,4 +17,6 @@ import java.util.List;
 public interface IProductTypeService extends IService<ProductType> {
 
     List<ProductTypeQueryResponseVo> listTypes();
+
+    List<ProductTypeQueryResponseVo> listTypesByStore(Integer storeId);
 }
