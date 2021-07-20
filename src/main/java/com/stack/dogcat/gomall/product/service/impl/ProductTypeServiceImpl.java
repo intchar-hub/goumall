@@ -95,6 +95,7 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     public List<ProductTypeQueryResponseVo> listTypesByStore(Integer storeId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", storeId);
+        queryWrapper.eq("status", 1);
         List<Product> productsDB = productMapper.selectList(queryWrapper);
         if(productsDB == null || productsDB.size() == 0) {
             LOG.info("店铺内商品获取失败");

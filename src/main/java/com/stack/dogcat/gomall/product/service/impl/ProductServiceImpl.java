@@ -369,6 +369,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             }
         }
 
+        if(requestVo.getColumnName() != null && requestVo.getColumnOrder() != null) {
+            if(requestVo.getColumnOrder().equals("ascending")) {
+                queryWrapper.orderByAsc(requestVo.getColumnName());
+            } else {
+                queryWrapper.orderByDesc(requestVo.getColumnName());
+            }
+        }
+
         Page<Product> page = new Page<>(requestVo.getPageNum(), requestVo.getPageSize());
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
         PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
