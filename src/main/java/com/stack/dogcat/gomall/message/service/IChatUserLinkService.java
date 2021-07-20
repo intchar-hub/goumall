@@ -13,4 +13,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IChatUserLinkService extends IService<ChatUserLink> {
 
+    /**
+     * 查询聊天双方的关联id
+     * @return
+     */
+    Integer selectAssociation(Integer customerId, Integer storeId);
+
+    /**
+     * 是否第一次聊天
+     * @return
+     */
+    int CheckFirstChat(Integer customerId, Integer storeId);
 }
