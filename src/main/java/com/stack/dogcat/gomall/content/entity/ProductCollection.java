@@ -31,6 +31,8 @@ public class ProductCollection implements Serializable {
 
     private LocalDateTime gmtCreate;
 
+    private Integer status;
+
     /**
      * 逻辑删除，0表示未删除，1表示删除
      */

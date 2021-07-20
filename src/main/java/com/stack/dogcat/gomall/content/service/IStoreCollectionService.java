@@ -20,4 +20,5 @@ public interface IStoreCollectionService extends IService<StoreCollection> {
     void saveStoreCollection(Integer customerId,Integer storeId);
     PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie);
     void deleteStoreCollection(Integer storeCollectionId);
+    void switchStoreCollection (Integer customerId, Integer storeId,Integer status);
 }

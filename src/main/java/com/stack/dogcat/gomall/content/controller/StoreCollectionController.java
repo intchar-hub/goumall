@@ -64,4 +64,16 @@ public class StoreCollectionController {
         return SysResult.success();
     }
 
+    @PostMapping("/switchStoreCollection")
+    public SysResult switchStoreCollection(Integer customerId,Integer storeId,Integer status){
+        try{
+            storeCollectionService.switchStoreCollection(customerId,storeId,status);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success();
+    }
+
 }
