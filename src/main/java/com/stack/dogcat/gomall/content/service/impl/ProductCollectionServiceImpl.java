@@ -83,4 +83,29 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
         productCollectionMapper.deleteById(productCollectionId);
     }
 
+    @Override
+    public void switchProductCollection(Integer customerId, Integer productId, Integer status) {
+        ProductCollection productCollection= productCollectionMapper.selectOne(new QueryWrapper<ProductCollection>().eq("customer_id",customerId).eq("product_id",productId));
+        //第一次收藏，先插入数据
+        if(productCollection==null){
+            productCollection = new ProductCollection();
+            productCollection.setCustomerId(customerId);
+            productCollection.setProductId(productId);
+            productCollection.setGmtCreate(LocalDateTime.now());
+            productCollection.setStatus(1);
+            //插入数据库
+            int i=productCollectionMapper.insert(productCollection);
+            if(i==0){
+                throw new RuntimeException("收藏失败");
+            }
+        }
+        //不是第一次收藏，对状态做出更改
+        else {
+            productCollection.setStatus(status);
+            int i=productCollectionMapper.updateById(productCollection);
+            if(i==0){
+                throw new RuntimeException("更改失败");
+            }
+        }
+    }
 }
