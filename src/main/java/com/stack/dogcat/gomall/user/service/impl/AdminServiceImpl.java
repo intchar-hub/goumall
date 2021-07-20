@@ -80,12 +80,26 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         if(flag==0){
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id",id).set("status",2);
+            //发送邮件
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setSubject("审核结果");
+            message.setText("抱歉，您的审核未通过");
+            message.setFrom("w741008w@163.com");
+            message.setTo(storeMapper.selectById(id).getEmail());
+            mailSender.send(message);
             return storeMapper.update(null,updateWrapper);
         }
         //审核通过
         else {
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id",id).set("status",1);
+            //发送邮件
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setSubject("审核结果");
+            message.setText("恭喜，您的审核已通过");
+            message.setFrom("w741008w@163.com");
+            message.setTo(storeMapper.selectById(id).getEmail());
+            mailSender.send(message);
             return storeMapper.update(null,updateWrapper);
         }
     }

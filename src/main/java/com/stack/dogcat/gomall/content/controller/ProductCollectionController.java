@@ -65,4 +65,16 @@ public class ProductCollectionController {
         return SysResult.success();
     }
 
+    @PostMapping("/switchProductCollection")
+    public SysResult switchProductCollection(Integer customerId,Integer productId,Integer status){
+        try{
+            productCollectionService.switchProductCollection(customerId,productId,status);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+        return SysResult.success();
+    }
+
 }
