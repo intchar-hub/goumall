@@ -140,7 +140,8 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
         if(complaintDB.getCustomerId() != customerId) {
             throw new RuntimeException();
         }
-        complaintMapper.deleteById(complaintId);
+        complaintDB.setStatus(2);
+        complaintMapper.updateById(complaintDB);
     }
 
 
