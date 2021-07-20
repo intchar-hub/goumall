@@ -62,25 +62,26 @@ public class CustomerController {
 
         try{
             Customer customer = customerService.queryCustomerByOpenid(openId);
-            //用户已经授权过信息
-            if (customer!=null){
-                //自定义方法用openId和session_key换取token(login_key)
-                TokenServiceImpl tokenService =new TokenServiceImpl();
-                String loginKey= tokenService.getToken(openId,session_key);
-                Integer id = customer.getId();
-                customer.setLoginKey(loginKey);
-                customerService.updateCustomerInfoById(customer);
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("id",id);
-                map.put("token",loginKey);
-                SysResult result = SysResult.build(200,"登录成功",map);
-                return result;
-            }
-            else{
+            Integer id;
+            //自定义方法用openId和session_key换取token(login_key)
+            TokenServiceImpl tokenService = new TokenServiceImpl();
+            String loginKey = tokenService.getToken(openId, session_key);
+            if (customer != null) {
+                //用户已经授权过信息
+                id = customer.getId();
+            }else{
                 //用户未授权过
-                SysResult result = SysResult.build(400,"未查询到用户授权信息",null);
-                return result;
+                customerService.insertCustomer(openId,session_key,"","",0);
+                id =customerService.queryCustomerByOpenid(openId).getId();
             }
+            customer.setLoginKey(loginKey);
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", id);
+            map.put("token", loginKey);
+            SysResult result = SysResult.build(200, "登录成功", map);
+            return result;
+
+
         }catch (Exception ex){
             //出现异常  status:-1
             String msg = "检索用户出现异常，具体异常:" + ex.getMessage();
@@ -93,32 +94,25 @@ public class CustomerController {
     /**
      * 用户授权
      * @param userInfo
-     * @param code
+     * @param current_customer
      * @return
      */
     @PostMapping ("/saveCustomerInfo")
     @ResponseBody
-    @Token.PassToken
-    public SysResult saveCustomerInfo(String userInfo,String code){
-
-        String url ="https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={js_code}&grant_type=authorization_code";
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("appid", AppConst.App_id);
-        requestMap.put("secret", AppConst.App_secret);
-        requestMap.put("code", code);
+    @Token.UserLoginToken
+    public SysResult saveCustomerInfo(@CurrentUser Customer current_customer,String userInfo){
 
         try{
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class,requestMap);
-            JSONObject jsonObject=JSONObject.parseObject(responseEntity.getBody());
-            String openId=jsonObject.getString("openid");
-            String session_key=jsonObject.getString("session_key");
-
             JSONObject info = JSONObject.parseObject(userInfo);
             String userName = info.getString("nickName");
             String avatarPath = info.getString("avatarUrl");
             Integer gender = info.getIntValue("gender");
 
-            customerService.insertCustomer(openId,session_key,userName,avatarPath,gender);
+            current_customer.setUserName(userName);
+            current_customer.setAvatorPath(avatarPath);
+            current_customer.setGender(gender);
+            customerService.updateCustomerInfoById(current_customer);
+
             SysResult result =SysResult.success();
             return result;
         }
