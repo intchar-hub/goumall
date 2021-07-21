@@ -53,7 +53,7 @@ public class CustomerController {
         Map<String, String> requestMap = new HashMap<>();
         requestMap.put("appid", AppConst.App_id);
         requestMap.put("secret", AppConst.App_secret);
-        requestMap.put("code", code);
+        requestMap.put("js_code", code);
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class,requestMap);
         JSONObject jsonObject=JSONObject.parseObject(responseEntity.getBody());
@@ -65,16 +65,21 @@ public class CustomerController {
             Integer id;
             //自定义方法用openId和session_key换取token(login_key)
             TokenServiceImpl tokenService = new TokenServiceImpl();
-            String loginKey = tokenService.getToken(openId, session_key);
+            String loginKey;
             if (customer != null) {
                 //用户已经授权过信息
                 id = customer.getId();
+                loginKey = customer.getLoginKey();
             }else{
                 //用户未授权过
+                loginKey = tokenService.getToken(openId, session_key);
                 customerService.insertCustomer(openId,session_key,"","",0);
                 id =customerService.queryCustomerByOpenid(openId).getId();
+                Customer customer1=customerService.queryCustomerByCustomerId(id);
+                customer1.setLoginKey(loginKey);
+                customerService.updateCustomerInfoById(customer1);
             }
-            customer.setLoginKey(loginKey);
+
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("id", id);
             map.put("token", loginKey);
@@ -178,7 +183,7 @@ public class CustomerController {
     @Token.PassToken
     public String testToken(){
         TokenServiceImpl tokenService =new TokenServiceImpl();
-        String token = tokenService.getToken("213413","12333");
+        String token = tokenService.getToken("oqHom5T64SZbL22Uj0dQzv_UxyXQ","K1wVmMG6duGulERS7SWq/A==");
         return token;
     }
 
