@@ -2,6 +2,7 @@ package com.stack.dogcat.gomall.product.service;
 
 import com.stack.dogcat.gomall.product.entity.Sku;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.product.requestVo.SkuUpdateRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.SkuQueryResponseVo;
 
 import java.util.List;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface ISkuService extends IService<Sku> {
 
     List<SkuQueryResponseVo> listSkuByProductId(Integer productId);
+
+    void updateSku(List<SkuUpdateRequestVo> requestVos);
 }

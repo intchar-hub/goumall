@@ -150,7 +150,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             sku.setStockNum(datum.getStockNum());
 
             String productAttribute = "";
-            productAttribute += "{";
+//            productAttribute += "{";
 
             for (int i = 0; i < attrValues.size(); i++) {
                 productAttribute += ("\"" + attrNames.get(i) + "\"" + ":" + "\"" + attrValues.get(i) + "\"");
@@ -159,7 +159,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 }
             }
 
-            productAttribute += "}";
+//            productAttribute += "}";
 
             sku.setProductAttribute(productAttribute);
 
@@ -267,7 +267,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             sku.setGmtCreate(gmtCreate);
 
             String productAttribute = "";
-            productAttribute += "{";
+//            productAttribute += "{";
 
             for (int i = 0; i < attrValues.size(); i++) {
                 productAttribute += ("\"" + attrNames.get(i) + "\"" + ":" + "\"" + attrValues.get(i) + "\"");
@@ -276,7 +276,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 }
             }
 
-            productAttribute += "}";
+//            productAttribute += "}";
 
             sku.setProductAttribute(productAttribute);
 
