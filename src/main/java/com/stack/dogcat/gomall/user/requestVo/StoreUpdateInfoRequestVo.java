@@ -15,6 +15,8 @@ public class StoreUpdateInfoRequestVo {
 
     private String password;
 
+    private String description;
+
     @Override
     public String toString() {
         return "StoreUpdateInfoRequestVo{" +
@@ -22,7 +24,16 @@ public class StoreUpdateInfoRequestVo {
                 ", shipAddress='" + shipAddress + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
                 ", password='" + password + '\'' +
+                ", description='" + description + '\'' +
                 '}';
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getId() {

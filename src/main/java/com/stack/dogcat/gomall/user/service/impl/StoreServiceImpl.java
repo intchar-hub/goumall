@@ -241,9 +241,13 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
         Store store = new Store();
         store.setId(requestVo.getId());
-        store.setPassword(requestVo.getPassword());
         store.setAvatarPath(requestVo.getAvatarPath());
         store.setShipAddress(requestVo.getShipAddress());
+        store.setDescription(requestVo.getDescription());
+
+        if(requestVo.getPassword() != null && !requestVo.getPassword().isEmpty() && !requestVo.getPassword().equals("")) {
+            store.setPassword(requestVo.getPassword());
+        }
 
         storeMapper.updateById(store);
     }
