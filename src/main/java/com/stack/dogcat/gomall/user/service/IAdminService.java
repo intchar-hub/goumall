@@ -23,9 +23,9 @@ public interface IAdminService extends IService<Admin> {
 
     PageResponseVo<StoreInfoResponseVo> listStoreInfo(Integer pageNum, Integer pageSize);
     Integer examineStoreRegister(Integer id,Integer flag);
-    Integer sendEmailCode(HttpServletRequest request, String email);
-    void getStringCode(HttpServletRequest request, HttpServletResponse response);
-    AdminLoginResponseVo emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo);
-    AdminLoginResponseVo pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo);
+    Integer sendEmailCode(String email);
+    void getStringCode(HttpServletResponse response);
+    AdminLoginResponseVo emailLogin(AdminEmailLoginRequestVo adminEmailLoginRequestVo);
+    AdminLoginResponseVo pwdLogin(AdminPwdLoginRequestVo adminPwdLoginRequestVo);
 
 }
