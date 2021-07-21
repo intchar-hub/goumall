@@ -12,6 +12,8 @@ import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
+import com.stack.dogcat.gomall.user.requestVo.AdminEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.AdminPwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
@@ -182,13 +184,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     /**
      * 管理员邮箱登录
      * @param request
-     * @param email
-     * @param verifyCode
      * @return
      */
     @Override
-    public AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode) {
+    public AdminLoginResponseVo emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
 
+        String email=adminEmailLoginRequestVo.getEmail();
+        String verifyCode=adminEmailLoginRequestVo.getVerifyCode();
         //判断邮箱验证码是否正确
         HttpSession session = request.getSession();
         String correctCode = (String)session.getAttribute("admin");
@@ -212,14 +214,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     /**
      * 管理员密码登录
-     * @param userName
-     * @param password
-     * @param verifyString
      * @return
      */
     @Override
-    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
 
+        String userName = adminPwdLoginRequestVo.getUserName();
+        String password = adminPwdLoginRequestVo.getPassword();
+        String verifyString = adminPwdLoginRequestVo.getVerifyString();
         //判断字符验证码是否正确
         HttpSession session = request.getSession();
         String correctCode = (String)session.getAttribute("admin");

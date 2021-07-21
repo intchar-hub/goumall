@@ -2,6 +2,8 @@ package com.stack.dogcat.gomall.user.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.user.requestVo.AdminEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.AdminPwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
@@ -111,15 +113,12 @@ public class AdminController {
 
     /**
      * 管理员邮箱验证码登录
-     * @param email
-     * @param request
-     * @param verifyCode
      */
     @PostMapping("/emailLogin")
-    public SysResult emailLogin(HttpServletRequest request, String email, String verifyCode) {
+    public SysResult emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
         AdminLoginResponseVo responseVo = null;
         try {
-            responseVo = adminService.emailLogin(request,email,verifyCode);
+            responseVo = adminService.emailLogin(request,adminEmailLoginRequestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
@@ -129,16 +128,12 @@ public class AdminController {
 
     /**
      * 管理员密码登录
-     * @param request
-     * @param verifyString
-     * @param password
-     * @param userName
      */
     @PostMapping("/pwdLogin")
-    public SysResult pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public SysResult pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
         AdminLoginResponseVo responseVo = null;
         try {
-            responseVo = adminService.pwdLogin(request,userName,password,verifyString);
+            responseVo = adminService.pwdLogin(request,adminPwdLoginRequestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
