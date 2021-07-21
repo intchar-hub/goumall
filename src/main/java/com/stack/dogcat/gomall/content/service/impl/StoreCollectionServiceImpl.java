@@ -97,4 +97,56 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
             throw new RuntimeException("取消收藏失败");
         }
     }
+
+    @Override
+    @Transactional
+    public void switchStoreCollection(Integer customerId, Integer storeId, Integer status) {
+        StoreCollection storeCollection= storeCollectionMapper.selectOne(new QueryWrapper<StoreCollection>().eq("customer_id",customerId).eq("store_id",storeId));
+        //第一次收藏，先插入数据
+        if(storeCollection==null){
+            storeCollection = new StoreCollection();
+            storeCollection.setCustomerId(customerId);
+            storeCollection.setStoreId(storeId);
+            storeCollection.setGmtCreate(LocalDateTime.now());
+            storeCollection.setStatus(1);
+            //插入数据库
+            int i=storeCollectionMapper.insert(storeCollection);
+            if(i==0){
+                throw new RuntimeException("收藏失败");
+            }
+            //增加商店粉丝数
+            Store store = storeMapper.selectById(storeId);
+            store.setFansNum(store.getFansNum()+1);
+            i = storeMapper.updateById(store);
+            if(i==0){
+                throw new RuntimeException("收藏失败");
+            }
+        }
+        //不是第一次收藏，对状态做出更改
+        else {
+            storeCollection.setStatus(status);
+            int i=storeCollectionMapper.updateById(storeCollection);
+            if(i==0){
+                throw new RuntimeException("更改失败");
+            }
+            if(status==1){
+                //增加粉丝数
+                Store store = storeMapper.selectById(storeId);
+                store.setFansNum(store.getFansNum()+1);
+                i = storeMapper.updateById(store);
+                if(i==0){
+                    throw new RuntimeException("收藏失败");
+                }
+            }
+            else {
+                //减少粉丝数
+                Store store = storeMapper.selectById(storeId);
+                store.setFansNum(store.getFansNum()-1);
+                i = storeMapper.updateById(store);
+                if(i==0){
+                    throw new RuntimeException("收藏失败");
+                }
+            }
+        }
+    }
 }

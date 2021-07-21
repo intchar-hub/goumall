@@ -1,37 +1,39 @@
-package com.stack.dogcat.gomall.content.entity;
+package com.stack.dogcat.gomall.user.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * <p>
- * 商品收藏
+ * 
  * </p>
  *
  * @author xrm
- * @since 2021-07-08
+ * @since 2021-07-21
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("cms_product_collection")
-public class ProductCollection implements Serializable {
+@TableName("ums_verify_code")
+public class VerifyCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer customerId;
+    private String markString;
 
-    private Integer productId;
+    private String verifyCode;
 
+    /**
+     * 创建时间
+     */
     private LocalDateTime gmtCreate;
-
-    private Integer status;
 
     /**
      * 逻辑删除，0表示未删除，1表示删除
@@ -39,6 +41,5 @@ public class ProductCollection implements Serializable {
     @TableLogic
     @TableField(value = "is_deleted")
     private Integer deleted;
-
 
 }

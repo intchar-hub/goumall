@@ -25,16 +25,38 @@ public class ScreenProductsRequestVo {
 
     private Integer stockNum;
 
+    private String columnName;
+
+    private String columnOrder;
+
     @Override
     public String toString() {
         return "ScreenProductsRequestVo{" +
                 "storeId=" + storeId +
-                ", pageNums=" + pageNum +
+                ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", name='" + name + '\'' +
                 ", typeId=" + typeId +
                 ", stockNum=" + stockNum +
+                ", columnName='" + columnName + '\'' +
+                ", columnOrder='" + columnOrder + '\'' +
                 '}';
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public String getColumnOrder() {
+        return columnOrder;
+    }
+
+    public void setColumnOrder(String columnOrder) {
+        this.columnOrder = columnOrder;
     }
 
     public Integer getStoreId() {

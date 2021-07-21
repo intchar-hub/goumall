@@ -12,6 +12,8 @@ import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
+import com.stack.dogcat.gomall.user.requestVo.AdminEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.AdminPwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 import com.stack.dogcat.gomall.user.service.IAdminService;
@@ -80,12 +82,26 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         if(flag==0){
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id",id).set("status",2);
+            //发送邮件
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setSubject("审核结果");
+            message.setText("抱歉，您的审核未通过");
+            message.setFrom("w741008w@163.com");
+            message.setTo(storeMapper.selectById(id).getEmail());
+            mailSender.send(message);
             return storeMapper.update(null,updateWrapper);
         }
         //审核通过
         else {
             UpdateWrapper<Store> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id",id).set("status",1);
+            //发送邮件
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setSubject("审核结果");
+            message.setText("恭喜，您的审核已通过");
+            message.setFrom("w741008w@163.com");
+            message.setTo(storeMapper.selectById(id).getEmail());
+            mailSender.send(message);
             return storeMapper.update(null,updateWrapper);
         }
     }
@@ -168,13 +184,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     /**
      * 管理员邮箱登录
      * @param request
-     * @param email
-     * @param verifyCode
      * @return
      */
     @Override
-    public AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode) {
+    public AdminLoginResponseVo emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
 
+        String email=adminEmailLoginRequestVo.getEmail();
+        String verifyCode=adminEmailLoginRequestVo.getVerifyCode();
         //判断邮箱验证码是否正确
         HttpSession session = request.getSession();
         String correctCode = (String)session.getAttribute("admin");
@@ -198,14 +214,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     /**
      * 管理员密码登录
-     * @param userName
-     * @param password
-     * @param verifyString
      * @return
      */
     @Override
-    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
 
+        String userName = adminPwdLoginRequestVo.getUserName();
+        String password = adminPwdLoginRequestVo.getPassword();
+        String verifyString = adminPwdLoginRequestVo.getVerifyString();
         //判断字符验证码是否正确
         HttpSession session = request.getSession();
         String correctCode = (String)session.getAttribute("admin");

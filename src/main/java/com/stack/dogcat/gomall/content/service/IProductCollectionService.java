@@ -4,6 +4,7 @@ import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.entity.ProductCollection;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -20,5 +21,5 @@ public interface IProductCollectionService extends IService<ProductCollection> {
     void saveProductCollection(Integer customerId,Integer productId);
     PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie);
     void deleteProductCollection(Integer productCollectionId);
-
+    void switchProductCollection (Integer customerId, Integer productId,Integer status);
 }

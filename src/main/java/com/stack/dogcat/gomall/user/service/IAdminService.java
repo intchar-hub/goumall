@@ -3,6 +3,8 @@ package com.stack.dogcat.gomall.user.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Admin;
+import com.stack.dogcat.gomall.user.requestVo.AdminEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.AdminPwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoResponseVo;
 
@@ -23,7 +25,7 @@ public interface IAdminService extends IService<Admin> {
     Integer examineStoreRegister(Integer id,Integer flag);
     Integer sendEmailCode(HttpServletRequest request, String email);
     void getStringCode(HttpServletRequest request, HttpServletResponse response);
-    AdminLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode);
-    AdminLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString);
+    AdminLoginResponseVo emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo);
+    AdminLoginResponseVo pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo);
 
 }

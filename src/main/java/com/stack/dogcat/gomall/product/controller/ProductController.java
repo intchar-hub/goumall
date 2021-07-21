@@ -104,7 +104,7 @@ public class ProductController {
      * @return
      */
     @GetMapping("/screenProducts")
-    public SysResult screenProducts(@Valid @RequestBody ScreenProductsRequestVo requestVo) {
+    public SysResult screenProducts(@Valid ScreenProductsRequestVo requestVo) {
         PageResponseVo<ProductQueryResponseVo> pageResponseVo = null;
         try {
             pageResponseVo = productService.screenProducts(requestVo);
