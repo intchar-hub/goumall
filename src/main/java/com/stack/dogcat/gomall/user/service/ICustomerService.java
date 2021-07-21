@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICustomerService extends IService<Customer> {
     //根据id查询消费者
-    Customer queryCustomerByCustomerId(String customerid);
+    Customer queryCustomerByCustomerId(Integer customerid);
 
     //根据openid查询消费者
     Customer queryCustomerByOpenid(String openid);
