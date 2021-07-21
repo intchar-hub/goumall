@@ -3,6 +3,8 @@ package com.stack.dogcat.gomall.user.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.user.requestVo.StoreEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.StorePwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
@@ -12,7 +14,6 @@ import com.stack.dogcat.gomall.user.service.IStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -24,7 +25,7 @@ import javax.validation.Valid;
  * @author xrm
  * @since 2021-07-08
  */
-@CrossOrigin
+@CrossOrigin(origins = {"http://10.128.150.29:8080/", "null"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/user/store")
 public class StoreController {
@@ -34,18 +35,15 @@ public class StoreController {
 
     /**
      * 商家获取字符验证码
-     * @param request
      * @param response
      */
     @GetMapping("/getStringCode")
-    public void getStringCode(HttpServletRequest request, HttpServletResponse response, String userName) {
+    public void getStringCode(HttpServletResponse response, String userName) {
         try {
-            storeService.getStringCode(request, response, userName);
+            storeService.getStringCode(response, userName);
         }catch (Exception e){
             e.printStackTrace();
-//            return SysResult.error("验证码生成失败");
         }
-//        return SysResult.success();
     }
 
     /**
@@ -54,9 +52,9 @@ public class StoreController {
      * @return
      */
     @GetMapping("/getEmailCode")
-    public SysResult getEmailCode(HttpServletRequest request, String email) {
+    public SysResult getEmailCode(String email) {
         try {
-            storeService.sendEmailCode(request, email);
+            storeService.sendEmailCode(email);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
@@ -71,9 +69,9 @@ public class StoreController {
      * @return
      */
     @PostMapping("/register")
-    public SysResult register(HttpServletRequest request, @Valid @RequestBody StoreRegisterRequestVo registerRequestVo) {
+    public SysResult register(@Valid @RequestBody StoreRegisterRequestVo registerRequestVo) {
         try {
-            storeService.register(request, registerRequestVo);
+            storeService.register(registerRequestVo);
         } catch (Exception e) {
             System.out.println(e);
             return SysResult.error(e.getMessage());
@@ -83,16 +81,15 @@ public class StoreController {
 
     /**
      * 商家密码登录
-     * @param userName
-     * @param password
-     * @param verifyString
+     * @param requestVo
+     * @param
      * @return
      */
     @PostMapping("/pwdLogin")
-    public SysResult pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public SysResult pwdLogin(@Valid @RequestBody StorePwdLoginRequestVo requestVo) {
         StoreLoginResponseVo responseVo = null;
         try {
-            responseVo= storeService.pwdLogin(request, userName, password, verifyString);
+            responseVo= storeService.pwdLogin(requestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
@@ -102,15 +99,15 @@ public class StoreController {
 
     /**
      * 商家邮箱验证码登录
-     * @param email
-     * @param verifyCode
+     * @param requestVo
      * @return
      */
     @PostMapping("/emailLogin")
-    public SysResult emailLogin(HttpServletRequest request, String email, String verifyCode) {
+    public SysResult emailLogin(@RequestBody StoreEmailLoginRequestVo requestVo) {
+        System.out.println(requestVo);
         StoreLoginResponseVo responseVo = null;
         try {
-            responseVo = storeService.emailLogin(request, email, verifyCode);
+            responseVo = storeService.emailLogin(requestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
