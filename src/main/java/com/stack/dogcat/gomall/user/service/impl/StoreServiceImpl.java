@@ -74,10 +74,15 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         LOG.info("商家" + email + "验证码：" + emailServiceCode);
 
         //字符验证码存入数据库
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("mark_string", email);
+        verifyCodeMapper.delete(queryWrapper);
+
         VerifyCode verifyCode = new VerifyCode();
         verifyCode.setMarkString(email);
         verifyCode.setVerifyCode(emailServiceCode);
         verifyCode.setGmtCreate(LocalDateTime.now());
+        verifyCodeMapper.insert(verifyCode);
     }
 
     /**
@@ -163,6 +168,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
             verifyCode.setMarkString(markString);
             verifyCode.setVerifyCode(lineCaptcha.getCode());
             verifyCode.setGmtCreate(LocalDateTime.now());
+            verifyCodeMapper.insert(verifyCode);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,7 +183,6 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
     public StoreLoginResponseVo pwdLogin(StorePwdLoginRequestVo requestVo) {
 
         //判断字符验证码是否正确
-        //判断邮箱验证码是否正确
         LOG.info("商家" + requestVo.getMarkString() + "验证码：" + requestVo.getVerifyCode());
 
         QueryWrapper queryWrapper = new QueryWrapper();
