@@ -25,7 +25,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     CustomerMapper customerMapper;
 
     @Override
-    public Customer queryCustomerByCustomerId(String customerid) {
+    public Customer queryCustomerByCustomerId(Integer customerid) {
         Customer customer = null;
         //1)构建QueryWrapper条件封装器
         QueryWrapper<Customer> wrapper = new QueryWrapper<Customer>();
