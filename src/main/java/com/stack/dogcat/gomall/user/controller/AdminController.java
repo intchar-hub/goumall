@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -78,13 +79,12 @@ public class AdminController {
 
     /**
      * 管理员获取图片验证码
-     * @param request
      * @param response
      */
     @GetMapping("/getStringCode")
-    public void getStringCode(HttpServletRequest request, HttpServletResponse response) {
+    public void getStringCode(HttpServletResponse response) {
         try {
-            adminService.getStringCode(request, response);
+            adminService.getStringCode(response);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -93,12 +93,11 @@ public class AdminController {
     /**
      * 管理员获取邮箱验证码
      * @param email
-     * @param request
      */
     @GetMapping("/getEmailCode")
-    public SysResult getEmailCode(HttpServletRequest request, String email) {
+    public SysResult getEmailCode(String email) {
         try {
-            Integer flag=adminService.sendEmailCode(request, email);
+            Integer flag=adminService.sendEmailCode(email);
             if(flag==0){
                 return SysResult.error("改邮箱未注册");
             }
@@ -115,10 +114,10 @@ public class AdminController {
      * 管理员邮箱验证码登录
      */
     @PostMapping("/emailLogin")
-    public SysResult emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
+    public SysResult emailLogin(@Valid @RequestBody AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
         AdminLoginResponseVo responseVo = null;
         try {
-            responseVo = adminService.emailLogin(request,adminEmailLoginRequestVo);
+            responseVo = adminService.emailLogin(adminEmailLoginRequestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
@@ -130,10 +129,10 @@ public class AdminController {
      * 管理员密码登录
      */
     @PostMapping("/pwdLogin")
-    public SysResult pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
+    public SysResult pwdLogin(@Valid @RequestBody AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
         AdminLoginResponseVo responseVo = null;
         try {
-            responseVo = adminService.pwdLogin(request,adminPwdLoginRequestVo);
+            responseVo = adminService.pwdLogin(adminPwdLoginRequestVo);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error(e.getMessage());
