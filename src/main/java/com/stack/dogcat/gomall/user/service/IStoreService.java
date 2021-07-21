@@ -3,6 +3,8 @@ package com.stack.dogcat.gomall.user.service;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.user.requestVo.StoreEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.StorePwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
@@ -23,15 +25,15 @@ import java.util.List;
  */
 public interface IStoreService extends IService<Store> {
 
-    void sendEmailCode(HttpServletRequest request, String email);
+    void sendEmailCode(String email);
 
-    void register(HttpServletRequest request, StoreRegisterRequestVo registerRequestVo);
+    void register(StoreRegisterRequestVo registerRequestVo);
 
-    void getStringCode(HttpServletRequest request, HttpServletResponse response, String userName);
+    void getStringCode(HttpServletResponse response, String userName);
 
-    StoreLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString);
+    StoreLoginResponseVo pwdLogin(StorePwdLoginRequestVo requestVo);
 
-    StoreLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode);
+    StoreLoginResponseVo emailLogin(StoreEmailLoginRequestVo requestVo);
 
     void updateStoreInfo(StoreUpdateInfoRequestVo requestVo);
 

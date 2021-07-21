@@ -8,7 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.entity.VerifyCode;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
+import com.stack.dogcat.gomall.user.mapper.VerifyCodeMapper;
+import com.stack.dogcat.gomall.user.requestVo.StoreEmailLoginRequestVo;
+import com.stack.dogcat.gomall.user.requestVo.StorePwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreRegisterRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.StoreUpdateInfoRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.StoreInfoQueryResponseVo;
@@ -23,7 +27,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -52,12 +55,15 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
     @Autowired
     StoreMapper storeMapper;
 
+    @Autowired
+    VerifyCodeMapper verifyCodeMapper;
+
     /**
      * 向商家发送邮箱验证码（四位数）
      * @param email
      */
     @Override
-    public void sendEmailCode(HttpServletRequest request, String email) {
+    public void sendEmailCode(String email) {
         String emailServiceCode = String.format("%04d", new Random().nextInt(9999));
         SimpleMailMessage message = new SimpleMailMessage();
         message.setSubject("验证码");
@@ -67,11 +73,11 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         mailSender.send(message);
         LOG.info("商家" + email + "验证码：" + emailServiceCode);
 
-        //字符验证码放入session
-        request.getSession().setAttribute("store-" + email, emailServiceCode);
-        //定时5分钟清除该session
-        removeAttrbute(request.getSession(), "store-" + email);
-        System.out.println("发验证码：" + request.getSession().getId());
+        //字符验证码存入数据库
+        VerifyCode verifyCode = new VerifyCode();
+        verifyCode.setMarkString(email);
+        verifyCode.setVerifyCode(emailServiceCode);
+        verifyCode.setGmtCreate(LocalDateTime.now());
     }
 
     /**
@@ -79,18 +85,17 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
      * @param registerRequestVo
      */
     @Override
-    public void register(HttpServletRequest request, StoreRegisterRequestVo registerRequestVo) {
+    public void register(StoreRegisterRequestVo registerRequestVo) {
 
         //判断邮箱验证码是否正确
-        HttpSession session = request.getSession();
-        System.out.println("注册时：" + session.getId());
-        String correctCode = (String)session.getAttribute("store-" + registerRequestVo.getEmail());
-        LOG.info("商家" + registerRequestVo.getEmail() + "验证码：" + correctCode);
-        if(correctCode == null || correctCode.isEmpty()) {
-            throw new RuntimeException("验证码已失效");
-        }
-        if(!correctCode.equals(registerRequestVo.getVerifyCode())) {
-            throw new RuntimeException("验证码错误");
+        LOG.info("商家" + registerRequestVo.getEmail() + "验证码：" + registerRequestVo.getEmail());
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("mark_string", registerRequestVo.getEmail());
+        queryWrapper.eq("verify_code", registerRequestVo.getVerifyCode());
+        List<VerifyCode> verifyCodesDB = verifyCodeMapper.selectList(queryWrapper);
+        if(verifyCodesDB == null || verifyCodesDB.size() == 0) {
+            throw new RuntimeException("验证码错误或已失效，请重试！");
         }
 
         /**
@@ -131,33 +136,33 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         store.setGmtCreate(LocalDateTime.now());
         store.setStatus(0);
         store.setFansNum(0);
-//        store.setAvatarPath("https://baomidou.com/img/logo.svg");
+        store.setAvatarPath("https://baomidou.com/img/logo.svg");
 
         storeMapper.insert(store);
     }
 
     /**
      * 商家获取字符验证码
-     * @param request
      * @param response
-     * @param userName
+     * @param markString
      */
     @Override
-    public void getStringCode(HttpServletRequest request, HttpServletResponse response, String userName) {
+    public void getStringCode(HttpServletResponse response, String markString) {
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(90, 40);
 
         response.setContentType("image/png");
         response.setHeader("Pragma", "No-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expire", 0);
-        LOG.info("商家" + userName + "验证码：" + lineCaptcha.getCode());
+        LOG.info("商家" + markString + "验证码：" + lineCaptcha.getCode());
         try {
             lineCaptcha.write(response.getOutputStream());
 
-            //字符验证码放入session
-            request.getSession().setAttribute("store-" + userName, lineCaptcha.getCode());
-            //定时5分钟清除该session
-            removeAttrbute(request.getSession(), "store-" + userName);
+            //字符验证码放入数据库
+            VerifyCode verifyCode = new VerifyCode();
+            verifyCode.setMarkString(markString);
+            verifyCode.setVerifyCode(lineCaptcha.getCode());
+            verifyCode.setGmtCreate(LocalDateTime.now());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,29 +170,28 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     /**
      * 商家密码登录
-     * @param userName
-     * @param password
-     * @param verifyString
+     * @param requestVo
      * @return
      */
     @Override
-    public StoreLoginResponseVo pwdLogin(HttpServletRequest request, String userName, String password, String verifyString) {
+    public StoreLoginResponseVo pwdLogin(StorePwdLoginRequestVo requestVo) {
 
         //判断字符验证码是否正确
-        HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("store-" + userName);
-        LOG.info("商家" + userName + "验证码：" + correctCode);
-        if(correctCode == null || correctCode.isEmpty()) {
-            throw new RuntimeException("验证码已失效");
-        }
-        if(!correctCode.equals(verifyString)) {
-            throw new RuntimeException("验证码错误");
-        }
+        //判断邮箱验证码是否正确
+        LOG.info("商家" + requestVo.getMarkString() + "验证码：" + requestVo.getVerifyCode());
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_name", userName);
+        queryWrapper.eq("mark_string", requestVo.getMarkString());
+        queryWrapper.eq("verify_code", requestVo.getVerifyCode());
+        List<VerifyCode> verifyCodesDB = verifyCodeMapper.selectList(queryWrapper);
+        if(verifyCodesDB == null || verifyCodesDB.size() == 0) {
+            throw new RuntimeException("验证码错误或已失效，请重试！");
+        }
+
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_name", requestVo.getUserName());
         Store storeDB = storeMapper.selectOne(queryWrapper);
-        if(storeDB != null && storeDB.getPassword().equals(password)) {
+        if(storeDB != null && storeDB.getPassword().equals(requestVo.getPassword())) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);
             return responseVo;
         } else {
@@ -197,27 +201,23 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     /**
      * 商家邮箱登录
-     * @param request
-     * @param email
-     * @param verifyCode
+     * @param requestVo
      * @return
      */
     @Override
-    public StoreLoginResponseVo emailLogin(HttpServletRequest request, String email, String verifyCode) {
+    public StoreLoginResponseVo emailLogin(StoreEmailLoginRequestVo requestVo) {
 
         //判断邮箱验证码是否正确
-        HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("store-" + email);
-        LOG.info("商家" + email + "验证码：" + correctCode);
-        if(correctCode == null || correctCode.isEmpty()) {
-            throw new RuntimeException("验证码已失效或邮箱错误");
-        }
-        if(!correctCode.equals(verifyCode)) {
-            throw new RuntimeException("验证码错误");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("mark_string", requestVo.getEmail());
+        queryWrapper.eq("verify_code", requestVo.getVerifyCode());
+        List<VerifyCode> verifyCodesDB = verifyCodeMapper.selectList(queryWrapper);
+        if(verifyCodesDB == null || verifyCodesDB.size() == 0) {
+            throw new RuntimeException("验证码错误或已失效，请重试！");
         }
 
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("email", email);
+        queryWrapper = new QueryWrapper();
+        queryWrapper.eq("email", requestVo.getEmail());
         Store storeDB = storeMapper.selectOne(queryWrapper);
         if(storeDB != null) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);
