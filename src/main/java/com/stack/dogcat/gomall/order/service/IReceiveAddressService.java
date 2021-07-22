@@ -17,7 +17,7 @@ import java.util.List;
 public interface IReceiveAddressService extends IService<ReceiveAddress> {
 
     //添加收货地址
-    void insertReceiveAddressByCustomerId(Integer customerId,String address,String phoneNumber);
+    void insertReceiveAddressByCustomerId(Integer customerId,String consignee,String address,String phoneNumber);
 
     //修改收货地址
     void updateReceiveAddressById(ReceiveAddress receiveAddress);

@@ -33,6 +33,11 @@ public class ReceiveAddress implements Serializable {
     private Integer customerId;
 
     /**
+     * 收件人
+     */
+    private String consignee;
+
+    /**
      * 地址
      */
     private String address;

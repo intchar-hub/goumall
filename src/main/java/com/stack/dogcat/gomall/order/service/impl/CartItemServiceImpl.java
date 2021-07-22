@@ -49,11 +49,6 @@ public class CartItemServiceImpl extends ServiceImpl<CartItemMapper, CartItem> i
     @Transactional
     public void saveCartItem(Integer customerId,Integer productId,String productAttribute,Integer productNum){
 
-        CartItem cartItem = new CartItem();
-        cartItem.setCustomerId(customerId);
-        cartItem.setProductId(productId);
-        cartItem.setProductNum(productNum);
-
         Map<String,Object> map =new HashMap<>();
         map.put("product_id",productId);
         map.put("product_attribute",productAttribute);
@@ -61,9 +56,23 @@ public class CartItemServiceImpl extends ServiceImpl<CartItemMapper, CartItem> i
         queryWrapper.allEq(map);
         Sku sku = skuMapper.selectOne(queryWrapper);
 
-        cartItem.setSkuId(sku.getId());
-        cartItem.setGmtCreate(LocalDateTime.now());
-        cartItemMapper.insert(cartItem);
+        queryWrapper.clear();
+        queryWrapper.eq("sku_id",sku.getId());
+        CartItem cartItem1 = cartItemMapper.selectOne(queryWrapper);
+        if (cartItem1 != null) {
+            cartItem1.setProductNum(cartItem1.getProductNum()+productNum);
+            cartItemMapper.updateById(cartItem1);
+
+        }else {
+            CartItem cartItem = new CartItem();
+            cartItem.setCustomerId(customerId);
+            cartItem.setProductId(productId);
+            cartItem.setProductNum(productNum);
+
+            cartItem.setSkuId(sku.getId());
+            cartItem.setGmtCreate(LocalDateTime.now());
+            cartItemMapper.insert(cartItem);
+        }
 
     }
 

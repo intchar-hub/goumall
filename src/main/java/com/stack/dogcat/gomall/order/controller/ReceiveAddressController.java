@@ -41,11 +41,11 @@ public class ReceiveAddressController {
     @PostMapping("/saveReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String address,String phoneNumber)
+    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String consignee,String address,String phoneNumber)
     {
         try{
             Integer customerId =current_customer.getId();
-            receiveAddressService.insertReceiveAddressByCustomerId(customerId,address,phoneNumber);
+            receiveAddressService.insertReceiveAddressByCustomerId(customerId,consignee,address,phoneNumber);
             SysResult result =SysResult.success();
             return  result;
         }catch (Exception e){
@@ -66,10 +66,13 @@ public class ReceiveAddressController {
     @PostMapping("/updateReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult updateReceiveAddress(Integer receiveAddressId,String address,String phoneNumber,Integer defaultAddress){
+    public SysResult updateReceiveAddress(Integer receiveAddressId,String consignee,String address,String phoneNumber,Integer defaultAddress){
 
         try{
             ReceiveAddress receiveAddress=receiveAddressService.queryReceiveAddressByReceiveAddressId(receiveAddressId);
+            if(consignee!=null){
+                receiveAddress.setConsignee(consignee);
+            }
             if(address!=null){
                 receiveAddress.setAddress(address);
             }
