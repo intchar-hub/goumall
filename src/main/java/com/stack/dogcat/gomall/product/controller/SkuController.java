@@ -2,14 +2,11 @@ package com.stack.dogcat.gomall.product.controller;
 
 
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.product.requestVo.SkuUpdateRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.SkuQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.ISkuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +41,22 @@ public class SkuController {
             return SysResult.error("商品规格获取失败");
         }
         return SysResult.success(responseVos);
+    }
+
+
+    /**
+     * 修改某一商品的sku
+     * @param requestVos
+     * @return
+     */
+    @PostMapping("/updateSku")
+    public SysResult updateSku(@RequestBody List<SkuUpdateRequestVo> requestVos) {
+        try {
+            skuService.updateSku(requestVos);
+        } catch (Exception e) {
+            return SysResult.error("操作失败");
+        }
+        return SysResult.success();
     }
 
 }

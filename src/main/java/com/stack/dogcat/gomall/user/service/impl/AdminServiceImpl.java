@@ -8,10 +8,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
+import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.user.entity.Admin;
 import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.entity.VerifyCode;
 import com.stack.dogcat.gomall.user.mapper.AdminMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
+import com.stack.dogcat.gomall.user.mapper.VerifyCodeMapper;
 import com.stack.dogcat.gomall.user.requestVo.AdminEmailLoginRequestVo;
 import com.stack.dogcat.gomall.user.requestVo.AdminPwdLoginRequestVo;
 import com.stack.dogcat.gomall.user.responseVo.AdminLoginResponseVo;
@@ -29,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,6 +56,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     @Autowired
     private AdminMapper adminMapper;
+
+    @Autowired
+    private VerifyCodeMapper verifyCodeMapper;
 
     @Autowired
     JavaMailSenderImpl mailSender;
@@ -111,7 +118,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @param email
      */
     @Override
-    public Integer sendEmailCode(HttpServletRequest request, String email) {
+    public Integer sendEmailCode(String email) {
         String adminString = adminMapper.selectById(1).getEmail();
         if(!email.equals(adminString)){
             System.out.println(email);
@@ -128,11 +135,20 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             message.setTo(email);
             mailSender.send(message);
 
-            //字符验证码放入session
-            request.getSession().setAttribute("admin", emailServiceCode);
-            //定时5分钟清除该session
-            removeAttrbute(request.getSession(), "admin");
+            //判断是否有之前的验证码
+            VerifyCode exitVerifyCode=verifyCodeMapper.selectOne(new QueryWrapper<VerifyCode>().eq("mark_string","admin_email"));
+            if(exitVerifyCode != null){
+                verifyCodeMapper.deleteById(exitVerifyCode.getId());
+            }
+            VerifyCode verifyCode = new VerifyCode();
+            verifyCode.setMarkString("admin_email");
+            verifyCode.setVerifyCode(emailServiceCode);
+            verifyCode.setGmtCreate(LocalDateTime.now());
 
+            int i =verifyCodeMapper.insert(verifyCode);
+            if(i==0){
+                throw new RuntimeException("验证码保存失败");
+            }
             return 1;
         }
     }
@@ -140,11 +156,10 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     /**
      * 管理员获取字符验证码
-     * @param request
      * @param response
      */
     @Override
-    public void getStringCode(HttpServletRequest request, HttpServletResponse response) {
+    public void getStringCode(HttpServletResponse response) {
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(90, 40);
 
         response.setContentType("image/png");
@@ -155,10 +170,17 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         try {
             lineCaptcha.write(response.getOutputStream());
 
-            //字符验证码放入session
-            request.getSession().setAttribute("admin", lineCaptcha.getCode());
-            //定时5分钟清除该session
-            removeAttrbute(request.getSession(), "admin");
+            //判断是否有之前的验证码
+            VerifyCode exitVerifyCode=verifyCodeMapper.selectOne(new QueryWrapper<VerifyCode>().eq("mark_string","admin_password"));
+            if(exitVerifyCode != null){
+                verifyCodeMapper.deleteById(exitVerifyCode.getId());
+            }
+            VerifyCode verifyCode = new VerifyCode();
+            verifyCode.setMarkString("admin_password");
+            verifyCode.setVerifyCode(lineCaptcha.getCode());
+            verifyCode.setGmtCreate(LocalDateTime.now());
+
+            verifyCodeMapper.insert(verifyCode);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,42 +191,37 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @param session
      * @param attrName
      */
-    private void removeAttrbute(final HttpSession session, final String attrName) {
-        final Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                // 删除session中存的验证码
-                session.removeAttribute(attrName);
-                timer.cancel();
-            }
-        }, 60 * 1000);
-    }
+//    private void removeAttrbute(final HttpSession session, final String attrName) {
+//        final Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                // 删除session中存的验证码
+//                session.removeAttribute(attrName);
+//                timer.cancel();
+//            }
+//        }, 60 * 1000);
+//    }
 
     /**
      * 管理员邮箱登录
-     * @param request
      * @return
      */
     @Override
-    public AdminLoginResponseVo emailLogin(HttpServletRequest request, AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
+    public AdminLoginResponseVo emailLogin(AdminEmailLoginRequestVo adminEmailLoginRequestVo) {
 
         String email=adminEmailLoginRequestVo.getEmail();
         String verifyCode=adminEmailLoginRequestVo.getVerifyCode();
-        //判断邮箱验证码是否正确
-        HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("admin");
-        LOG.info("管理员" + email + "验证码：" + correctCode);
-        if(correctCode == null || correctCode.isEmpty()) {
-            throw new RuntimeException("验证码已失效或邮箱错误");
-        }
-        if(!correctCode.equals(verifyCode)) {
-            throw new RuntimeException("验证码错误");
-        }
 
         Admin adminDB = adminMapper.selectOne(new QueryWrapper<Admin>().eq("email",email));
-
         if(adminDB != null) {
+            String exitVerifyCode = verifyCodeMapper.selectOne(new QueryWrapper<VerifyCode>().eq("mark_string","admin_email")).getVerifyCode();
+            if(exitVerifyCode==null || exitVerifyCode.isEmpty()){
+                throw new RuntimeException("验证码已失效");
+            }
+            if(!verifyCode.equals(exitVerifyCode)){
+                throw new RuntimeException("验证码错误");
+            }
             AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
             return responseVo;
         } else {
@@ -217,25 +234,21 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
      * @return
      */
     @Override
-    public AdminLoginResponseVo pwdLogin(HttpServletRequest request, AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
+    public AdminLoginResponseVo pwdLogin(AdminPwdLoginRequestVo adminPwdLoginRequestVo) {
 
         String userName = adminPwdLoginRequestVo.getUserName();
         String password = adminPwdLoginRequestVo.getPassword();
-        String verifyString = adminPwdLoginRequestVo.getVerifyString();
-        //判断字符验证码是否正确
-        HttpSession session = request.getSession();
-        String correctCode = (String)session.getAttribute("admin");
-        LOG.info("管理员" + userName + "验证码：" + correctCode);
-        if(correctCode == null || correctCode.isEmpty()) {
-            throw new RuntimeException("验证码已失效");
-        }
-        if(!correctCode.equals(verifyString)) {
-            throw new RuntimeException("验证码错误");
-        }
+        String verifyCode = adminPwdLoginRequestVo.getVerifyCode();
 
         Admin adminDB = adminMapper.selectOne(new QueryWrapper<Admin>().eq("username",userName));
-
         if(adminDB != null && adminDB.getPassword().equals(password)) {
+            String exitVerifyCode = verifyCodeMapper.selectOne(new QueryWrapper<VerifyCode>().eq("mark_string","admin_password")).getVerifyCode();
+            if(exitVerifyCode==null || exitVerifyCode.isEmpty()){
+                throw new RuntimeException("验证码已失效");
+            }
+            if(!verifyCode.equals(exitVerifyCode)){
+                throw new RuntimeException("验证码错误");
+            }
             AdminLoginResponseVo responseVo = CopyUtil.copy(adminDB, AdminLoginResponseVo.class);
             return responseVo;
         } else {

@@ -25,7 +25,7 @@ import javax.validation.Valid;
  * @author xrm
  * @since 2021-07-08
  */
-@CrossOrigin(origins = {"http://10.128.150.29:8080/", "null"}, allowCredentials = "true")
+@CrossOrigin
 @RestController
 @RequestMapping("/user/store")
 public class StoreController {
@@ -38,9 +38,9 @@ public class StoreController {
      * @param response
      */
     @GetMapping("/getStringCode")
-    public void getStringCode(HttpServletResponse response, String userName) {
+    public void getStringCode(HttpServletResponse response, String markString) {
         try {
-            storeService.getStringCode(response, userName);
+            storeService.getStringCode(response, markString);
         }catch (Exception e){
             e.printStackTrace();
         }
