@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,6 +117,7 @@ public class CustomerController {
             current_customer.setUserName(userName);
             current_customer.setAvatorPath(avatarPath);
             current_customer.setGender(gender);
+            current_customer.setGmtCreate(LocalDateTime.now());
             customerService.updateCustomerInfoById(current_customer);
 
             SysResult result =SysResult.success();

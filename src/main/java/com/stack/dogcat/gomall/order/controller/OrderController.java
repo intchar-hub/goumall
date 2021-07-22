@@ -4,12 +4,14 @@ package com.stack.dogcat.gomall.order.controller;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
-import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
-import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeWapPayResponse;
 import com.stack.dogcat.gomall.annotation.CurrentUser;
 import com.stack.dogcat.gomall.annotation.Token;
+
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
@@ -18,6 +20,8 @@ import com.stack.dogcat.gomall.order.mapper.OrderMapper;
 import com.stack.dogcat.gomall.order.service.impl.OrderServiceImpl;
 import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 import com.stack.dogcat.gomall.user.entity.Customer;
+import com.stack.dogcat.gomall.utils.AppConst;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -140,38 +144,6 @@ public class OrderController {
         return SysResult.success();
     }
 
-    //应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
-    String APP_ID="2021000117691523";
-
-    // 商户私钥，您的PKCS8格式RSA2私钥
-    String APP_PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCgiAFZCotl7Mqy2niWN0jgqVupFPdkq66ZTSdeZ" +
-            "ZagooarSAwzeIsKY8OiIFnrqtIY2Q0HzMhlEU+jqwT0jITR7L6xW5kO4K5zsbUBZdRGVaQyBF0Y36JhoA9Fg+GpIBjo51dRFqoC57pGuBtH" +
-            "2b+augYfFuRKBTYnE1qLMdKFKjKaMGQ3aMQ2Iih84M5Rsc+cOAZ96nH2AdKnOOqV8YBQUteYNRnYn3UthguEuslRbpG69zZf8KFAqjxAv64" +
-            "D4ugl2urJka9VEN6fX7aU3nSuO8S1I+4QETnEzHy3FXUJDuza0WjpZgKNKQWBwQWzJs17C50ruJFlwqjLxjV0/GqRAgMBAAECggEAadbh1J" +
-            "wAJlZFmkAyaw/OK9ldRpA9QBF1TzuwLiuacRRW58zbxn++ZD48eMMNpjR8yscoMTFSGlicglM6NCYFWAbX/0VeF5IJUtwic+Z4W1sRo6x+2" +
-            "OxxOh52kyWNfZ1c7wm/5wWjV8ECbqfpzKiDDHeDm7HTF/5xore+5bEWlJafIEvniaA+GYmnE5h8Ze5K/F68teU5P3q7sbH/jv4lyQt94YFc" +
-            "zMmVUDwntxHxM7E4IMBwRjMtXtR83SP1MLjwLVIHTizrEEVSDVDM1g9dpuYZbG8/71skqM6Pi6eLxBIlYBhP3ko3prcP3UC9I90uUeUxYAF" +
-            "2zmwPXFiQNeNO8QKBgQDUtvXjF7t2xk6r828r6v4EKGkILhDewQKCIpPYK3gr81cXA4ZTQvxxwxoyLuPxYqZ/FuzfUfTBVukb2/7CTxjtnW" +
-            "ai9j0qldbc+6AKIPIZpwSXJ9LYIxbFfuusecCNd/zeFqdz67F+fXKJg0/9OyDtf0xLyhEh5g/Qvb5u29sXfQKBgQDBMqGNtGNVlyrjyntYU" +
-            "P17Cd1oXzsVL0YwyfQkMKaT5gIOfA1lrGcw7iXqCSJgMmdJwiPwxFfdLQSs/p/0KybWQS3Qg0rLcfjl5wM7ZIwodx3doXTqfn6FeoMHhwvP" +
-            "JDX1a0QIItWtPQbNTXGX9heyAFwQ3EK0fhZ/od6hpKgTpQKBgQC/UnjC8xuX7zHfkysQ82HZ14bw5o4h7LQW3IbhzedekJZqiq8MwJlSsUs" +
-            "ki+xVtodOlA4lpw9fvo4Ykr0HhCFFx2cDeDr3zKHfTStbMNrQm9qTIiyQXq8in8/V6AR6uctk7jdbGkkhHjAg40zU1ZP+SZsUKAFU3hqng6" +
-            "J/D5x1+QKBgQCrO5rgo68fHzqOZtpn7nCb6qRoa29MWXgWqghPQyeBEm1kNSMSqHlVbt3/zlS/eiz9vKpqLTvK9qmcQpm2qcBkSaS3mIZkR" +
-            "wHZkqTUsUtgWiMIWp/rbm3pFCqqM1GOKIQCny3PIEDOqLYspKU3kJBz3cm7z9z3aIG8YdWW4v9tWQKBgFPga2XaR/7QuIhXoJuEA7srRP52" +
-            "W0lF2UW2fUW9zuiRawqqH1jRODDWgpwwkpLuuiTA64IltoBRyrHJ7meA3PqdNIsorjTqkcQaT68M7QxZvfnnc0puax9UEbf0KCNbXjxxQC/" +
-            "r3fJ1zxyjy9CVQSGrk1lWbWezNsRd2ASnBlg9";
-
-    String FORMAT="json";
-    String CHARSET="utf-8";
-    String SIGN_TYPE="RSA2";
-
-    //公钥
-    String ALIPAY_PUBLIC_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoIgBWQqLZezKstp4ljdI4KlbqRT3ZKuumU0nXmWWoKKGq0" +
-            "gMM3iLCmPDoiBZ66rSGNkNB8zIZRFPo6sE9IyE0ey+sVuZDuCuc7G1AWXURlWkMgRdGN+iYaAPRYPhqSAY6OdXURaqAue6RrgbR9m/mroGH" +
-            "xbkSgU2JxNaizHShSoymjBkN2jENiIofODOUbHPnDgGfepx9gHSpzjqlfGAUFLXmDUZ2J91LYYLhLrJUW6Ruvc2X/ChQKo8QL+uA+LoJdrq" +
-            "yZGvVRDen1+2lN50rjvEtSPuEBE5xMx8txV1CQ7s2tFo6WYCjSkFgcEFsybNewudK7iRZcKoy8Y1dPxqkQIDAQAB";
-
-
 
     @Autowired
     OrderMapper orderMapper;
@@ -187,13 +159,15 @@ public class OrderController {
     @Token.UserLoginToken
     public SysResult payOrder (HttpServletRequest httpRequest, HttpServletResponse httpResponse, Integer orderId) throws ServletException, IOException {
 
+
         Order order = orderMapper.selectById(orderId);
         OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId,1);
 
         //获得初始化的 AlipayClient
-        AlipayClient alipayClient = new DefaultAlipayClient( "\t\n" + "https://openapi.alipaydev.com/gateway.do" , APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
+        AlipayClient alipayClient = new DefaultAlipayClient( "https://openapi.alipaydev.com/gateway.do" , AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
+        /**
         //创建API对应的request
-        AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
+        AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
 
         //
         alipayRequest.setNotifyUrl("http://localhost:8081/order/order/payNotify");
@@ -209,13 +183,12 @@ public class OrderController {
 
         String form="";
         try {
-            AlipayTradeAppPayResponse response =alipayClient.sdkExecute(alipayRequest);
+            AlipayTradeWapPayResponse response =alipayClient.pageExecute(alipayRequest);
             if(response.isSuccess()){
                 System.out.println("调用成功");
             } else {
                 System.out.println("调用失败");
             }
-
 
             form = response.getBody();
 
@@ -223,9 +196,34 @@ public class OrderController {
             e.printStackTrace();
         }
 
+        return SysResult.build(200,"操作成功",form); **/
 
-
-        return SysResult.success(form);
+        try {
+            //（1）封装bizmodel信息
+            AlipayTradeWapPayModel model = new AlipayTradeWapPayModel();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            model.setOutTradeNo(order.getOrderNumber());
+            model.setSubject(orderInfoResponseVo.getProductName());
+            model.setBody(orderInfoResponseVo.getProductName());
+            model.setProductCode("QUICK_WAP_WAY");
+            model.setSellerId("2088621956175664");
+            model.setTotalAmount(order.getTotalPrice().toString());
+            model.setTimeoutExpress("10m");
+            model.setQuitUrl("https://www.hao123.com/");
+            //（2）设置请求参数
+            AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
+            //alipayRequest.setReturnUrl();
+            alipayRequest.setNotifyUrl("http://localhost:8081/order/order/payNotify");
+            alipayRequest.setReturnUrl("https://www.hao123.com/");
+            alipayRequest.setBizModel(model);
+            //（3）请求
+            String form = alipayClient.pageExecute(alipayRequest).getBody();
+            System.out.println("*********************\n返回结果为："+form);
+            return SysResult.build(200,"操作成功",form);
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

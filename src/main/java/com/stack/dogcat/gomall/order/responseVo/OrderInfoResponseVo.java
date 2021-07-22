@@ -44,6 +44,11 @@ public class OrderInfoResponseVo {
     private Integer productNum;
 
     /**
+     * 收件人
+     */
+    private String consignee;
+
+    /**
      * 收货人电话
      */
     private String phoneNumber;

@@ -5,6 +5,7 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
@@ -28,6 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -42,6 +47,8 @@ import java.util.*;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
+
+    //private static final Logger LOG = LoggerFactory.getLogger(LogAspect.class);
 
     @Autowired
     OrderMapper orderMapper;
@@ -64,6 +71,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional
     public SysResult saveOrder(Integer customerId, OrderRequestVo orderRequestVo){
+
 
         /**判断库存**/
         Map<String,Object> map =new HashMap<>();
@@ -93,6 +101,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setProductNum(orderRequestVo.getProductNum());
             order.setPrice(sku.getPrice());
             ReceiveAddress receiveAddress = receiveAddressMapper.selectById(orderRequestVo.getReceiveAddressId());
+            order.setReceiveAddressId(orderRequestVo.getReceiveAddressId());
+            order.setConsignee(receiveAddress.getConsignee());
             order.setAddress(receiveAddress.getAddress());
             order.setPhoneNumber(receiveAddress.getPhoneNumber());
 
@@ -141,6 +151,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderInfoResponseVo.setProductNum(order.getProductNum());
         orderInfoResponseVo.setOrderGmtCreate(order.getGmtCreate());
         orderInfoResponseVo.setStatus(order.getStatus());
+        orderInfoResponseVo.setConsignee(order.getConsignee());
         orderInfoResponseVo.setReceiveAddress(order.getAddress());
         orderInfoResponseVo.setPhoneNumber(order.getPhoneNumber());
 
@@ -209,6 +220,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
+    @Transactional
     public String aliNotify(Map<String, String> conversionParams){
 
         //签名验证(对支付宝返回的数据验证，确定是支付宝返回的)
@@ -240,6 +252,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     queryWrapper.eq("order_number",orderNumber);
                     Order order = orderMapper.selectOne(queryWrapper);
                     order.setStatus(1);
+                    orderMapper.updateById(order);
+
+                    Product product=productMapper.selectById(order.getProductId());
+                    product.setSalesNum(product.getSalesNum()+order.getProductNum());
+                    productMapper.updateById(product);
 
                     return "success";
                 } else {

@@ -1,36 +1,18 @@
 package com.stack.dogcat.gomall.utils;
 
 public interface AppConst {
-    public static String App_id = "wx08669aa3f21bcf61";
-    public static String App_secret = "13f5d45bb4547b38ec0eac3c9eb82904";
+    String App_id = "wx08669aa3f21bcf61";
+    String App_secret = "13f5d45bb4547b38ec0eac3c9eb82904";
     //应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
     String APP_ID="2021000117691523";
 
     // 商户私钥，您的PKCS8格式RSA2私钥
-    String APP_PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCgiAFZCotl7Mqy2niWN0jgqVupFPdkq66ZTSdeZ" +
-            "ZagooarSAwzeIsKY8OiIFnrqtIY2Q0HzMhlEU+jqwT0jITR7L6xW5kO4K5zsbUBZdRGVaQyBF0Y36JhoA9Fg+GpIBjo51dRFqoC57pGuBtH" +
-            "2b+augYfFuRKBTYnE1qLMdKFKjKaMGQ3aMQ2Iih84M5Rsc+cOAZ96nH2AdKnOOqV8YBQUteYNRnYn3UthguEuslRbpG69zZf8KFAqjxAv64" +
-            "D4ugl2urJka9VEN6fX7aU3nSuO8S1I+4QETnEzHy3FXUJDuza0WjpZgKNKQWBwQWzJs17C50ruJFlwqjLxjV0/GqRAgMBAAECggEAadbh1J" +
-            "wAJlZFmkAyaw/OK9ldRpA9QBF1TzuwLiuacRRW58zbxn++ZD48eMMNpjR8yscoMTFSGlicglM6NCYFWAbX/0VeF5IJUtwic+Z4W1sRo6x+2" +
-            "OxxOh52kyWNfZ1c7wm/5wWjV8ECbqfpzKiDDHeDm7HTF/5xore+5bEWlJafIEvniaA+GYmnE5h8Ze5K/F68teU5P3q7sbH/jv4lyQt94YFc" +
-            "zMmVUDwntxHxM7E4IMBwRjMtXtR83SP1MLjwLVIHTizrEEVSDVDM1g9dpuYZbG8/71skqM6Pi6eLxBIlYBhP3ko3prcP3UC9I90uUeUxYAF" +
-            "2zmwPXFiQNeNO8QKBgQDUtvXjF7t2xk6r828r6v4EKGkILhDewQKCIpPYK3gr81cXA4ZTQvxxwxoyLuPxYqZ/FuzfUfTBVukb2/7CTxjtnW" +
-            "ai9j0qldbc+6AKIPIZpwSXJ9LYIxbFfuusecCNd/zeFqdz67F+fXKJg0/9OyDtf0xLyhEh5g/Qvb5u29sXfQKBgQDBMqGNtGNVlyrjyntYU" +
-            "P17Cd1oXzsVL0YwyfQkMKaT5gIOfA1lrGcw7iXqCSJgMmdJwiPwxFfdLQSs/p/0KybWQS3Qg0rLcfjl5wM7ZIwodx3doXTqfn6FeoMHhwvP" +
-            "JDX1a0QIItWtPQbNTXGX9heyAFwQ3EK0fhZ/od6hpKgTpQKBgQC/UnjC8xuX7zHfkysQ82HZ14bw5o4h7LQW3IbhzedekJZqiq8MwJlSsUs" +
-            "ki+xVtodOlA4lpw9fvo4Ykr0HhCFFx2cDeDr3zKHfTStbMNrQm9qTIiyQXq8in8/V6AR6uctk7jdbGkkhHjAg40zU1ZP+SZsUKAFU3hqng6" +
-            "J/D5x1+QKBgQCrO5rgo68fHzqOZtpn7nCb6qRoa29MWXgWqghPQyeBEm1kNSMSqHlVbt3/zlS/eiz9vKpqLTvK9qmcQpm2qcBkSaS3mIZkR" +
-            "wHZkqTUsUtgWiMIWp/rbm3pFCqqM1GOKIQCny3PIEDOqLYspKU3kJBz3cm7z9z3aIG8YdWW4v9tWQKBgFPga2XaR/7QuIhXoJuEA7srRP52" +
-            "W0lF2UW2fUW9zuiRawqqH1jRODDWgpwwkpLuuiTA64IltoBRyrHJ7meA3PqdNIsorjTqkcQaT68M7QxZvfnnc0puax9UEbf0KCNbXjxxQC/" +
-            "r3fJ1zxyjy9CVQSGrk1lWbWezNsRd2ASnBlg9";
+    String APP_PRIVATE_KEY = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH80hgjQk+dVEx4XTudzL1rdeNx/cE9sj6Hj9CRlLikLaPbk3WEDAZeXSyxfq8fvkYnS3836/BjUHPbl2nxjbrnAXRrJTdht5zBJ4yI5Hl94vSQeZTBzXqjSAxEqdNKCCPp/MbEVX1THH3E2+38hzzQXvg59vPeT0d/pzmwXF3XBitIfJ+aCAogy4BUN3fj7x7Ed+bzf1nEEDz6lHkEYQOBm1xSX3/quO9N8+cCgTm7mtsFocrACOGwrtR5z4wQbNhPEaonm3GsHH+rmeLADhieHG0qTd/tznHhDN2zyq2bpchQANaMrFU7VAw+X4zJ32GpOOdVyR2QacPY9SXY031AgMBAAECggEAJxaI2dHTNZUPmlLjhujYyxCHqGk1GcVG9bsanxiPHjtTchvZ31FaMwjbx8bql6W+Qxh2L321D+ZoZJar8OApzEZY2fdP+f2cGd/bCDl36nHpTrPJ4FdzZhPbjKB7X9DIw+UbHc43M8ceAVciSPYg4sQSNREU/ysxql0ZibNWx2VU6GvBTjymnIkPSMqrlCPLlvmaBvw8qNgqI6LNh7gk/cBpNdnzt1y4MbVTwLw/Khtihvrytn+7p+PoJMlOjmN9SkToi52QGgv932E/0fcJfytzDq5idndmeAHDBIJwlZ5mDpeAyarttRsv9bz6ziRh5fgs2ogNIRBSLLT/RsHuIQKBgQDGylj8VBKINtgun2S96lGyLkB1Dw4B05gZSNIyXJCEpWmXuVW13Iq5c3d8BG0mICzlfFLuAo5JygmAocVo0pxMbQBSxPZFTz/tohK+p13msclsULy7Ry/fJ3quq1HHrbTj9DthsvzBlv+yjQxsNU4iN30wCiDXQXyp1fKOuwVljQKBgQCvE0OleoFv/DcSNvNccfhHsrXEzo6B7ScPh2CoAbNIgKCLWHRWgAU688W2wVXRLAuZRytppFC51DS9FxEXRn66Mst2rJB7SrMhSbjP/JRtkNNK3flSbrYaqC+ErrjdZuPLJ7m9lWPIsgdAZqd9QEEuEC7niB0asSgDjhgbydisCQKBgEWn2Y5xFx1Lumx7xZ0WYhIBSuy5nbreHcmeTqj+7lTMcTeM5Y+X+7QH1bJLCsP1OkYfTh/AHYOVm8bK6JVWVxYgi6B1C6Y1orztsYvEsY6IdX/Suo8U3p1fBAn4VeuV3nCRv8z4HsDm3CoAan3wH7S1pNQUeHV0qO4J3bhNqBJxAoGBAIrd/ecw76By7v+8pHXsVKISR4luyayW/keb+vfoOVvF4xIEPGssKnnjSC041ygOBrkysWWfFwT/JEHkHQNYQEbS6X4dTJDu5Hz/697Vmqn5mQ8mWI+hD0K/qslUiX/cD81hmjudVkOnqobTpgB8SfcOkRXHakZ0xKdlOww3o2x5AoGAaAnAONUvsnSbm6gtY/zBwqfKNt1+XHT67WyyFnBE8YHaN4l1JRpuTagwxNS2hTB2L6qVf6EY7gN0UIXp2EWroXRIi6X0q5WTjvNQD6U48BefOuvJLsU83nUXcanFu1QOA0w4Io6u0FfrlccoMiinPM66VZZZMaEdg9erJ15+YI0=";
 
     String FORMAT="json";
-    String CHARSET="utf-8";
+    String CHARSET="UTF-8";
     String SIGN_TYPE="RSA2";
 
     //公钥
-    String ALIPAY_PUBLIC_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoIgBWQqLZezKstp4ljdI4KlbqRT3ZKuumU0nXmWWoKKGq0" +
-            "gMM3iLCmPDoiBZ66rSGNkNB8zIZRFPo6sE9IyE0ey+sVuZDuCuc7G1AWXURlWkMgRdGN+iYaAPRYPhqSAY6OdXURaqAue6RrgbR9m/mroGH" +
-            "xbkSgU2JxNaizHShSoymjBkN2jENiIofODOUbHPnDgGfepx9gHSpzjqlfGAUFLXmDUZ2J91LYYLhLrJUW6Ruvc2X/ChQKo8QL+uA+LoJdrq" +
-            "yZGvVRDen1+2lN50rjvEtSPuEBE5xMx8txV1CQ7s2tFo6WYCjSkFgcEFsybNewudK7iRZcKoy8Y1dPxqkQIDAQAB";
+    String ALIPAY_PUBLIC_KEY="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqBALszYUjko2m1FXa08NzXQt8ZXgau2oalVf7mLacfslLXIMwk+MyzIo4KU2AXSj8TlrJ1MFvutBC0zk6mCMXvI4JeLtpkeRrJSqjWl6q9c+c/x0IJUQZPWJQYAiDkYgo4NqnijXt1xyMAclpBgj+kVJm/qKlwtMKNJB5pMYWJWS/kyf6yVNMzu2Xwm1IQaAnH/nsuvjMZVhad80L+HSAoHWw6t3LM1Hsa9+S7GEQF6HRE/LIppuom6KzhoHB8nzvBHlxVpHyVKP0uKBFU4chvP8dCG3r22DOBYFudtNpbJH7kDFhp9yl073BxZyX5toSCX/p+NJ3RrOU6GZi2Dc+QIDAQAB";
 }

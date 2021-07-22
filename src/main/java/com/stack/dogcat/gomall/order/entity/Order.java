@@ -70,6 +70,16 @@ public class Order implements Serializable {
     private Integer status;
 
     /**
+     * 收货地址id
+     */
+    private Integer receiveAddressId;
+
+    /**
+     * 收件人
+     */
+    private String consignee;
+
+    /**
      * 收货人电话
      */
     private String phoneNumber;
