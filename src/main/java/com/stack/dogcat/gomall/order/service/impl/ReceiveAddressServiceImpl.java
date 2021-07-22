@@ -28,9 +28,10 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
     ReceiveAddressMapper receiveAddressMapper;
 
     @Override
-    public void insertReceiveAddressByCustomerId(Integer customerId,String address,String phoneNumber){
+    public void insertReceiveAddressByCustomerId(Integer customerId,String consignee,String address,String phoneNumber){
         ReceiveAddress receiveAddress=new ReceiveAddress();
         receiveAddress.setCustomerId(customerId);
+        receiveAddress.setConsignee(consignee);
         receiveAddress.setAddress(address);
         receiveAddress.setPhoneNumber(phoneNumber);
 
