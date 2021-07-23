@@ -196,6 +196,9 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         queryWrapper = new QueryWrapper();
         queryWrapper.eq("user_name", requestVo.getUserName());
         Store storeDB = storeMapper.selectOne(queryWrapper);
+        if(storeDB.getStatus() != 1) {
+            throw new RuntimeException("该用户不存在");
+        }
         if(storeDB != null && storeDB.getPassword().equals(requestVo.getPassword())) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);
             return responseVo;
@@ -224,6 +227,9 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         queryWrapper = new QueryWrapper();
         queryWrapper.eq("email", requestVo.getEmail());
         Store storeDB = storeMapper.selectOne(queryWrapper);
+        if(storeDB.getStatus() != 1) {
+            throw new RuntimeException("该用户不存在");
+        }
         if(storeDB != null) {
             StoreLoginResponseVo responseVo = CopyUtil.copy(storeDB, StoreLoginResponseVo.class);
             return responseVo;

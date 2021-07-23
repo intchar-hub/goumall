@@ -72,14 +72,19 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
     @Transactional
     public Integer solveComplaints(Integer complaintId,Integer banned){
         if(banned==0){
-            return 1;
+            UpdateWrapper<Complaint> complaintUpdateWrapper = new UpdateWrapper<>();
+            complaintUpdateWrapper.eq("id",complaintId).set("status",1);
+            int i = complaintMapper.update(null,complaintUpdateWrapper);
+            return i;
         }
         else {
             Integer storeId=complaintMapper.selectById(complaintId).getStoreId();
             UpdateWrapper<Store> storeUpdateWrapper = new UpdateWrapper<>();
             storeUpdateWrapper.eq("id",storeId).set("status",3);
             int i = storeMapper.update(null,storeUpdateWrapper);
+
             UpdateWrapper<Complaint> complaintUpdateWrapper = new UpdateWrapper<>();
+            complaintUpdateWrapper.eq("id",complaintId).set("status",1);
             int j = complaintMapper.update(null,complaintUpdateWrapper);
             return i*j;
         }

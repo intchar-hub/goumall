@@ -4,6 +4,7 @@ package com.stack.dogcat.gomall.sales.controller;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
+import com.stack.dogcat.gomall.sales.responseVo.SalesProductQueryResponseVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.sales.service.ISalesPromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,22 @@ public class SalesPromotionController {
         List<SalesPromotionQueryResponseVo> responseVos = null;
         try {
             responseVos = salesPromotionService.listPromotion(screenCondition);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("秒杀活动获取失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
+    /**
+     * 顾客查看所有参加秒杀活动的商品
+     * @return
+     */
+    @GetMapping("/listPromotionProducts")
+    public SysResult listPromotionProducts() {
+        List<SalesProductQueryResponseVo> responseVos = null;
+        try {
+            responseVos = salesPromotionService.listPromotionProducts();
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("秒杀活动获取失败");

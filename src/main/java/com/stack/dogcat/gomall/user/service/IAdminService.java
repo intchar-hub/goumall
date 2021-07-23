@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface IAdminService extends IService<Admin> {
 
     PageResponseVo<StoreInfoResponseVo> listStoreInfo(Integer pageNum, Integer pageSize);
+    PageResponseVo<StoreInfoResponseVo> listStoreInfoByStatus(Integer pageNum, Integer pageSize);
     Integer examineStoreRegister(Integer id,Integer flag);
     Integer sendEmailCode(String email);
     void getStringCode(HttpServletResponse response);

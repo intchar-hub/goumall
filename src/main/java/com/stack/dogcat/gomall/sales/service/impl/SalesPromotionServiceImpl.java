@@ -9,6 +9,7 @@ import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
+import com.stack.dogcat.gomall.sales.responseVo.SalesProductQueryResponseVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.sales.service.ISalesPromotionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -193,6 +194,27 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
                 }
             }
             responseVos.removeAll(filterList);
+        }
+        return responseVos;
+    }
+
+    /**
+     * 顾客查看所有参与秒杀活动的商品
+     * @return
+     */
+    @Override
+    public List<SalesProductQueryResponseVo> listPromotionProducts() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("is_onsale", 1);
+        queryWrapper.eq("status", 1);
+        List<Product> productsDB = productMapper.selectList(queryWrapper);
+        List<SalesProductQueryResponseVo> responseVos = new ArrayList<>();
+        for (Product product : productsDB) {
+            SalesProductQueryResponseVo vo = new SalesProductQueryResponseVo();
+            vo.setProductId(product.getId());
+            vo.setProductImagepath(product.getImagePath());
+
+            responseVos.add(vo);
         }
         return responseVos;
     }
