@@ -9,6 +9,8 @@ import com.stack.dogcat.gomall.order.mapper.CartItemMapper;
 import com.stack.dogcat.gomall.order.responseVo.CartItemResponseVo;
 import com.stack.dogcat.gomall.order.service.ICartItemService;
 import com.stack.dogcat.gomall.user.entity.Customer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,8 @@ import java.util.ArrayList;
 @CrossOrigin
 @RequestMapping("/order/cart-item")
 public class CartItemController {
+
+    private static Logger logger = LoggerFactory.getLogger(CartItemController.class);
 
     @Autowired
     ICartItemService cartItemService;
@@ -46,6 +50,8 @@ public class CartItemController {
         try{
             Integer customerId = current_customer.getId();
             cartItemService.saveCartItem(customerId,productId,productAttribute,productNum);
+            logger.info("save_cartItem->current_customer.id:{},current_customer.name:{},save_cartItem_pro.id:{},save_cartItem_pro.num:{}",
+                    new Object[]{current_customer.getId().toString(), current_customer.getUserName(), productId.toString(), productNum.toString()});
 
         }catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());

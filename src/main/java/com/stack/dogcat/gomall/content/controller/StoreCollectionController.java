@@ -5,6 +5,8 @@ import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IStoreCollectionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,9 @@ import java.util.List;
 @RequestMapping("/cms/store-collection")
 public class StoreCollectionController {
 
+    private static Logger logger = LoggerFactory.getLogger(StoreCollectionController.class);
+
+
     @Autowired
     IStoreCollectionService storeCollectionService;
 
@@ -31,6 +36,7 @@ public class StoreCollectionController {
         SysResult result=null;
         try{
             storeCollectionService.saveStoreCollection(customerId,storeId);
+            logger.info("save_pro_col->current_customer.id:{},star_store.id:{}",new Object[]{customerId.toString(), storeId.toString()});
         }
         catch (Exception e){
             e.printStackTrace();

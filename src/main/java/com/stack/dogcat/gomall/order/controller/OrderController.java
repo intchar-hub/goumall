@@ -1,11 +1,13 @@
 package com.stack.dogcat.gomall.order.controller;
 
-
+import com.stack.dogcat.gomall.config.AlipayConfig;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeWapPayResponse;
@@ -22,6 +24,8 @@ import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import com.stack.dogcat.gomall.utils.AppConst;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +50,8 @@ import java.util.Map;
 @RequestMapping("/order/order")
 public class OrderController {
 
+    private static Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     @Autowired
     OrderServiceImpl orderService;
 
@@ -62,6 +68,11 @@ public class OrderController {
     public SysResult saveOrder(@CurrentUser Customer current_customer, OrderRequestVo orderRequestVo){
 
         try{
+            logger.info("save_order->current_customer.id:{},current_customer.name:{},save_order_pro.id:{},save_order_store.id:{},save_order_pro.num:{}",
+                    new Object[]{current_customer.getId().toString(), current_customer.getUserName()
+                            , orderRequestVo.getProductId().toString(), orderRequestVo.getStoreId().toString(),
+                            orderRequestVo.getProductNum().toString()});
+
             Integer customerId =current_customer.getId();
             SysResult result=orderService.saveOrder(customerId,orderRequestVo);
             return result;
@@ -157,73 +168,18 @@ public class OrderController {
     @PostMapping("/payOrder")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult payOrder (HttpServletRequest httpRequest, HttpServletResponse httpResponse, Integer orderId) throws ServletException, IOException {
+    public String payOrder (Integer orderId,HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 
+        String msg;
+        try{
+           msg=orderService.payOrder(orderId,httpRequest, httpResponse);
 
-        Order order = orderMapper.selectById(orderId);
-        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId,1);
-
-        //获得初始化的 AlipayClient
-        AlipayClient alipayClient = new DefaultAlipayClient( "https://openapi.alipaydev.com/gateway.do" , AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
-        /**
-        //创建API对应的request
-        AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
-
-        //
-        alipayRequest.setNotifyUrl("http://localhost:8081/order/order/payNotify");
-
-        alipayRequest.setBizContent("{" +
-                "\"out_trade_no\":"+"\""+order.getOrderNumber()+"\""+","+
-                "\"timeout_express\":\"10m\","+
-                "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"," +
-                "\"total_amount\":"+"\""+order.getTotalPrice().toString()+"\""+","+
-                "\"subject\":"+"\""+orderInfoResponseVo.getProductName()+"\""+","+
-                "\"body\":"+"\""+orderInfoResponseVo.getProductName()+"\""+
-                "}");
-
-        String form="";
-        try {
-            AlipayTradeWapPayResponse response =alipayClient.pageExecute(alipayRequest);
-            if(response.isSuccess()){
-                System.out.println("调用成功");
-            } else {
-                System.out.println("调用失败");
-            }
-
-            form = response.getBody();
-
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
+        } catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return "result";
         }
+        return msg;
 
-        return SysResult.build(200,"操作成功",form); **/
-
-        try {
-            //（1）封装bizmodel信息
-            AlipayTradeWapPayModel model = new AlipayTradeWapPayModel();
-            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
-            model.setOutTradeNo(order.getOrderNumber());
-            model.setSubject(orderInfoResponseVo.getProductName());
-            model.setBody(orderInfoResponseVo.getProductName());
-            model.setProductCode("QUICK_WAP_WAY");
-            model.setSellerId("2088621956175664");
-            model.setTotalAmount(order.getTotalPrice().toString());
-            model.setTimeoutExpress("10m");
-            model.setQuitUrl("https://www.hao123.com/");
-            //（2）设置请求参数
-            AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
-            //alipayRequest.setReturnUrl();
-            alipayRequest.setNotifyUrl("http://localhost:8081/order/order/payNotify");
-            alipayRequest.setReturnUrl("https://www.hao123.com/");
-            alipayRequest.setBizModel(model);
-            //（3）请求
-            String form = alipayClient.pageExecute(alipayRequest).getBody();
-            System.out.println("*********************\n返回结果为："+form);
-            return SysResult.build(200,"操作成功",form);
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 
@@ -254,10 +210,42 @@ public class OrderController {
             conversionParams.put(key, valueStr);
         }
         System.out.println("==返回参数集合："+conversionParams);
+
         String status=orderService.aliNotify(conversionParams);
         return status;
 
     }
 
+/**
+    @RequestMapping(value="/toPay",method = RequestMethod.GET)
+    @ResponseBody
+    public String doPost (HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException{
 
-}
+        AlipayClient alipayClient = new DefaultAlipayClient( AlipayConfig.gatewayUrl , AlipayConfig.app_id, AlipayConfig.merchant_private_key, AlipayConfig.format, AlipayConfig.charset, AlipayConfig.alipay_public_key, AlipayConfig.sign_type);
+
+        AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest(); //创建API对应的request
+        alipayRequest.setReturnUrl( "http://domain.com/CallBack/return_url.jsp" );
+        alipayRequest.setNotifyUrl( "http://domain.com/CallBack/notify_url.jsp" );
+        alipayRequest.setBizContent( "{" + " \"out_trade_no\":\"20150320010101002\"," + " \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," + " \"total_amount\":88.88," + " \"subject\":\"Iphone6 16G\"," + " \"body\":\"Iphone6 16G\"," + " \"passback_params\":\"merchantBizType%3d3C%26merchantBizNo%3d2016010101111\"," + " \"extend_params\":{" + " \"sys_service_provider_id\":\"2088511833207846\"" + " }" + " }" );
+        String form= "" ;
+        try {
+            form = alipayClient.pageExecute(alipayRequest).getBody();
+            //调用SDK 生成表单
+             } catch (AlipayApiException e) { e.printStackTrace(); }
+        return  form;
+        }
+
+    @RequestMapping(value="/pay")
+    public String toPay(){
+        return "pay"; //进入支付页面 }
+    }*/
+
+
+
+
+
+    }
+
+
+
+
