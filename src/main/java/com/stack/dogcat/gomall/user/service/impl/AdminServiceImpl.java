@@ -80,6 +80,16 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     }
 
+    @Override
+    public PageResponseVo<StoreInfoResponseVo> listStoreInfoByStatus(Integer pageNum, Integer pageSize) {
+        Page<Store> page = new Page<>(pageNum,pageSize);
+        IPage<Store> storePage = storeMapper.selectPage(page,new QueryWrapper<Store>().eq("status",0));
+        //封装vo
+        PageResponseVo<StoreInfoResponseVo> storePageResponseVo = new PageResponseVo(storePage);
+        storePageResponseVo.setData(CopyUtil.copyList(storePageResponseVo.getData(), StoreInfoResponseVo.class));
+        return storePageResponseVo;
+    }
+
     /**
      * 管理员审核商家注册
      */
