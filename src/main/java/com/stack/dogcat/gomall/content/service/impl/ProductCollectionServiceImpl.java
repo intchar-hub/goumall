@@ -10,6 +10,7 @@ import com.stack.dogcat.gomall.content.mapper.ProductCollectionMapper;
 import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IProductCollectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,11 +62,14 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
         List<ProductCollectionResponseVo> collectionResponseVos = new ArrayList<>();
         for (ProductCollection productCollection:collections) {
             ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
+            Product product=productMapper.selectById(productCollection.getProductId());
             responseVo.setProductCollectionId(productCollection.getId());
             responseVo.setProductId(productCollection.getProductId());
-            responseVo.setProductName(productMapper.selectById(productCollection.getProductId()).getName());
-            responseVo.setImagePath(productMapper.selectById(productCollection.getProductId()).getImagePath());
-            responseVo.setDescription(productMapper.selectById(productCollection.getProductId()).getDescription());
+            responseVo.setProductName(product.getName());
+            responseVo.setImagePath(product.getImagePath());
+            responseVo.setDescription(product.getDescription());
+            responseVo.setHighestPrice(product.getHighestPrice());
+            responseVo.setLowestPrice(product.getLowestPrice());
             collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
