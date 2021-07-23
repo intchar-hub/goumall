@@ -7,6 +7,7 @@ import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
+import com.stack.dogcat.gomall.product.responseVo.ProductWithCommentResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface IProductService extends IService<Product> {
 
     void updateProducts(ProductUpdateRequestVo requestVo);
 
-    PageResponseVo<ProductQueryResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize);
+    PageResponseVo<ProductWithCommentResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize);
 
     PageResponseVo<ProductQueryResponseVo> screenProducts(ScreenProductsRequestVo requestVo);
 

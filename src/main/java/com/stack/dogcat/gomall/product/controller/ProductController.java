@@ -7,6 +7,7 @@ import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
+import com.stack.dogcat.gomall.product.responseVo.ProductWithCommentResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +89,7 @@ public class ProductController {
      */
     @GetMapping("/listProductsByStore")
     public SysResult listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
-        PageResponseVo<ProductQueryResponseVo> pageResponseVo = null;
+        PageResponseVo<ProductWithCommentResponseVo> pageResponseVo = null;
         try {
             pageResponseVo = productService.listProductsByStore(id, pageNum, pageSize);
         } catch (Exception e) {
