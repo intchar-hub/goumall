@@ -149,11 +149,17 @@ public class AttributeNameServiceImpl extends ServiceImpl<AttributeNameMapper, A
     @Transactional
     public void deleteAttributeNameById(Integer attributeNameId){
 
-        attributeNameMapper.deleteById(attributeNameId);
-
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("attribute_name_id", attributeNameId);
+        AttributeName attributeName=attributeNameMapper.selectById(attributeNameId);
+
+        //属性集合中属性数量-1
+        AttributeCollection attributeCollection = attributeCollectionMapper.selectById(attributeName.getAttributeCollectionId());
+        attributeCollection.setAttributeNum(attributeCollection.getAttributeNum()-1);
+        attributeCollectionMapper.updateById(attributeCollection);
+
         attributeValueMapper.delete(queryWrapper);
+        attributeNameMapper.deleteById(attributeNameId);
 
     }
 }

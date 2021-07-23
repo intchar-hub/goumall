@@ -7,6 +7,8 @@ import com.stack.dogcat.gomall.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -30,6 +32,9 @@ public interface IOrderService extends IService<Order> {
 
     /**消费者删除订单**/
     void deleteOrder(Integer customerId,Integer orderId);
+
+    /**支付订单**/
+    String payOrder(Integer orderId,HttpServletResponse servletResponse);
 
 
     /**

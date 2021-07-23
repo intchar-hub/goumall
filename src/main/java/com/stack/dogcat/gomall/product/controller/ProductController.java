@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.product.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.order.controller.OrderController;
 import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
@@ -10,6 +11,8 @@ import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithCommentResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,8 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/product/product")
 public class ProductController {
+
+    private static Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     IProductService productService;
@@ -157,14 +162,18 @@ public class ProductController {
      * @return
      */
     @GetMapping("/listProductsByProductName")
-    public SysResult listProductsByProductName(String name, Integer pageNum, Integer pageSize) {
+    public SysResult listProductsByProductName(Integer customerId,String name, Integer pageNum, Integer pageSize) {
         PageResponseVo<ProductQueryResponseVo> responseVos = null;
         try {
             responseVos = productService.listProductsByProductName(name, pageNum, pageSize);
+            if(customerId!=0){
+                logger.info("search_pro->current_customer.id:{},search_pro.name:{}",new Object[]{customerId.toString(), name});
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("按名字获取商品失败");
         }
+
         return SysResult.success(responseVos);
     }
 
@@ -174,14 +183,18 @@ public class ProductController {
      * @return
      */
     @GetMapping("/listProductsByStoreId")
-    public SysResult listProductsByStoreId(Integer storeId, Integer pageNum, Integer pageSize) {
+    public SysResult listProductsByStoreId(Integer customerId,Integer storeId, Integer pageNum, Integer pageSize) {
         PageResponseVo<ProductQueryResponseVo> responseVos = null;
         try {
             responseVos = productService.listProductsByStoreId(storeId, pageNum, pageSize);
+            if(customerId!=0){
+                logger.info("search_store->current_customer.id:{},search_store.id:{}",new Object[]{customerId.toString(), storeId.toString()});
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("按店铺获取商品失败");
         }
+
         return SysResult.success(responseVos);
     }
 
@@ -191,10 +204,11 @@ public class ProductController {
      * @return
      */
     @GetMapping("/getProductWithStoreById")
-    public SysResult getProductWithStoreById(Integer id) {
+    public SysResult getProductWithStoreById(Integer customerId,Integer id) {
         ProductWithStoreQueryResponseVo responseVo = null;
         try {
             responseVo = productService.getProductWithStoreById(id);
+            logger.info("click_pro->current_customer.id:{},click_pro.id:{},",new Object[]{customerId.toString(),id.toString()});
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("获取商品及店铺失败");
