@@ -3,8 +3,10 @@ package com.stack.dogcat.gomall.order.service.impl;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -243,7 +245,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             String charset = AppConst.CHARSET;
             String signType = AppConst.SIGN_TYPE;
 
-            signVerified = AlipaySignature.rsaCheckV1(conversionParams, alipayPublicKey, charset, signType);
+            signVerified = AlipaySignature.rsaCheckV2(conversionParams, alipayPublicKey, charset, signType);
             //对验签进行处理.
             if (signVerified) {
 
@@ -289,7 +291,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String payOrder (Integer orderId,HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public String payOrder (Integer orderId) {
 
         Order order = orderMapper.selectById(orderId);
         OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
@@ -299,31 +301,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         try {
             //（1）封装bizmodel信息
-            AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
-            AlipayTradeWapPayModel model = new AlipayTradeWapPayModel();
+            AlipayTradePrecreateRequest alipayRequest = new AlipayTradePrecreateRequest();
+            AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
             //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
             model.setOutTradeNo(order.getOrderNumber());
             model.setSubject(orderInfoResponseVo.getProductName());
             model.setBody(orderInfoResponseVo.getProductName());
-            model.setProductCode("QUICK_WAP_WAY");
+           // model.setProductCode("QUICK_WAP_WAY");
             model.setSellerId("2088621956175664");
             model.setTotalAmount(order.getTotalPrice().toString());
             model.setTimeoutExpress("30m");
-            model.setQuitUrl("https://www.hao123.com/");
+            //model.setQuitUrl("https://www.hao123.com/");
             //（2）设置请求参数
             //alipayRequest.setReturnUrl();
             alipayRequest.setNotifyUrl("http://hqqjw9.natappfree.cc/order/order/payNotify");
-            alipayRequest.setReturnUrl("https://www.hao123.com/");
+            //alipayRequest.setReturnUrl("https://www.hao123.com/");
             alipayRequest.setBizModel(model);
             //（3）请求
-            String form = alipayClient.pageExecute(alipayRequest).getBody();
+            String form = alipayClient.execute(alipayRequest).getBody();
             //System.out.println("*********************\n返回结果为：" + form);
-            /**httpResponse.setContentType( "text/html;charset=" + AppConst.CHARSET);
-            httpResponse.getWriter().write(form); //直接将完整的表单html输出到页面
-            httpResponse.getWriter().flush();
-            httpResponse.getWriter().close();*/
+
             return form;
-        } catch (AlipayApiException /**| IOException*/ e) {
+        } catch (AlipayApiException e) {
             e.printStackTrace();
             return null;
         }

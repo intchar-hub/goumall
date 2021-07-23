@@ -34,7 +34,7 @@ public interface IOrderService extends IService<Order> {
     void deleteOrder(Integer customerId,Integer orderId);
 
     /**支付订单**/
-    String payOrder(Integer orderId,HttpServletRequest httpRequest, HttpServletResponse httpResponse);
+    String payOrder(Integer orderId);
 
 
     /**

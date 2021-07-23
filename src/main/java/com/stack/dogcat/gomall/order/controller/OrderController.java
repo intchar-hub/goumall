@@ -168,11 +168,11 @@ public class OrderController {
     @PostMapping("/payOrder")
     @ResponseBody
     @Token.UserLoginToken
-    public String payOrder (Integer orderId,HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+    public String payOrder (Integer orderId){
 
         String msg;
         try{
-           msg=orderService.payOrder(orderId,httpRequest, httpResponse);
+           msg=orderService.payOrder(orderId);
 
         } catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
