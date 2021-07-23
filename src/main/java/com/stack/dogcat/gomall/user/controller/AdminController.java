@@ -51,6 +51,27 @@ public class AdminController {
         }
         return result;
     }
+
+    /**
+     * 管理员查看所有未审核商家信息
+     * @param pageNum
+     * @param pageSize
+     */
+    @GetMapping("/listStoreInfoByStatus")
+    public SysResult listStoreInfoByStatus(Integer pageNum,Integer pageSize){
+
+        SysResult result=null;
+        PageResponseVo<StoreInfoResponseVo> responseVo = null;
+        try{
+            responseVo=adminService.listStoreInfoByStatus(pageNum,pageSize);
+            result = SysResult.success(responseVo);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            result = SysResult.error("获取数据失败");
+        }
+        return result;
+    }
     
     /**
      * 管理员审核商家注册申请
@@ -58,11 +79,11 @@ public class AdminController {
      *@param flag
      */
     @PostMapping("/examineStoreRegister")
-    public SysResult examineStoreRegister(Integer id,Integer flag){
+    public SysResult examineStoreRegister(String id,String flag){
 
         SysResult result=null;
         try{
-            Integer i=adminService.examineStoreRegister(id,flag);
+            Integer i=adminService.examineStoreRegister(Integer.valueOf(id),Integer.valueOf(flag));
             if(i==1){
                 result = SysResult.success();
             }

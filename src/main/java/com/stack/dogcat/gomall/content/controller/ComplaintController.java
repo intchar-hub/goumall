@@ -54,11 +54,11 @@ public class ComplaintController {
      * @param banned
      */
     @PostMapping("/solveComplaints")
-    public SysResult solveComplaints(Integer complaintId, Integer banned){
+    public SysResult solveComplaints(String complaintId, String banned){
 
         SysResult result=null;
         try{
-            Integer flag=complaintService.solveComplaints(complaintId,banned);
+            Integer flag=complaintService.solveComplaints(Integer.valueOf(complaintId),Integer.valueOf(banned));
             if(flag==1){
                 result = SysResult.success();
             }
