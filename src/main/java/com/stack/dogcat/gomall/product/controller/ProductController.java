@@ -8,6 +8,7 @@ import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
+import com.stack.dogcat.gomall.product.responseVo.ProductWithCommentResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ public class ProductController {
      */
     @GetMapping("/listProductsByStore")
     public SysResult listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
-        PageResponseVo<ProductQueryResponseVo> pageResponseVo = null;
+        PageResponseVo<ProductWithCommentResponseVo> pageResponseVo = null;
         try {
             pageResponseVo = productService.listProductsByStore(id, pageNum, pageSize);
         } catch (Exception e) {
@@ -215,6 +216,21 @@ public class ProductController {
         return SysResult.success(responseVo);
     }
 
-
+    /**
+     * 按id查看商品
+     * @param id 商品id
+     * @return
+     */
+    @GetMapping("/getProductById")
+    public SysResult getProductById(Integer id) {
+        ProductQueryResponseVo responseVo = null;
+        try {
+            responseVo = productService.getProductById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("获取商品失败");
+        }
+        return SysResult.success(responseVo);
+    }
 
 }

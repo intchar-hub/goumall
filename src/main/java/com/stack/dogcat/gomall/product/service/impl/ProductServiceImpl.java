@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.content.mapper.ProductCollectionMapper;
+import com.stack.dogcat.gomall.message.entity.Comment;
+import com.stack.dogcat.gomall.message.mapper.CommentMapper;
 import com.stack.dogcat.gomall.order.mapper.CartItemMapper;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.entity.Sku;
@@ -19,10 +21,7 @@ import com.stack.dogcat.gomall.product.mapper.SkuMapper;
 import com.stack.dogcat.gomall.product.requestVo.ProductSaveRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ProductUpdateRequestVo;
 import com.stack.dogcat.gomall.product.requestVo.ScreenProductsRequestVo;
-import com.stack.dogcat.gomall.product.responseVo.ProductQueryResponseVo;
-import com.stack.dogcat.gomall.product.responseVo.ProductWithAttrbutes;
-import com.stack.dogcat.gomall.product.responseVo.ProductWithStoreQueryResponseVo;
-import com.stack.dogcat.gomall.product.responseVo.StoreQueryResponseVo;
+import com.stack.dogcat.gomall.product.responseVo.*;
 import com.stack.dogcat.gomall.product.service.IProductService;
 import com.stack.dogcat.gomall.sales.entity.Coupon;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
@@ -83,6 +82,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     SalesPromotionMapper salesPromotionMapper;
+
+    @Autowired
+    CommentMapper commentMapper;
 
     /**
      * 商家上架商品
@@ -312,7 +314,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
-    public PageResponseVo<ProductQueryResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
+    public PageResponseVo<ProductWithCommentResponseVo> listProductsByStore(Integer id, Integer pageNum, Integer pageSize) {
         if(id == null || pageNum == null || pageSize == null) {
             LOG.error("缺少请求参数");
             throw new RuntimeException();
@@ -323,9 +325,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         queryWrapper.eq("status", 1);
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
-        PageResponseVo<ProductQueryResponseVo> responseVo = new PageResponseVo(productIPage);
-        responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
-        return responseVo;
+        PageResponseVo<ProductWithCommentResponseVo> responseVos = new PageResponseVo(productIPage);
+        List<Product> products = productIPage.getRecords();
+        List<ProductWithCommentResponseVo> responseVoList=new ArrayList<>();
+        for (Product product:products) {
+            ProductWithCommentResponseVo responseVo = new ProductWithCommentResponseVo();
+            responseVo.setId(product.getId());
+            responseVo.setImagePath(product.getImagePath());
+            responseVo.setName(product.getName());
+            responseVo.setDescription(product.getDescription());
+            responseVo.setGmtCreate(product.getGmtCreate());
+            responseVo.setCommentNum(commentMapper.selectCount(new QueryWrapper<Comment>().eq("product_id",product.getId())));
+            responseVoList.add(responseVo);
+        }
+        responseVos.setData(responseVoList);
+        return responseVos;
     }
 
     /**
@@ -540,5 +554,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         responseVo.setData(CopyUtil.copyList(productIPage.getRecords(), ProductQueryResponseVo.class));
 
         return responseVo;
+    }
+
+    /**
+     * 按id查看商品
+     * @param id
+     * @return
+     */
+    @Override
+    public ProductQueryResponseVo getProductById(Integer id) {
+        Product productDB = productMapper.selectById(id);
+        if(productDB == null) {
+            LOG.info("商品获取失败");
+            throw new RuntimeException();
+        }
+        return CopyUtil.copy(productDB, ProductQueryResponseVo.class);
     }
 }

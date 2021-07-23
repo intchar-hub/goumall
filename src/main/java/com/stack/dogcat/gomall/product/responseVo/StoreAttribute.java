@@ -11,5 +11,7 @@ public class StoreAttribute {
 
     private String name;
 
+    private Integer inputType;
+
     private List<StoreValue> values;
 }

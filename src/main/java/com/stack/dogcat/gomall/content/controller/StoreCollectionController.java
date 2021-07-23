@@ -46,10 +46,10 @@ public class StoreCollectionController {
     }
 
     @GetMapping("/listStoreCollection")
-    public SysResult listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie){
+    public SysResult listStoreCollection(Integer customerId,Integer pageNum,Integer pageSize){
         PageResponseVo<StoreCollectionResponseVo> responseVos=null;
         try{
-            responseVos = storeCollectionService.listStoreCollection(customerId,pageNum,pageSzie);
+            responseVos = storeCollectionService.listStoreCollection(customerId,pageNum,pageSize);
         }
         catch (Exception e){
             e.printStackTrace();
