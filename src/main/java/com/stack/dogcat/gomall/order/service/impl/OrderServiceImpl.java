@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.order.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -12,6 +13,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import com.stack.dogcat.gomall.QrCode.QrCodeService;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.config.AlipayConfig;
@@ -63,6 +65,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     OrderServiceImpl orderService;
+
+    @Autowired
+    QrCodeService qrCodeService;
 
     @Autowired
     OrderMapper orderMapper;
@@ -241,11 +246,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         boolean signVerified = false;
         try {
             //调用SDK验证签名
-            String alipayPublicKey = AppConst.APP_ID;
+            String alipayPublicKey = AppConst.ALIPAY_PUBLIC_KEY;
             String charset = AppConst.CHARSET;
             String signType = AppConst.SIGN_TYPE;
 
-            signVerified = AlipaySignature.rsaCheckV2(conversionParams, alipayPublicKey, charset, signType);
+            signVerified = AlipaySignature.rsaCheckV1(conversionParams, alipayPublicKey, charset, signType);
             //对验签进行处理.
             if (signVerified) {
 
@@ -291,7 +296,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public String payOrder (Integer orderId) {
+    public String payOrder (Integer orderId,HttpServletResponse servletResponse) {
 
         Order order = orderMapper.selectById(orderId);
         OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
@@ -321,10 +326,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             String form = alipayClient.execute(alipayRequest).getBody();
             //System.out.println("*********************\n返回结果为：" + form);
 
-            return form;
+            JSONObject info = JSONObject.parseObject(form);
+            String response = info.getString("alipay_trade_precreate_response");
+            JSONObject response_info = JSONObject.parseObject(response);
+            String qr_code = response_info.getString("qr_code");
+
+            qrCodeService.createCodeToStream(qr_code,servletResponse);
+
+            return "请求支付操作成功";
         } catch (AlipayApiException e) {
             e.printStackTrace();
-            return null;
+            return "请求支付操作失败";
         }
 
     }
