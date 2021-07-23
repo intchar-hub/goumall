@@ -555,4 +555,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         return responseVo;
     }
+
+    /**
+     * 按id查看商品
+     * @param id
+     * @return
+     */
+    @Override
+    public ProductQueryResponseVo getProductById(Integer id) {
+        Product productDB = productMapper.selectById(id);
+        if(productDB == null) {
+            LOG.info("商品获取失败");
+            throw new RuntimeException();
+        }
+        return CopyUtil.copy(productDB, ProductQueryResponseVo.class);
+    }
 }
