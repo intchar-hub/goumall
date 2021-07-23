@@ -79,6 +79,7 @@ public class AttributeCollectionServiceImpl extends ServiceImpl<AttributeCollect
                 StoreAttribute attribute = new StoreAttribute();
                 attribute.setId(attributeName.getId());
                 attribute.setName(attributeName.getName());
+                attribute.setInputType(attributeName.getInputType());
                 List<AttributeValue> attributeValues = attributeValueMapper.selectList(new QueryWrapper<AttributeValue>().eq("attribute_name_id",attributeName.getId()));
                 for (AttributeValue attributeValue:attributeValues) {
                     StoreValue value = new StoreValue();

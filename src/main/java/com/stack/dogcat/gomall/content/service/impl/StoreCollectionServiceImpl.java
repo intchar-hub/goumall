@@ -11,6 +11,8 @@ import com.stack.dogcat.gomall.content.responseVo.ProductCollectionResponseVo;
 import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
 import com.stack.dogcat.gomall.content.service.IStoreCollectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.product.entity.Product;
+import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
 
     @Autowired
     StoreMapper storeMapper;
+
+    @Autowired
+    ProductMapper productMapper;
 
     @Override
     @Transactional
@@ -75,6 +80,18 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
             responseVo.setStoreName(store.getStoreName());
             responseVo.setAvatarPath(store.getAvatarPath());
             responseVo.setDescription(store.getDescription());
+            List<Product> productList = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",store.getId()));
+            List<String> imagePaths = new ArrayList<>();
+            for (Product product:productList) {
+                if(imagePaths.size()<3){
+                    imagePaths.add(product.getImagePath());
+                }
+                else break;
+            }
+            while (imagePaths.size()<3){
+                imagePaths.add("https://img1.baidu.com/it/u=429168432,2347606957&fm=26&fmt=auto&gp=0.jpg");
+            }
+            responseVo.setImagePaths(imagePaths);
             collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
