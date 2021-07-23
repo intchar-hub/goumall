@@ -1,13 +1,18 @@
 package com.stack.dogcat.gomall.order.service.impl;
 
 import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.config.AlipayConfig;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
 import com.stack.dogcat.gomall.order.controller.OrderController;
 import com.stack.dogcat.gomall.order.entity.Order;
@@ -33,6 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -48,7 +57,10 @@ import java.util.*;
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
-    //private static final Logger LOG = LoggerFactory.getLogger(LogAspect.class);
+    private static  Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    @Autowired
+    OrderServiceImpl orderService;
 
     @Autowired
     OrderMapper orderMapper;
@@ -154,6 +166,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderInfoResponseVo.setConsignee(order.getConsignee());
         orderInfoResponseVo.setReceiveAddress(order.getAddress());
         orderInfoResponseVo.setPhoneNumber(order.getPhoneNumber());
+        orderInfoResponseVo.setPrice(order.getPrice());
 
         Store store=storeMapper.selectById(order.getStoreId());
         if(store!=null) {
@@ -169,7 +182,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Sku sku = skuMapper.selectById(order.getSkuId());
         if(sku!=null){
             orderInfoResponseVo.setProductAttribute(sku.getProductAttribute());
-            orderInfoResponseVo.setPrice(sku.getPrice());
         }
 
         if(order.getCouponId()!=null){
@@ -227,7 +239,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         boolean signVerified = false;
         try {
             //调用SDK验证签名
-            String alipayPublicKey = AppConst.ALIPAY_PUBLIC_KEY;
+            String alipayPublicKey = AppConst.APP_ID;
             String charset = AppConst.CHARSET;
             String signType = AppConst.SIGN_TYPE;
 
@@ -245,7 +257,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 if (tradeStatus.equals("TRADE_SUCCESS") ||tradeStatus.equals("TRADE_FINISHED")) {
                     //获取支付宝通知完成充值后续业务
                     //交易成功 获取商户订单号
-                    String orderNumber = conversionParams.get("trade_no");
+                    String orderNumber = conversionParams.get("out_trade_no");
 
                     /**修改订单信息*/
                     QueryWrapper queryWrapper=new QueryWrapper();
@@ -257,6 +269,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     Product product=productMapper.selectById(order.getProductId());
                     product.setSalesNum(product.getSalesNum()+order.getProductNum());
                     productMapper.updateById(product);
+
+                    logger.info("order_payed->order_number:{},total_amount:{},",new Object[]{orderNumber, conversionParams.get("total_amount")});
 
                     return "success";
                 } else {
@@ -271,6 +285,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             e.printStackTrace();
         }
             return "fail";
+
+    }
+
+    @Override
+    public String payOrder (Integer orderId,HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+
+        Order order = orderMapper.selectById(orderId);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+
+        //获得初始化的 AlipayClient
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
+
+        try {
+            //（1）封装bizmodel信息
+            AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
+            AlipayTradeWapPayModel model = new AlipayTradeWapPayModel();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            model.setOutTradeNo(order.getOrderNumber());
+            model.setSubject(orderInfoResponseVo.getProductName());
+            model.setBody(orderInfoResponseVo.getProductName());
+            model.setProductCode("QUICK_WAP_WAY");
+            model.setSellerId("2088621956175664");
+            model.setTotalAmount(order.getTotalPrice().toString());
+            model.setTimeoutExpress("30m");
+            model.setQuitUrl("https://www.hao123.com/");
+            //（2）设置请求参数
+            //alipayRequest.setReturnUrl();
+            alipayRequest.setNotifyUrl("http://hqqjw9.natappfree.cc/order/order/payNotify");
+            alipayRequest.setReturnUrl("https://www.hao123.com/");
+            alipayRequest.setBizModel(model);
+            //（3）请求
+            String form = alipayClient.pageExecute(alipayRequest).getBody();
+            //System.out.println("*********************\n返回结果为：" + form);
+            /**httpResponse.setContentType( "text/html;charset=" + AppConst.CHARSET);
+            httpResponse.getWriter().write(form); //直接将完整的表单html输出到页面
+            httpResponse.getWriter().flush();
+            httpResponse.getWriter().close();*/
+            return form;
+        } catch (AlipayApiException /**| IOException*/ e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 

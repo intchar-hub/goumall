@@ -153,6 +153,13 @@ public class AttributeNameServiceImpl extends ServiceImpl<AttributeNameMapper, A
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("attribute_name_id", attributeNameId);
+        AttributeName attributeName=attributeNameMapper.selectOne(queryWrapper);
+
+        //属性集合中属性数量-1
+        AttributeCollection attributeCollection = attributeCollectionMapper.selectById(attributeName.getAttributeCollectionId());
+        attributeCollection.setAttributeNum(attributeCollection.getAttributeNum()-1);
+        attributeCollectionMapper.updateById(attributeCollection);
+
         attributeValueMapper.delete(queryWrapper);
 
     }

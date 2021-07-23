@@ -158,11 +158,14 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.alipay.sdk/alipay-sdk-java -->
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
-            <version>4.10.97.ALL</version>
+            <version>4.15.0.ALL</version>
         </dependency>
+
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
