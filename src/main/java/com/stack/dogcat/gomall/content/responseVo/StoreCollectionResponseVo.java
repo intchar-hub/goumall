@@ -2,6 +2,8 @@ package com.stack.dogcat.gomall.content.responseVo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class StoreCollectionResponseVo {
 
@@ -14,5 +16,7 @@ public class StoreCollectionResponseVo {
     private String avatarPath;
 
     private String description;
+
+    private List<String> imagePaths;
 
 }

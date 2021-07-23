@@ -1,11 +1,13 @@
 package com.stack.dogcat.gomall.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.message.entity.Comment;
 import com.stack.dogcat.gomall.message.entity.Reply;
 import com.stack.dogcat.gomall.message.mapper.CommentMapper;
 import com.stack.dogcat.gomall.message.mapper.ReplyMapper;
 import com.stack.dogcat.gomall.message.requestVo.CommentSaveRequestVo;
+import com.stack.dogcat.gomall.message.responseVo.CommentByStoreResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponse;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.ReplyResponse;
@@ -99,5 +101,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
 
         return commentResponseVos;
+    }
+
+    @Override
+    public PageResponseVo<CommentByStoreResponseVo> listCommentByStore(Integer storeId) {
+        return null;
     }
 }
