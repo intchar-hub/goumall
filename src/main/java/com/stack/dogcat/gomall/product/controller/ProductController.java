@@ -216,6 +216,21 @@ public class ProductController {
         return SysResult.success(responseVo);
     }
 
-
+    /**
+     * 按id查看商品
+     * @param id 商品id
+     * @return
+     */
+    @GetMapping("/getProductById")
+    public SysResult getProductById(Integer id) {
+        ProductQueryResponseVo responseVo = null;
+        try {
+            responseVo = productService.getProductById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("获取商品失败");
+        }
+        return SysResult.success(responseVo);
+    }
 
 }
