@@ -59,21 +59,22 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
     }
 
     @Override
-    public PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie) {
+    public PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSize) {
         QueryWrapper wrapper=new QueryWrapper();
         wrapper.eq("customer_id",customerId);
-        Page<StoreCollection> page =new Page<>(pageNum,pageSzie);
+        Page<StoreCollection> page =new Page<>(pageNum,pageSize);
         IPage<StoreCollection> collectionPage = storeCollectionMapper.selectPage(page,wrapper);
         //补充返回vo需要的内容
         List<StoreCollection> collections=collectionPage.getRecords();
         List<StoreCollectionResponseVo> collectionResponseVos = new ArrayList<>();
         for (StoreCollection storeCollection:collections) {
             StoreCollectionResponseVo responseVo= new StoreCollectionResponseVo();
+            Store store=storeMapper.selectById(storeCollection.getStoreId());
             responseVo.setStoreCollectionId(storeCollection.getId());
             responseVo.setStoreId(storeCollection.getStoreId());
-            responseVo.setStoreName(storeMapper.selectById(storeCollection.getStoreId()).getStoreName());
-            responseVo.setAvatarPath(storeMapper.selectById(storeCollection.getStoreId()).getAvatarPath());
-            responseVo.setDescription(storeMapper.selectById(storeCollection.getStoreId()).getDescription());
+            responseVo.setStoreName(store.getStoreName());
+            responseVo.setAvatarPath(store.getAvatarPath());
+            responseVo.setDescription(store.getDescription());
             collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo

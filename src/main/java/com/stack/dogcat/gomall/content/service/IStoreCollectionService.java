@@ -18,7 +18,7 @@ import java.util.List;
 public interface IStoreCollectionService extends IService<StoreCollection> {
 
     void saveStoreCollection(Integer customerId,Integer storeId);
-    PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSzie);
+    PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSize);
     void deleteStoreCollection(Integer storeCollectionId);
     void switchStoreCollection (Integer customerId, Integer storeId,Integer status);
 }
