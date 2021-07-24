@@ -520,7 +520,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             queryWrapper = new QueryWrapper();
             queryWrapper.eq("product_id", id);
             queryWrapper.gt("deadline", now);
-            salesPromotionMapper.selectList(queryWrapper);
+            salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
             salesPromotionQueryResponseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
         }
 //        if(salesPromotionsDB == null || salesPromotionsDB.size() != 1) {
