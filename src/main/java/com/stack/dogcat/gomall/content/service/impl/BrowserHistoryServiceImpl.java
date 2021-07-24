@@ -90,7 +90,9 @@ public class BrowserHistoryServiceImpl extends ServiceImpl<BrowserHistoryMapper,
             record.setProductId(browserHistory.getProductId());
             record.setProductName(productName);
             record.setGmtCreate(browserHistory.getGmtCreate());
-
+            record.setImagePath(product.getImagePath());
+            record.setHighestPrice(product.getHighestPrice());
+            record.setLowestPrice(product.getLowestPrice());
             records.add(record);
         }
         responseVos.setData(records);
