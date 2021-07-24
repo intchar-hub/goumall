@@ -1,13 +1,15 @@
 package com.stack.dogcat.gomall.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.message.entity.Comment;
 import com.stack.dogcat.gomall.message.entity.Reply;
 import com.stack.dogcat.gomall.message.mapper.CommentMapper;
 import com.stack.dogcat.gomall.message.mapper.ReplyMapper;
 import com.stack.dogcat.gomall.message.requestVo.CommentSaveRequestVo;
-import com.stack.dogcat.gomall.message.responseVo.CommentByStoreResponseVo;
+import com.stack.dogcat.gomall.message.responseVo.CommentQueryByStoreResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponse;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.ReplyResponse;
@@ -104,7 +106,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public PageResponseVo<CommentByStoreResponseVo> listCommentByStore(Integer storeId) {
-        return null;
+    public PageResponseVo<CommentQueryByStoreResponseVo> listCommentByStore(Integer storeId, Integer pageNum, Integer pageSize) {
+        Page<Product> page = new Page<>(pageNum,pageSize);
+        IPage<Product> productPage = productMapper.selectPage(page,new QueryWrapper<Product>().eq("store_id",storeId));
+        List<Product> products=productPage.getRecords();
+        List<CommentQueryByStoreResponseVo> responseVos = new ArrayList<>();
+        for (Product product:products) {
+            CommentQueryByStoreResponseVo responseVo = new CommentQueryByStoreResponseVo();
+            responseVo.setProductId(product.getId());
+            responseVo.setProductName(product.getName());
+            responseVo.setImagePath(product.getImagePath());
+            responseVo.setGmtCreate(product.getGmtCreate());
+            responseVo.setComments(this.listCommentByProduct(product.getId()));
+            responseVos.add(responseVo);
+        }
+        PageResponseVo<CommentQueryByStoreResponseVo> responseVoPage = new PageResponseVo(productPage);
+        responseVoPage.setData(responseVos);
+        return responseVoPage;
     }
 }

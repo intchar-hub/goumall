@@ -2,10 +2,12 @@ package com.stack.dogcat.gomall.message.controller;
 
 
 import com.stack.dogcat.gomall.annotation.Token;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.content.controller.StoreCollectionController;
 import com.stack.dogcat.gomall.message.requestVo.CommentSaveRequestVo;
 import com.stack.dogcat.gomall.message.requestVo.ReplySaveRequestVo;
+import com.stack.dogcat.gomall.message.responseVo.CommentQueryByStoreResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
 import com.stack.dogcat.gomall.message.service.ICommentService;
 import org.slf4j.Logger;
@@ -58,6 +60,21 @@ public class CommentController {
     public  SysResult listCommentByProduct(Integer productId){
         try{
             List<CommentResponseVo> responseVos = commentService.listCommentByProduct(productId);
+            return SysResult.success(responseVos);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 商家查看所有评论和回复
+     */
+    @GetMapping("/listCommentByStore")
+    public  SysResult listCommentByStore(Integer storeId, Integer pageNum, Integer pageSize){
+        try{
+            PageResponseVo<CommentQueryByStoreResponseVo> responseVos = commentService.listCommentByStore(storeId,pageNum,pageSize);
             return SysResult.success(responseVos);
         }
         catch (Exception e){

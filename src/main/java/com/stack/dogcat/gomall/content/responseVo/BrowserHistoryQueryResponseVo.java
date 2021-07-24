@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.content.responseVo;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -17,6 +18,19 @@ public class BrowserHistoryQueryResponseVo {
 
     private LocalDateTime gmtCreate;
 
+    private String imagePath;
+
+    /**
+     * 商品最高价格（规格不同，价格不同）
+     */
+    private BigDecimal highestPrice;
+
+
+    /**
+     * 商品最低价格（规格不同，价格不同）
+     */
+    private BigDecimal lowestPrice;
+
     @Override
     public String toString() {
         return "BrowserHistoryQueryResponseVo{" +
@@ -24,7 +38,34 @@ public class BrowserHistoryQueryResponseVo {
                 ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", gmtCreate=" + gmtCreate +
+                ", imagePath='" + imagePath + '\'' +
+                ", highestPrice=" + highestPrice +
+                ", lowestPrice=" + lowestPrice +
                 '}';
+    }
+
+    public BigDecimal getHighestPrice() {
+        return highestPrice;
+    }
+
+    public void setHighestPrice(BigDecimal highestPrice) {
+        this.highestPrice = highestPrice;
+    }
+
+    public BigDecimal getLowestPrice() {
+        return lowestPrice;
+    }
+
+    public void setLowestPrice(BigDecimal lowestPrice) {
+        this.lowestPrice = lowestPrice;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getImagePath() {
+        return imagePath;
     }
 
     public LocalDateTime getGmtCreate() {
