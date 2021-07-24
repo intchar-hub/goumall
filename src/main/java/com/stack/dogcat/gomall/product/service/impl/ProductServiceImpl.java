@@ -514,20 +514,24 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<Coupon> couponsDB = couponMapper.selectList(queryWrapper);
         List<CouponInfoResponseVo> couponInfoResponseVos = CopyUtil.copyList(couponsDB, CouponInfoResponseVo.class);
 
-        queryWrapper = new QueryWrapper();
-        queryWrapper.eq("product_id", id);
-        queryWrapper.gt("deadline", now);
-        List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
-        if(salesPromotionsDB == null || salesPromotionsDB.size() != 1) {
-            LOG.error("促销活动有误");
-            throw new RuntimeException();
+        List<SalesPromotion> salesPromotionsDB = new ArrayList<>();
+        List<SalesPromotionQueryResponseVo> salesPromotionQueryResponseVos = new ArrayList<>();
+        if(productDB.getIsOnsale() == 1) {
+            queryWrapper = new QueryWrapper();
+            queryWrapper.eq("product_id", id);
+            queryWrapper.gt("deadline", now);
+            salesPromotionMapper.selectList(queryWrapper);
+            salesPromotionQueryResponseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
         }
-        SalesPromotionQueryResponseVo salesPromotionQueryResponseVo = CopyUtil.copy(salesPromotionsDB.get(0), SalesPromotionQueryResponseVo.class);
+//        if(salesPromotionsDB == null || salesPromotionsDB.size() != 1) {
+//            LOG.error("促销活动有误");
+//            throw new RuntimeException();
+//        }
 
         responseVo.setProduct(product);
         responseVo.setStore(store);
         responseVo.setCoupons(couponInfoResponseVos);
-        responseVo.setSale(salesPromotionQueryResponseVo);
+        responseVo.setSales(salesPromotionQueryResponseVos);
 
         return responseVo;
     }
