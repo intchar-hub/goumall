@@ -208,7 +208,7 @@ public class ProductController {
         ProductWithStoreQueryResponseVo responseVo = null;
         try {
             responseVo = productService.getProductWithStoreById(id);
-            logger.info("click_pro->current_customer.id:{},click_pro.id:{},",new Object[]{customerId.toString(),id.toString()});
+//            logger.info("click_pro->current_customer.id:{},click_pro.id:{},",new Object[]{customerId.toString(),id.toString()});
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("获取商品及店铺失败");
