@@ -52,9 +52,13 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
     }
 
     @Override
-    public void updateReceiveAddressById(ReceiveAddress receiveAddress) {
+    public void updateReceiveAddressById(Integer receiveAddressId,ReceiveAddress receiveAddress) {
 
-        receiveAddressMapper.updateById(receiveAddress);
+        ReceiveAddress receiveAddress1 = receiveAddressMapper.selectById(receiveAddressId);
+        if(receiveAddress.getConsignee()!=null){receiveAddress1.setConsignee(receiveAddress.getConsignee());}
+        if(receiveAddress.getPhoneNumber()!=null){receiveAddress1.setPhoneNumber(receiveAddress.getPhoneNumber());}
+        if(receiveAddress.getAddress()!=null){receiveAddress1.setAddress(receiveAddress.getAddress());}
+        receiveAddressMapper.updateById(receiveAddress1);
 
     }
 
@@ -81,19 +85,26 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
 
     @Override
     @Transactional
-    public void updateDefaultAddressById(Integer customerId,Integer receiveAddressId){
+    public void updateDefaultAddressById(Integer customerId,Integer receiveAddressId,Integer defaultAddress){
 
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("customer_id",customerId);
-        queryWrapper.eq("default_address",1);
+        if(defaultAddress==0){
+            ReceiveAddress receiveAddress =receiveAddressMapper.selectById(receiveAddressId);
+            receiveAddress.setDefaultAddress(0);
+            receiveAddressMapper.updateById(receiveAddress);
+        }
+        else if(defaultAddress==1) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("customer_id", customerId);
+            queryWrapper.eq("default_address", 1);
 
-        ReceiveAddress old_default_address=receiveAddressMapper.selectOne(queryWrapper);
-        old_default_address.setDefaultAddress(0);
-        receiveAddressMapper.updateById(old_default_address);
+            ReceiveAddress old_default_address = receiveAddressMapper.selectOne(queryWrapper);
+            old_default_address.setDefaultAddress(0);
+            receiveAddressMapper.updateById(old_default_address);
 
-        ReceiveAddress receiveAddress=receiveAddressMapper.selectById(receiveAddressId);
-        receiveAddress.setDefaultAddress(1);
-        receiveAddressMapper.updateById(receiveAddress);
+            ReceiveAddress receiveAddress = receiveAddressMapper.selectById(receiveAddressId);
+            receiveAddress.setDefaultAddress(1);
+            receiveAddressMapper.updateById(receiveAddress);
+        }
 
 
     }
