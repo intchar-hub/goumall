@@ -20,7 +20,7 @@ public interface IReceiveAddressService extends IService<ReceiveAddress> {
     void insertReceiveAddressByCustomerId(Integer customerId,String consignee,String address,String phoneNumber);
 
     //修改收货地址
-    void updateReceiveAddressById(ReceiveAddress receiveAddress);
+    void updateReceiveAddressById(Integer receiveAddressId,ReceiveAddress receiveAddress);
 
     //用id查询收货地址
     ReceiveAddress queryReceiveAddressByReceiveAddressId(Integer receiveAddressId);
@@ -30,4 +30,7 @@ public interface IReceiveAddressService extends IService<ReceiveAddress> {
 
     //根据ReceiveAddressId删除收货地址
     void deleteReceiveAddressById(Integer receiveAddressId);
+
+    //设置默认地址
+    void updateDefaultAddressById(Integer customerId,Integer receiveAddressId,Integer defaultAddress);
 }

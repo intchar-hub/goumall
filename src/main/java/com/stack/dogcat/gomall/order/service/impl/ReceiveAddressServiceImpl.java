@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
         receiveAddress.setAddress(address);
         receiveAddress.setPhoneNumber(phoneNumber);
 
-        QueryWrapper<ReceiveAddress> wrapper = new QueryWrapper<ReceiveAddress>();
-        wrapper.eq("customer_id", customerId);
-        ReceiveAddress receiveAddress1=null;
-        receiveAddress1 = receiveAddressMapper.selectOne(wrapper);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("customer_id", customerId);
+        List<ReceiveAddress> receiveAddress1=null;
+        receiveAddress1 = receiveAddressMapper.selectList(queryWrapper);
         if(receiveAddress1==null){
             //无收货地址
             receiveAddress.setDefaultAddress(1);
@@ -51,9 +52,13 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
     }
 
     @Override
-    public void updateReceiveAddressById(ReceiveAddress receiveAddress) {
+    public void updateReceiveAddressById(Integer receiveAddressId,ReceiveAddress receiveAddress) {
 
-        receiveAddressMapper.updateById(receiveAddress);
+        ReceiveAddress receiveAddress1 = receiveAddressMapper.selectById(receiveAddressId);
+        if(receiveAddress.getConsignee()!=null){receiveAddress1.setConsignee(receiveAddress.getConsignee());}
+        if(receiveAddress.getPhoneNumber()!=null){receiveAddress1.setPhoneNumber(receiveAddress.getPhoneNumber());}
+        if(receiveAddress.getAddress()!=null){receiveAddress1.setAddress(receiveAddress.getAddress());}
+        receiveAddressMapper.updateById(receiveAddress1);
 
     }
 
@@ -76,5 +81,31 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
     @Override
     public void deleteReceiveAddressById(Integer receiveAddressId){
         receiveAddressMapper.deleteById(receiveAddressId);
+    }
+
+    @Override
+    @Transactional
+    public void updateDefaultAddressById(Integer customerId,Integer receiveAddressId,Integer defaultAddress){
+
+        if(defaultAddress==0){
+            ReceiveAddress receiveAddress =receiveAddressMapper.selectById(receiveAddressId);
+            receiveAddress.setDefaultAddress(0);
+            receiveAddressMapper.updateById(receiveAddress);
+        }
+        else if(defaultAddress==1) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("customer_id", customerId);
+            queryWrapper.eq("default_address", 1);
+
+            ReceiveAddress old_default_address = receiveAddressMapper.selectOne(queryWrapper);
+            old_default_address.setDefaultAddress(0);
+            receiveAddressMapper.updateById(old_default_address);
+
+            ReceiveAddress receiveAddress = receiveAddressMapper.selectById(receiveAddressId);
+            receiveAddress.setDefaultAddress(1);
+            receiveAddressMapper.updateById(receiveAddress);
+        }
+
+
     }
 }
