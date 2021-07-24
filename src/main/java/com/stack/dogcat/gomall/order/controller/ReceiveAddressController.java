@@ -57,36 +57,24 @@ public class ReceiveAddressController {
 
     /**
      * 用户修改收货地址
-     * @param current_customer
      * @param receiveAddressId
      * @param address
-     * @param defaultAddress
      * @param phoneNumber
      * @return
      */
     @PostMapping("/updateReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult updateReceiveAddress(@CurrentUser Customer current_customer,Integer receiveAddressId,String consignee,String address,String phoneNumber,Integer defaultAddress){
+    public SysResult updateReceiveAddress(Integer receiveAddressId,String consignee,String address,String phoneNumber){
 
         try{
             ReceiveAddress receiveAddress=receiveAddressService.queryReceiveAddressByReceiveAddressId(receiveAddressId);
-            if(consignee!=null){
-                receiveAddress.setConsignee(consignee);
-            }
-            if(address!=null){
-                receiveAddress.setAddress(address);
-            }
-            if(phoneNumber!=null){
-                receiveAddress.setPhoneNumber(phoneNumber);
-            }
-            if(defaultAddress==0){
-                receiveAddress.setDefaultAddress(defaultAddress);
-            }
-            if(defaultAddress==1){
-                receiveAddressService.updateDefaultAddressById(current_customer.getId(),receiveAddressId);
-            }
-            receiveAddressService.updateReceiveAddressById(receiveAddress);
+
+            receiveAddress.setConsignee(consignee);
+            receiveAddress.setAddress(address);
+            receiveAddress.setPhoneNumber(phoneNumber);
+
+            receiveAddressService.updateReceiveAddressById(receiveAddressId,receiveAddress);
             SysResult result =SysResult.success();
             return result;
         }catch (Exception e){
@@ -95,6 +83,28 @@ public class ReceiveAddressController {
         }
     }
 
+    /**
+     * 用户修改收货地址
+     * @param current_customer
+     * @param receiveAddressId
+     * @param defaultAddress
+     * @return
+     */
+    @PostMapping("/updateDefaultAddressById")
+    @ResponseBody
+    @Token.UserLoginToken
+    public SysResult updateDefaultAddressById(@CurrentUser Customer current_customer,Integer receiveAddressId,Integer defaultAddress){
+
+        try{
+            receiveAddressService.updateDefaultAddressById(current_customer.getId(),receiveAddressId,defaultAddress);
+
+            SysResult result =SysResult.success();
+            return result;
+        }catch (Exception e){
+            SysResult result =SysResult.error(e.getMessage());
+            return result;
+        }
+    }
 
     /**
      * 用户查询收货地址
