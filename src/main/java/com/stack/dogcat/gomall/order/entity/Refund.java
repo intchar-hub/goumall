@@ -34,12 +34,17 @@ public class Refund implements Serializable {
     private Integer orderId;
 
     /**
+     * 商家id
+     */
+    private Integer storeId;
+
+    /**
      * 退货原因
      */
     private String reason;
 
     /**
-     * 退款状态，0->未退款；1->已退款；2->商家不同意退款
+     * 退款状态，0->未退款；1->已退款；2->商家不同意退款；3->消费者已取消
      */
     private Integer status;
 

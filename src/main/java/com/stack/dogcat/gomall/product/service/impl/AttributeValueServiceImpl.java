@@ -24,7 +24,7 @@ public class AttributeValueServiceImpl extends ServiceImpl<AttributeValueMapper,
     AttributeValueMapper attributeValueMapper;
 
     @Override
-    public void saveAttributeValue(Integer attributeNameId, String value) {
+    public Integer saveAttributeValue(Integer attributeNameId, String value) {
         AttributeValue attributeValue=new AttributeValue();
         attributeValue.setAttributeNameId(attributeNameId);
         attributeValue.setValue(value);
@@ -33,6 +33,7 @@ public class AttributeValueServiceImpl extends ServiceImpl<AttributeValueMapper,
         if(i==0){
             throw new RuntimeException("新建属性失败");
         }
+        return attributeValue.getId();
     }
 
     @Override

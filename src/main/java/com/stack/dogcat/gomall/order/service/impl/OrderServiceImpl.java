@@ -174,6 +174,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderInfoResponseVo.setReceiveAddress(order.getAddress());
         orderInfoResponseVo.setPhoneNumber(order.getPhoneNumber());
         orderInfoResponseVo.setPrice(order.getPrice());
+        orderInfoResponseVo.setRefundStatus(order.getRefundStatus());
 
         Store store=storeMapper.selectById(order.getStoreId());
         if(store!=null) {

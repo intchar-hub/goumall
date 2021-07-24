@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IAttributeValueService extends IService<AttributeValue> {
 
-    void saveAttributeValue(Integer attributeNameId, String value);
+    Integer saveAttributeValue(Integer attributeNameId, String value);
     void deleteAttributeValueById(Integer attributeValueId);
 
 }
