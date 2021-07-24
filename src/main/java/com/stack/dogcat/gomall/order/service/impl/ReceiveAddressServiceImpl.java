@@ -35,10 +35,10 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
         receiveAddress.setAddress(address);
         receiveAddress.setPhoneNumber(phoneNumber);
 
-        QueryWrapper<ReceiveAddress> wrapper = new QueryWrapper<ReceiveAddress>();
-        wrapper.eq("customer_id", customerId);
-        ReceiveAddress receiveAddress1=null;
-        receiveAddress1 = receiveAddressMapper.selectOne(wrapper);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("customer_id", customerId);
+        ReceiveAddress receiveAddress1;
+        receiveAddress1 = receiveAddressMapper.selectOne(queryWrapper);
         if(receiveAddress1==null){
             //无收货地址
             receiveAddress.setDefaultAddress(1);
