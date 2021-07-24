@@ -57,6 +57,7 @@ public class ReceiveAddressController {
 
     /**
      * 用户修改收货地址
+     * @param current_customer
      * @param receiveAddressId
      * @param address
      * @param defaultAddress
@@ -66,7 +67,7 @@ public class ReceiveAddressController {
     @PostMapping("/updateReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult updateReceiveAddress(Integer receiveAddressId,String consignee,String address,String phoneNumber,Integer defaultAddress){
+    public SysResult updateReceiveAddress(@CurrentUser Customer current_customer,Integer receiveAddressId,String consignee,String address,String phoneNumber,Integer defaultAddress){
 
         try{
             ReceiveAddress receiveAddress=receiveAddressService.queryReceiveAddressByReceiveAddressId(receiveAddressId);
@@ -79,8 +80,11 @@ public class ReceiveAddressController {
             if(phoneNumber!=null){
                 receiveAddress.setPhoneNumber(phoneNumber);
             }
-            if(defaultAddress!=null){
+            if(defaultAddress==0){
                 receiveAddress.setDefaultAddress(defaultAddress);
+            }
+            if(defaultAddress==1){
+                receiveAddressService.updateDefaultAddressById(current_customer.getId(),receiveAddressId);
             }
             receiveAddressService.updateReceiveAddressById(receiveAddress);
             SysResult result =SysResult.success();
