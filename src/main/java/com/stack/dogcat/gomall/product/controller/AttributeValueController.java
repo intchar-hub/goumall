@@ -27,8 +27,8 @@ public class AttributeValueController {
     @PostMapping("/saveAttributeValue")
     public SysResult saveAttributeValue(Integer attributeNameId,String value){
         try{
-            attributeValueService.saveAttributeValue(attributeNameId,value);
-            return SysResult.success();
+            Integer id = attributeValueService.saveAttributeValue(attributeNameId,value);
+            return SysResult.success(id);
         }
         catch (Exception e){
             e.printStackTrace();
