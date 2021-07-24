@@ -5,7 +5,7 @@ import com.stack.dogcat.gomall.message.entity.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.message.requestVo.CommentSaveRequestVo;
 import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
-import com.stack.dogcat.gomall.message.responseVo.CommentByStoreResponseVo;
+import com.stack.dogcat.gomall.message.responseVo.CommentQueryByStoreResponseVo;
 
 import java.util.List;
 
@@ -21,5 +21,5 @@ public interface ICommentService extends IService<Comment> {
 
     void saveComment(CommentSaveRequestVo commentSaveRequestVo);
     List<CommentResponseVo> listCommentByProduct(Integer productId);
-    PageResponseVo<CommentByStoreResponseVo> listCommentByStore(Integer storeId);
+    PageResponseVo<CommentQueryByStoreResponseVo> listCommentByStore(Integer storeId, Integer pageNum, Integer pageSize);
 }
