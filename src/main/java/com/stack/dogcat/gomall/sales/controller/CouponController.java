@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.sales.controller;
 
 
+import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.sales.requestVo.CouponSaveRequestVo;
@@ -62,6 +63,7 @@ public class CouponController {
      * 顾客查看所有优惠券
      */
     @GetMapping("/listCoupon")
+    @Token.UserLoginToken
     public SysResult listCoupon(Integer  customerId,Integer screenCondition, Integer pageNum, Integer pageSize){
         try{
             PageResponseVo<CouponInfoResponseVo> responseVos=couponService.listCoupon(customerId,screenCondition,pageNum,pageSize);
