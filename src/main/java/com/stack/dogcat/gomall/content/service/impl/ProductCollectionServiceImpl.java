@@ -112,4 +112,16 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
             }
         }
     }
+
+    @Override
+    public int checkProductCollection(Integer customerId, Integer productId) {
+        //返回1代表已收藏，返回0代表未收藏
+        ProductCollection productCollection = productCollectionMapper.selectOne(new QueryWrapper<ProductCollection>().eq("customer_id",customerId).eq("product_id",productId).eq("status",1));
+        if(productCollection==null){
+            return 0;
+        }
+        else{
+            return 1;
+        }
+    }
 }

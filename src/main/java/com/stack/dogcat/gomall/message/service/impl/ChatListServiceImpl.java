@@ -49,7 +49,12 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
      */
     @Override
     public List<CustomerChatListResponseVo> getCustomerChatList(Integer customerId) {
-        List<ChatList> chatLists = chatListMapper.selectList(new QueryWrapper<ChatList>().eq("customer_id",customerId).eq("sender_type",0));
+        List<ChatUserLink> chatUserLinks=chatUserLinkMapper.selectList(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId));
+        List<ChatList> chatLists = new ArrayList<>();
+        for (ChatUserLink chatUserLink:chatUserLinks) {
+            ChatList chatList = chatListMapper.selectOne(new QueryWrapper<ChatList>().eq("chat_user_link_id",chatUserLink.getId()).eq("sender_type",0));
+            chatLists.add(chatList);
+        }
         List<CustomerChatListResponseVo> responseVos = new ArrayList<>();
         for (ChatList chatList:chatLists) {
             CustomerChatListResponseVo responseVo = new CustomerChatListResponseVo();
@@ -71,7 +76,12 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
      */
     @Override
     public List<StoreChatListResponseVo> getStoreChatList(Integer storeId) {
-        List<ChatList> chatLists = chatListMapper.selectList(new QueryWrapper<ChatList>().eq("store_id",storeId).eq("sender_type",1));
+        List<ChatUserLink> chatUserLinks=chatUserLinkMapper.selectList(new QueryWrapper<ChatUserLink>().eq("store_id",storeId));
+        List<ChatList> chatLists = new ArrayList<>();
+        for (ChatUserLink chatUserLink:chatUserLinks) {
+            ChatList chatList = chatListMapper.selectOne(new QueryWrapper<ChatList>().eq("chat_user_link_id",chatUserLink.getId()).eq("sender_type",1));
+            chatLists.add(chatList);
+        }
         List<StoreChatListResponseVo> responseVos = new ArrayList<>();
         for (ChatList chatList:chatLists) {
             StoreChatListResponseVo responseVo = new StoreChatListResponseVo();
