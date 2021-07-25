@@ -86,6 +86,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             if(customer==null){
                 throw new RuntimeException("找不到评论的顾客");
             }
+            commentResponse.setCommentId(comment.getId());
             commentResponse.setCustomerName(customer.getUserName());
             commentResponse.setAvatarPath(customer.getAvatorPath());
             commentResponse.setContent(comment.getContent());
@@ -95,9 +96,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
             ReplyResponse replyResponseVo =new ReplyResponse();
             Reply reply = replyMapper.selectOne(new QueryWrapper<Reply>().eq("comment_id",comment.getId()));
-            replyResponseVo.setContent(reply.getContent());
-            replyResponseVo.setGmtCreate(reply.getGmtCreate());
-            commentResponseVo.setStore(replyResponseVo);
+            if(reply!=null){
+                replyResponseVo.setContent(reply.getContent());
+                replyResponseVo.setGmtCreate(reply.getGmtCreate());
+                commentResponseVo.setStore(replyResponseVo);
+            }
+            else{
+                commentResponseVo.setStore(replyResponseVo);
+            }
 
             commentResponseVos.add(commentResponseVo);
         }

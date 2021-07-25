@@ -162,9 +162,21 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
                 store.setFansNum(store.getFansNum()-1);
                 i = storeMapper.updateById(store);
                 if(i==0){
-                    throw new RuntimeException("收藏失败");
+                    throw new RuntimeException("取消收藏失败");
                 }
             }
+        }
+    }
+
+    @Override
+    public int checkStoreCollection(Integer customerId, Integer storeId) {
+        //返回1代表已收藏，返回0代表未收藏
+        StoreCollection storeCollection = storeCollectionMapper.selectOne(new QueryWrapper<StoreCollection>().eq("customer_id",customerId).eq("store_id",storeId).eq("status",1));
+        if(storeCollection==null){
+            return 0;
+        }
+        else{
+            return 1;
         }
     }
 }
