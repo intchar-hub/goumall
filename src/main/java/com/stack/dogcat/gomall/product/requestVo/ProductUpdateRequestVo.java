@@ -25,7 +25,7 @@ public class ProductUpdateRequestVo {
     @NotEmpty(message = "商品图片不能为空")
     private String imagePath;
 
-    @NotEmpty(message = "商品规格不能为空")
+//    @NotEmpty(message = "商品规格不能为空")
     private String skusString;
 
     @Override
