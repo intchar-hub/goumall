@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.content.controller;
 
 
+import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.content.responseVo.StoreCollectionResponseVo;
@@ -10,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,6 +35,7 @@ public class StoreCollectionController {
     IStoreCollectionService storeCollectionService;
 
     @PostMapping("/saveStoreCollection")
+    @Token.UserLoginToken
     public SysResult saveStoreCollection(Integer customerId, Integer storeId){
         SysResult result=null;
         try{
@@ -46,6 +50,7 @@ public class StoreCollectionController {
     }
 
     @GetMapping("/listStoreCollection")
+    @Token.UserLoginToken
     public SysResult listStoreCollection(Integer customerId,Integer pageNum,Integer pageSize){
         PageResponseVo<StoreCollectionResponseVo> responseVos=null;
         try{
@@ -59,6 +64,7 @@ public class StoreCollectionController {
     }
 
     @DeleteMapping("/deleteStoreCollection")
+    @Token.UserLoginToken
     public SysResult deleteStoreCollection(Integer storeCollectionId){
         try{
             storeCollectionService.deleteStoreCollection(storeCollectionId);
@@ -71,6 +77,7 @@ public class StoreCollectionController {
     }
 
     @PostMapping("/switchStoreCollection")
+    @Token.UserLoginToken
     public SysResult switchStoreCollection(Integer customerId,Integer storeId,Integer status){
         try{
             storeCollectionService.switchStoreCollection(customerId,storeId,status);
@@ -80,6 +87,21 @@ public class StoreCollectionController {
             return SysResult.error(e.getMessage());
         }
         return SysResult.success();
+    }
+
+    @GetMapping("/checkStoreCollection")
+    @Token.UserLoginToken
+    public SysResult checkStoreCollection(Integer customerId, Integer storeId){
+        try{
+            int i = storeCollectionService.checkStoreCollection(customerId,storeId);
+            Map<String,Integer> map = new HashMap<>();
+            map.put("isCollected",i);
+            return SysResult.success(map);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
     }
 
 }

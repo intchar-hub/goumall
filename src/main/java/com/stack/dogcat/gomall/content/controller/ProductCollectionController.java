@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -87,5 +89,21 @@ public class ProductCollectionController {
         }
         return SysResult.success();
     }
+
+    @GetMapping("/checkProductCollection")
+    @Token.UserLoginToken
+    public SysResult checkProductCollection(Integer customerId, Integer productId){
+        try{
+            int i = productCollectionService.checkProductCollection(customerId,productId);
+            Map<String,Integer> map = new HashMap<>();
+            map.put("isCollected",i);
+            return SysResult.success(map);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error(e.getMessage());
+        }
+    }
+
 
 }

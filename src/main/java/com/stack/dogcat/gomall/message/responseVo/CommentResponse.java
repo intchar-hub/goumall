@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Data
 public class CommentResponse {
 
+    private Integer commentId;
+
     private String customerName;
 
     private String avatarPath;

@@ -22,4 +22,5 @@ public interface IProductCollectionService extends IService<ProductCollection> {
     PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie);
     void deleteProductCollection(Integer productCollectionId);
     void switchProductCollection (Integer customerId, Integer productId,Integer status);
+    int checkProductCollection(Integer customerId,Integer productId);
 }

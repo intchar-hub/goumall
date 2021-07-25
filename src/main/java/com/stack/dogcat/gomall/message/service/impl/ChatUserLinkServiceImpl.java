@@ -59,15 +59,17 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
             chatUserLink.setGmtCreate(LocalDateTime.now());
             chatUserLinkMapper.insert(chatUserLink);
 
+            chatUserLink = chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId));
+
             //添加两条聊天列表数据（商家，消费者）
             ChatList storeChatList = new ChatList();
             ChatList customerChatList = new ChatList();
-            storeChatList.setChatUserLinkId(linkId);
+            storeChatList.setChatUserLinkId(chatUserLink.getId());
             storeChatList.setSenderType(1);
             storeChatList.setUnreadNum(0);
             storeChatList.setCustomerWindow(0);
             storeChatList.setStoreWindow(0);
-            customerChatList.setChatUserLinkId(linkId);
+            customerChatList.setChatUserLinkId(chatUserLink.getId());
             customerChatList.setSenderType(0);
             customerChatList.setUnreadNum(0);
             customerChatList.setCustomerWindow(0);
@@ -76,13 +78,20 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
             chatListMapper.insert(customerChatList);
 
             //插入一条空白消息（为了更好地联表查询数据）
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setChatUserLinkId(linkId);
-            chatMessage.setContent("");
-            chatMessage.setSenderType(0);
-            chatMessage.setGmtCreate(LocalDateTime.now());
-            chatMessage.setLatest(1);
-            chatMessageMapper.insert(chatMessage);
+            ChatMessage customerChatMessage = new ChatMessage();
+            customerChatMessage.setChatUserLinkId(chatUserLink.getId());
+            customerChatMessage.setContent("");
+            customerChatMessage.setSenderType(0);
+            customerChatMessage.setGmtCreate(LocalDateTime.now());
+            customerChatMessage.setLatest(1);
+            chatMessageMapper.insert(customerChatMessage);
+            ChatMessage storeChatMessage = new ChatMessage();
+            storeChatMessage.setChatUserLinkId(chatUserLink.getId());
+            storeChatMessage.setContent("");
+            storeChatMessage.setSenderType(0);
+            storeChatMessage.setGmtCreate(LocalDateTime.now());
+            storeChatMessage.setLatest(1);
+            chatMessageMapper.insert(storeChatMessage);
 
             return chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId)).getId();
         }
