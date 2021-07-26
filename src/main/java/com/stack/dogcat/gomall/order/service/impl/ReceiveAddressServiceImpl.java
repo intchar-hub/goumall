@@ -40,7 +40,8 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
         queryWrapper.eq("customer_id", customerId);
         List<ReceiveAddress> receiveAddress1=null;
         receiveAddress1 = receiveAddressMapper.selectList(queryWrapper);
-        if(receiveAddress1==null){
+        System.out.println(receiveAddress1);
+        if(receiveAddress1.isEmpty()){
             //无收货地址
             receiveAddress.setDefaultAddress(1);
             receiveAddressMapper.insert(receiveAddress);
