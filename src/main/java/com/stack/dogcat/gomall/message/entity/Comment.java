@@ -48,6 +48,11 @@ public class Comment implements Serializable {
     private Integer productId;
 
     /**
+     * 订单id
+     */
+    private Integer orderId;
+
+    /**
      * 商品评论
      */
     private String content;
