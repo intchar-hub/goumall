@@ -170,11 +170,21 @@ public class OrderController {
     @PostMapping("/payOrder")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult payOrder (Integer orderId,HttpServletResponse servletResponse){
+    public SysResult payOrder (Integer orderId,HttpServletResponse servletResponse,Integer option){
 
-        String msg;
+        String msg="";
         try{
-           msg=orderService.payOrder(orderId,servletResponse);
+            switch (option){
+                case 0:
+                    msg=orderService.payOrder(orderId,servletResponse);
+                    break;
+                case 1:
+                    msg =orderService.payOrderByApp(orderId);
+                    break;
+                case 2:
+                    msg =orderService.payOrderByWap(orderId);
+
+            }
 
         } catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
@@ -256,7 +266,7 @@ public class OrderController {
     @ResponseBody
     public SysResult listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate){
 
-        PageResponseVo<Order> orderPage;
+        PageResponseVo<OrderInfoResponseVo> orderPage;
         try{
             orderPage=orderService.listOrdersByScreenConditions(storeId,pageNum,pageSize,orderNumber,status,gmtCreate);
 
