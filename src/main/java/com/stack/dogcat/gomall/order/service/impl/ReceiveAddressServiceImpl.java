@@ -70,11 +70,11 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
     }
 
     @Override
-    public List<ReceiveAddressQueryResponseVo> queryReceiveAddressByCustomerId(Integer customerId){
+    public List<ReceiveAddress> queryReceiveAddressByCustomerId(Integer customerId){
 
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("customer_id", customerId);
-        List<ReceiveAddressQueryResponseVo>receiveAddress_list =receiveAddressMapper.selectList(queryWrapper);
+        List<ReceiveAddress>receiveAddress_list =receiveAddressMapper.selectList(queryWrapper);
         return  receiveAddress_list;
     }
 
