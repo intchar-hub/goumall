@@ -62,4 +62,20 @@ public class ProductTypeController {
         return SysResult.success(responseVos);
     }
 
+    /**
+     * 根据子分类查询父分类
+     * @param typeId
+     * @return
+     */
+    @GetMapping("/getParentTypeId")
+    public SysResult getParentTypeId(Integer typeId) {
+        Integer parentId = 0;
+        try {
+            parentId = productTypeService.getParentTypeId(typeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("分类获取失败");
+        }
+        return SysResult.success(parentId);
+    }
 }

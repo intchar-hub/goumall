@@ -21,6 +21,12 @@ public class CommentSaveRequestVo {
     private Integer productId;
 
     /**
+     * 订单id
+     */
+    @NotNull(message = "订单id不能为空")
+    private Integer orderId;
+
+    /**
      * 评分星级,1-5
      */
     @NotNull(message = "评分星级不能为空")

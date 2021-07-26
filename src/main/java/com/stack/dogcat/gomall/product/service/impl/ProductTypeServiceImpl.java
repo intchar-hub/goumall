@@ -93,6 +93,11 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
      */
     @Override
     public List<ProductTypeQueryResponseVo> listTypesByStore(Integer storeId) {
+        if(storeId == null) {
+            LOG.info("缺少请求参数");
+            throw new RuntimeException();
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id", storeId);
         queryWrapper.eq("status", 1);
@@ -155,5 +160,25 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
         }
 
         return responseVos;
+    }
+
+    /**
+     * 根据子分类查询父分类
+     * @param typeId
+     * @return
+     */
+    @Override
+    public Integer getParentTypeId(Integer typeId) {
+        if(typeId == null) {
+            LOG.info("缺少请求参数");
+            throw new RuntimeException();
+        }
+
+        ProductType productTypeDB = productTypeMapper.selectById(typeId);
+        if(productTypeDB == null) {
+            LOG.info("该子分类不存在");
+            throw new RuntimeException();
+        }
+        return productTypeDB.getParentId();
     }
 }

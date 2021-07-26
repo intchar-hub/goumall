@@ -15,6 +15,7 @@ import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.ReplyResponse;
 import com.stack.dogcat.gomall.message.service.ICommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.order.mapper.OrderMapper;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.user.entity.Customer;
@@ -49,6 +50,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     ReplyMapper replyMapper;
 
+    @Autowired
+    OrderMapper orderMapper;
+
     /**
      * 顾客发表评论
      */
@@ -57,6 +61,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Comment comment=new Comment();
         comment.setCustomerId(commentSaveRequestVo.getCustomerId());
         comment.setProductId(commentSaveRequestVo.getProductId());
+        comment.setOrderId(commentSaveRequestVo.getOrderId());
         comment.setContent(commentSaveRequestVo.getContent());
         comment.setLevel(commentSaveRequestVo.getLevel());
         comment.setGmtCreate(LocalDateTime.now());
@@ -86,18 +91,25 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             if(customer==null){
                 throw new RuntimeException("找不到评论的顾客");
             }
+            commentResponse.setCommentId(comment.getId());
             commentResponse.setCustomerName(customer.getUserName());
             commentResponse.setAvatarPath(customer.getAvatorPath());
             commentResponse.setContent(comment.getContent());
             commentResponse.setLevel(comment.getLevel());
             commentResponse.setGmtCreate(comment.getGmtCreate());
+            commentResponse.setOrderNumber(orderMapper.selectById(comment.getOrderId()).getOrderNumber());
             commentResponseVo.setCustomer(commentResponse);
 
             ReplyResponse replyResponseVo =new ReplyResponse();
             Reply reply = replyMapper.selectOne(new QueryWrapper<Reply>().eq("comment_id",comment.getId()));
-            replyResponseVo.setContent(reply.getContent());
-            replyResponseVo.setGmtCreate(reply.getGmtCreate());
-            commentResponseVo.setStore(replyResponseVo);
+            if(reply!=null){
+                replyResponseVo.setContent(reply.getContent());
+                replyResponseVo.setGmtCreate(reply.getGmtCreate());
+                commentResponseVo.setStore(replyResponseVo);
+            }
+            else{
+                commentResponseVo.setStore(replyResponseVo);
+            }
 
             commentResponseVos.add(commentResponseVo);
         }
