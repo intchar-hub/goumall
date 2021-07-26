@@ -256,7 +256,7 @@ public class OrderController {
     @ResponseBody
     public SysResult listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate){
 
-        IPage<Order> orderPage;
+        PageResponseVo<Order> orderPage;
         try{
             orderPage=orderService.listOrdersByScreenConditions(storeId,pageNum,pageSize,orderNumber,status,gmtCreate);
 

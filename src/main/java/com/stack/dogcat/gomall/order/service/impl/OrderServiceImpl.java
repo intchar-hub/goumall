@@ -348,7 +348,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public IPage<Order>listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate) throws ParseException {
+    public PageResponseVo<Order>listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate) throws ParseException {
 
         QueryWrapper queryWrapper =new QueryWrapper();
         queryWrapper.eq("store_id",storeId);
@@ -356,13 +356,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         queryWrapper.orderByAsc("status");
         Page<Order>page=new Page<>(pageNum,pageSize);
 
-        if(orderNumber!=null){
+        if(orderNumber!=null&&!orderNumber.isEmpty()){
             queryWrapper.eq("order_number",orderNumber);
         }
         if(status!=null){
             queryWrapper.eq("status",status);
         }
-        if(gmtCreate!=null){
+        if(gmtCreate!=null&&!gmtCreate.isEmpty()){
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             Date date = sdf.parse(gmtCreate);
             Date date1= new Date(date.getTime()+24*3600*1000);
@@ -370,7 +370,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         IPage<Order> orderIPage=orderMapper.selectPage(page,queryWrapper);
-        return orderIPage;
+        PageResponseVo<Order>responseVo=new PageResponseVo(orderIPage);
+        return responseVo;
     }
 
     @Override
