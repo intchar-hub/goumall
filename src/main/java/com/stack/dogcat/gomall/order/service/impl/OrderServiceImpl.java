@@ -6,6 +6,7 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
+import com.alipay.api.domain.Data;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
@@ -47,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -166,6 +169,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         Order order = orderMapper.selectOne(queryWrapper);
 
+        orderInfoResponseVo.setOrderId(order.getId());
         orderInfoResponseVo.setOrderNumber(order.getOrderNumber());
         orderInfoResponseVo.setProductNum(order.getProductNum());
         orderInfoResponseVo.setOrderGmtCreate(order.getGmtCreate());
@@ -183,6 +187,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         Product product = productMapper.selectById(order.getProductId());
         if(product!=null){
+            orderInfoResponseVo.setProductId(order.getProductId());
             orderInfoResponseVo.setProductName(product.getName());
             orderInfoResponseVo.setProductImagePath(product.getImagePath());
         }
@@ -341,5 +346,60 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
     }
+
+    @Override
+    public IPage<Order>listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate) throws ParseException {
+
+        QueryWrapper queryWrapper =new QueryWrapper();
+        queryWrapper.eq("store_id",storeId);
+        queryWrapper.orderByDesc("gmt_create");
+        queryWrapper.orderByAsc("status");
+        Page<Order>page=new Page<>(pageNum,pageSize);
+
+        if(orderNumber!=null){
+            queryWrapper.eq("order_number",orderNumber);
+        }
+        if(status!=null){
+            queryWrapper.eq("status",status);
+        }
+        if(gmtCreate!=null){
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            Date date = sdf.parse(gmtCreate);
+            Date date1= new Date(date.getTime()+24*3600*1000);
+            queryWrapper.between("gmt_create",date,date1);
+        }
+
+        IPage<Order> orderIPage=orderMapper.selectPage(page,queryWrapper);
+        return orderIPage;
+    }
+
+    @Override
+    public String shiftOrder(Integer orderId){
+
+        Order order = orderMapper.selectById(orderId);
+        if(order.getStatus()!=1){
+            return "订单状态错误，发货失败";
+        }
+        else {
+            order.setStatus(2);
+            orderMapper.updateById(order);
+            return "发货成功";
+        }
+    }
+
+    @Override
+    public String confirmReceipt(Integer orderId){
+
+        Order order = orderMapper.selectById(orderId);
+        if(order.getStatus()!=2){
+            return "订单状态错误，收货失败";
+        }
+        else {
+            order.setStatus(3);
+            orderMapper.updateById(order);
+            return "收货成功";
+        }
+    }
+
 
 }

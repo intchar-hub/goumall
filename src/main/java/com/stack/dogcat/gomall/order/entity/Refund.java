@@ -34,6 +34,11 @@ public class Refund implements Serializable {
     private Integer orderId;
 
     /**
+     * 消费者id
+     */
+    private Integer customerId;
+
+    /**
      * 商家id
      */
     private Integer storeId;

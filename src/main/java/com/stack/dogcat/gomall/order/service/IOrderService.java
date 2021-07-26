@@ -1,5 +1,7 @@
 package com.stack.dogcat.gomall.order.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
@@ -9,6 +11,7 @@ import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -44,4 +47,12 @@ public interface IOrderService extends IService<Order> {
      */
     String aliNotify(Map<String, String> conversionParams);
 
+    /**商家按条件查询订单（与退款相关除外，即refund_status需为0），所有筛选条件下，均有：refund_status=0**/
+    IPage<Order> listOrdersByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer status, String gmtCreate) throws ParseException;
+
+    /**订单发货*/
+    String shiftOrder(Integer orderId);
+
+    /**订单收货*/
+    String confirmReceipt(Integer orderId);
 }

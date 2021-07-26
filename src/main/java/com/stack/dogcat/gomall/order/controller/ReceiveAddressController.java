@@ -84,7 +84,7 @@ public class ReceiveAddressController {
     }
 
     /**
-     * 用户修改收货地址
+     * 用户修改默认收货地址
      * @param current_customer
      * @param receiveAddressId
      * @param defaultAddress

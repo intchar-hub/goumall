@@ -1,5 +1,7 @@
 package com.stack.dogcat.gomall.order.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.config.AlipayConfig;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -116,7 +118,7 @@ public class OrderController {
      * @return
      */
 
-    @PostMapping("/listOrderByCustomer")
+    @GetMapping("/listOrderByCustomer")
     @ResponseBody
     @Token.UserLoginToken
     public SysResult listOrderByCustomer(@CurrentUser Customer current_customer,Integer status,Integer pageNum,Integer pageSize){
@@ -240,11 +242,76 @@ public class OrderController {
         return "pay"; //进入支付页面 }
     }*/
 
+    /**
+     * 商家按条件查询订单（与退款相关除外，即refund_status需为0），所有筛选条件下，均有：refund_status=0
+     * @param storeId
+     * @param pageNum
+     * @param pageSize
+     * @param orderNumber
+     * @param status
+     * @param gmtCreate
+     * @return
+     */
+    @GetMapping("/listOrdersByScreenConditions")
+    @ResponseBody
+    public SysResult listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate){
 
+        IPage<Order> orderPage;
+        try{
+            orderPage=orderService.listOrdersByScreenConditions(storeId,pageNum,pageSize,orderNumber,status,gmtCreate);
 
-
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(orderPage);
 
     }
+
+
+    /**
+     * 订单发货
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/shiftOrder")
+    @ResponseBody
+    public SysResult shiftOrder(Integer orderId){
+
+        String msg;
+        try{
+            msg=orderService.shiftOrder(orderId);
+
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(msg);
+    }
+
+
+    /**
+     * 订单收货
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/confirmReceipt")
+    @ResponseBody
+    @Token.UserLoginToken
+    public SysResult confirmReceipt(Integer orderId){
+
+        String msg;
+        try{
+            msg=orderService.confirmReceipt(orderId);
+
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success(msg);
+    }
+
+}
 
 
 
