@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.domain.Data;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -169,6 +171,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         Order order = orderMapper.selectOne(queryWrapper);
 
+        orderInfoResponseVo.setTotalPrice(order.getTotalPrice());
         orderInfoResponseVo.setOrderId(order.getId());
         orderInfoResponseVo.setOrderNumber(order.getOrderNumber());
         orderInfoResponseVo.setProductNum(order.getProductNum());
@@ -348,7 +351,87 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public PageResponseVo<Order>listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate) throws ParseException {
+    /**支付订单App**/
+    public String payOrderByApp (Integer orderId){
+
+        Order order = orderMapper.selectById(orderId);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+
+        //获得初始化的 AlipayClient
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
+
+        try {
+            //（1）封装bizmodel信息
+            AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
+            AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            model.setOutTradeNo(order.getOrderNumber());
+            model.setSubject(orderInfoResponseVo.getProductName());
+            model.setBody(orderInfoResponseVo.getProductName());
+            // model.setProductCode("QUICK_WAP_WAY");
+            model.setSellerId("2088621956175664");
+            model.setTotalAmount(order.getTotalPrice().toString());
+            model.setTimeoutExpress("30m");
+            //model.setQuitUrl("https://www.hao123.com/");
+            //（2）设置请求参数
+            //alipayRequest.setReturnUrl();
+            alipayRequest.setNotifyUrl("http://hqqjw9.natappfree.cc/order/order/payNotify");
+            //alipayRequest.setReturnUrl("https://www.hao123.com/");
+            alipayRequest.setBizModel(model);
+            //（3）请求
+            String form = alipayClient.sdkExecute(alipayRequest).getBody();
+            //System.out.println("*********************\n返回结果为：" + form);
+
+            return form;
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            return "请求支付操作失败";
+        }
+
+    }
+
+    @Override
+    /**支付订单Wap**/
+    public String payOrderByWap (Integer orderId){
+
+        Order order = orderMapper.selectById(orderId);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+
+        //获得初始化的 AlipayClient
+        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
+        try {
+            //封装bizmodel信息
+            AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
+            AlipayTradeWapPayModel model = new AlipayTradeWapPayModel();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            model.setOutTradeNo(order.getOrderNumber());
+            model.setSubject(orderInfoResponseVo.getProductName());
+            model.setBody(orderInfoResponseVo.getProductName());
+            model.setProductCode("QUICK_WAP_WAY");
+            model.setSellerId("2088621956175664");
+            model.setTotalAmount(order.getTotalPrice().toString());
+            model.setTimeoutExpress("30m");
+            model.setQuitUrl("https://www.hao123.com/");
+
+            alipayRequest.setNotifyUrl("http://hqqjw9.natappfree.cc/order/order/payNotify");
+            //alipayRequest.setReturnUrl("https://www.hao123.com/");
+            alipayRequest.setBizModel(model);
+            //请求
+            String form = alipayClient.pageExecute(alipayRequest).getBody();
+            //System.out.println("*********************\n返回结果为：" + form);
+
+            return form;
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            return "请求支付操作失败";
+        }
+
+
+    }
+
+
+    @Override
+    public PageResponseVo<OrderInfoResponseVo>listOrdersByScreenConditions(Integer storeId,Integer pageNum,Integer pageSize,String orderNumber,Integer status,String gmtCreate) throws ParseException {
 
         QueryWrapper queryWrapper =new QueryWrapper();
         queryWrapper.eq("store_id",storeId);
@@ -370,7 +453,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         IPage<Order> orderIPage=orderMapper.selectPage(page,queryWrapper);
-        PageResponseVo<Order>responseVo=new PageResponseVo(orderIPage);
+
+        List<Order>orders=orderIPage.getRecords();
+        List<OrderInfoResponseVo>orderInfoResponseVos=new ArrayList<>();
+        for(int i=0; i<orders.size(); i++){
+            Order order=orders.get(i);
+            OrderInfoResponseVo orderInfoResponseVo=getOrderInfo(order.getId(),1);
+            orderInfoResponseVos.add(orderInfoResponseVo);
+        }
+
+        PageResponseVo<OrderInfoResponseVo>responseVo=new PageResponseVo(orderIPage);
+        responseVo.setData(orderInfoResponseVos);
         return responseVo;
     }
 

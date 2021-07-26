@@ -76,6 +76,12 @@ public class OrderInfoResponseVo {
     private BigDecimal discount;
 
     /**
+     * 总价
+     */
+    private BigDecimal totalPrice;
+
+
+    /**
      * 订单状态，0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；
      */
     private Integer status;
