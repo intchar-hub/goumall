@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.message.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.message.entity.Comment;
 import com.stack.dogcat.gomall.message.entity.Reply;
@@ -15,6 +16,7 @@ import com.stack.dogcat.gomall.message.responseVo.CommentResponseVo;
 import com.stack.dogcat.gomall.message.responseVo.ReplyResponse;
 import com.stack.dogcat.gomall.message.service.ICommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.order.entity.Order;
 import com.stack.dogcat.gomall.order.mapper.OrderMapper;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
@@ -22,6 +24,7 @@ import com.stack.dogcat.gomall.user.entity.Customer;
 import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +60,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      * 顾客发表评论
      */
     @Override
+    @Transactional
+    @Token.UserLoginToken
     public void saveComment(CommentSaveRequestVo commentSaveRequestVo) {
         Comment comment=new Comment();
         comment.setCustomerId(commentSaveRequestVo.getCustomerId());
@@ -71,6 +76,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             throw new RuntimeException("查找关联店铺失败");
         }
         comment.setStoreId(product.getStoreId());
+
+        Order order = orderMapper.selectById(comment.getOrderId());
+        order.setStatus(6);
+        int j=orderMapper.updateById(order);
+        if(j==0){
+            throw new RuntimeException("评论上传失败");
+        }
 
         int i = commentMapper.insert(comment);
         if(i==0){
