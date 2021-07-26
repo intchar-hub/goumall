@@ -7,40 +7,37 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class RefundResponseVo {
+public class RefundListInfo {
 
     /**
      * 退款id
      */
-    private Integer id;
+    private Integer refundId;
 
     /**
-     * 订单id
+     * 商品名
      */
-    private Integer orderId;
+    private String productName;
 
     /**
-     * 消费者id
+     * 商品数
      */
-    private Integer customerId;
+    private Integer productNum;
 
     /**
-     * 商家id
+     * 商品图片路径
      */
-    private Integer storeId;
+    private String productAvatarPath;
 
     /**
-     * 退货原因
+     * 退款状态，0->未退款（已申请）；1->已退款；2->商家不同意退款；3->消费者已取消
      */
-    private String reason;
-
-    /**
-     * 退款状态，0->未退款；1->已退款；2->商家不同意退款；3->消费者已取消
-     */
-    private Integer status;
+    private Integer refundStatus;
 
     /**
      * 创建时间
      */
     private LocalDateTime gmtCreate;
+
+
 }

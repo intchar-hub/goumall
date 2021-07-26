@@ -3,7 +3,9 @@ package com.stack.dogcat.gomall.product.controller;
 
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.product.entity.AttributeCollection;
 import com.stack.dogcat.gomall.product.entity.AttributeName;
+import com.stack.dogcat.gomall.product.mapper.AttributeCollectionMapper;
 import com.stack.dogcat.gomall.product.requestVo.AddAttributeRequestVo;
 import com.stack.dogcat.gomall.product.responseVo.AttributeNameVo;
 import com.stack.dogcat.gomall.product.service.IAttributeNameService;
@@ -33,6 +35,9 @@ public class AttributeNameController {
     @Autowired
     IAttributeNameService attributeNameService;
 
+    @Autowired
+    AttributeCollectionMapper attributeCollectionMapper;
+
     /**
      * 商店添加属性
      * @param addAttributeRequestVo
@@ -42,6 +47,11 @@ public class AttributeNameController {
     @ResponseBody
     public SysResult addAttribute(@Valid @RequestBody AddAttributeRequestVo addAttributeRequestVo){
 
+        AttributeCollection attributeCollection;
+        attributeCollection = attributeCollectionMapper.selectById(addAttributeRequestVo.getCollectionId());
+        if(attributeCollection.getAttributeNum()>=3){
+            return SysResult.error("属性已满3个");
+        }
         try{
             AttributeName attributeName =new AttributeName();
             attributeName.setName(addAttributeRequestVo.getAttributeName());
@@ -60,13 +70,10 @@ public class AttributeNameController {
                         String valueStr=valueArrayStr.substring(indexTemp,i);
                         valueArray.add(valueStr);
                         indexTemp=i+1;
-                        //System.out.println(valueStr);
-                        //System.out.println(indexTemp);
                     }
                     if(i==valueArrayStr.length()-1){
                         String valueStr=valueArrayStr.substring(indexTemp);
                         valueArray.add(valueStr);
-                        //System.out.println(valueStr);
                     }
                 }
                 attributeNameService.insertAttributeNameAndValueList(attributeName,valueArray);

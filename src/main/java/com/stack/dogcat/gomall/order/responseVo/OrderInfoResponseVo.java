@@ -1,5 +1,7 @@
 package com.stack.dogcat.gomall.order.responseVo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -7,6 +9,16 @@ import java.time.LocalDateTime;
 
 @Data
 public class OrderInfoResponseVo {
+
+    /**
+     * 订单id
+     */
+    private Integer orderId;
+
+    /**
+     * 商品id
+     */
+    private Integer productId;
 
     /**
      * 订单编号
