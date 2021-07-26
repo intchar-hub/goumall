@@ -117,7 +117,7 @@ public class ReceiveAddressController {
     public SysResult queryListReceiveAddress(@CurrentUser Customer current_customer){
         try{
             Integer customerId = current_customer.getId();
-            List<ReceiveAddressQueryResponseVo> receiveAddressQueryResponseVos=receiveAddressService.queryReceiveAddressByCustomerId(customerId);
+            List<ReceiveAddress> receiveAddressQueryResponseVos=receiveAddressService.queryReceiveAddressByCustomerId(customerId);
             SysResult result = SysResult.success(receiveAddressQueryResponseVos);
             return result;
         }catch (Exception e){

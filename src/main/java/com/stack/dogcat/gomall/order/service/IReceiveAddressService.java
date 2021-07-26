@@ -26,7 +26,7 @@ public interface IReceiveAddressService extends IService<ReceiveAddress> {
     ReceiveAddress queryReceiveAddressByReceiveAddressId(Integer receiveAddressId);
 
     //查询所有收货地址
-    List<ReceiveAddressQueryResponseVo> queryReceiveAddressByCustomerId(Integer customerId);
+    List<ReceiveAddress> queryReceiveAddressByCustomerId(Integer customerId);
 
     //根据ReceiveAddressId删除收货地址
     void deleteReceiveAddressById(Integer receiveAddressId);
