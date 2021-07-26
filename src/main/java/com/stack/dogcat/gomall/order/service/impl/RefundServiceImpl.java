@@ -71,6 +71,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
         Refund refund = new Refund();
         refund.setOrderId(orderId);
+        refund.setCustomerId(order.getCustomerId());
         refund.setStoreId(order.getStoreId());
         refund.setReason(reason);
         refund.setGmtCreate(LocalDateTime.now());
@@ -119,6 +120,8 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
             Thread.sleep(10000);
             if(aliPayRefundQuery(order.getOrderNumber())){
+                refund.setStatus(1);
+                refundMapper.updateById(refund);
                 return refundResponse;
             }else{
                 return "退款未执行成功，请重新请求";
@@ -171,6 +174,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
             request.setBizModel(model);
 
             AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
+            System.out.println(response);
 
             if(response.getOutTradeNo()!=null&&response.getOutRequestNo()!=null&&response.getRefundAmount()!=null){
                 return true;
