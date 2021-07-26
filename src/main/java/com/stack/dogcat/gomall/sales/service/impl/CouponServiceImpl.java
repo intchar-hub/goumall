@@ -77,7 +77,7 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
         IPage<Coupon> couponPage =new Page<>();
         //查询全部
         if(screenCondition==0){
-            couponPage = couponMapper.selectPage(page,null);
+            couponPage = couponMapper.selectPage(page,new QueryWrapper<Coupon>().eq("store_id",storeId));
         }
         //查询不能使用
         else if(screenCondition==1){
