@@ -251,13 +251,13 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         queryWrapper.orderByAsc("refund_status");
         Page<Order>page=new Page<>(pageNum,pageSize);
 
-        if(orderNumber!=null){
+        if(orderNumber!=null&&!orderNumber.isEmpty()){
             queryWrapper.eq("order_number",orderNumber);
         }
         if(refundStatus!=null){
             queryWrapper.eq("refund_status",refundStatus);
         }
-        if(gmtCreate!=null){
+        if(gmtCreate!=null&&!gmtCreate.isEmpty()){
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             Date date = sdf.parse(gmtCreate);
             Date date1= new Date(date.getTime()+24*3600*1000);
@@ -301,7 +301,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         }
 
 
-        PageResponseVo<RefundOrderInfo>responseVo=new PageResponseVo<>();
+        PageResponseVo<RefundOrderInfo>responseVo=new PageResponseVo(orderIPage);
         responseVo.setData(refundOrderInfos);
         return responseVo;
     }

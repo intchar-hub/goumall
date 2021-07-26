@@ -48,7 +48,7 @@ public interface IOrderService extends IService<Order> {
     String aliNotify(Map<String, String> conversionParams);
 
     /**商家按条件查询订单（与退款相关除外，即refund_status需为0），所有筛选条件下，均有：refund_status=0**/
-    IPage<Order> listOrdersByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer status, String gmtCreate) throws ParseException;
+    PageResponseVo<Order> listOrdersByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer status, String gmtCreate) throws ParseException;
 
     /**订单发货*/
     String shiftOrder(Integer orderId);
