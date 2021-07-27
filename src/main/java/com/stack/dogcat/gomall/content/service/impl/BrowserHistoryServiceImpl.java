@@ -38,20 +38,22 @@ public class BrowserHistoryServiceImpl extends ServiceImpl<BrowserHistoryMapper,
 
     /**
      * 保存浏览历史
-     * @param customerId
+     * @param customerId 顾客id（游客为0）
      * @param productId
      */
     @Override
     @Transactional
     public void saveBrowserHistory(Integer customerId, Integer productId) {
-        /**
-         * 保存浏览历史
-         */
-        BrowserHistory browserHistory = new BrowserHistory();
-        browserHistory.setCustomerId(customerId);
-        browserHistory.setProductId(productId);
-        browserHistory.setGmtCreate(LocalDateTime.now());
-        browserHistoryMapper.insert(browserHistory);
+        if(customerId != 0) {
+            /**
+             * 保存浏览历史
+             */
+            BrowserHistory browserHistory = new BrowserHistory();
+            browserHistory.setCustomerId(customerId);
+            browserHistory.setProductId(productId);
+            browserHistory.setGmtCreate(LocalDateTime.now());
+            browserHistoryMapper.insert(browserHistory);
+        }
 
         /**
          * 商品的点击次数 +1
