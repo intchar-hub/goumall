@@ -1,6 +1,8 @@
 package com.stack.dogcat.gomall.config;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -202,6 +204,5 @@ public class RedisConfig extends CachingConfigurerSupport {
     public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
-
 
 }
