@@ -49,7 +49,7 @@ public class Refund implements Serializable {
     private String reason;
 
     /**
-     * 退款状态，0->未退款；1->已退款；2->商家不同意退款；3->消费者已取消
+     * 退款状态，1->退款申请中；2->已退款；3->退款取消；4->退款失败
      */
     private Integer status;
 

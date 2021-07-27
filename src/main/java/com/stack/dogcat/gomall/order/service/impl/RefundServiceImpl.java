@@ -90,8 +90,8 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("store_id",storeId);
         queryWrapper.orderByDesc("gmt_create");
-        if(status==4){
-            queryWrapper.in("status", 2,3);
+        if(status==5){
+            queryWrapper.in("status", 3,4);
         }else{
             queryWrapper.eq("status",status);
         }
@@ -110,7 +110,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
         Refund refund = refundMapper.selectById(refundId);
         if(option==0){
-            refund.setStatus(2);
+            refund.setStatus(4);
             Order order = orderMapper.selectById(refund.getOrderId());
             order.setRefundStatus(4);
 
@@ -124,7 +124,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
             Thread.sleep(10000);
             if(aliPayRefundQuery(order.getOrderNumber())){
-                refund.setStatus(1);
+                refund.setStatus(2);
                 refundMapper.updateById(refund);
                 return refundResponse;
             }else{
@@ -252,7 +252,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
     @Override
     public PageResponseVo<RefundOrderInfo>listRefundByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer refundStatus, String gmtCreate) throws ParseException {
-
+/**
         QueryWrapper queryWrapper =new QueryWrapper();
         queryWrapper.eq("store_id",storeId);
         queryWrapper.orderByDesc("gmt_create");
@@ -319,5 +319,106 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         PageResponseVo<RefundOrderInfo>responseVo=new PageResponseVo(orderIPage);
         responseVo.setData(refundOrderInfos);
         return responseVo;
+    }*/
+
+        QueryWrapper queryWrapper =new QueryWrapper();
+        queryWrapper.eq("store_id",storeId);
+        queryWrapper.orderByDesc("gmt_create");
+        queryWrapper.orderByAsc("status");
+        if(refundStatus!=null){
+            queryWrapper.eq("status",refundStatus);
+        }
+        if(gmtCreate!=null&&!gmtCreate.isEmpty()){
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            Date date = sdf.parse(gmtCreate);
+            Date date1= new Date(date.getTime()+24*3600*1000);
+            queryWrapper.between("gmt_create",date,date1);
+        }
+
+        Page<Refund>page=new Page<>(pageNum,pageSize);
+        IPage<Refund> refundIPage=refundMapper.selectPage(page,queryWrapper);
+        List<Refund>refunds=refundIPage.getRecords();
+
+        List<RefundOrderInfo>refundOrderInfos=new ArrayList<>();
+
+        if(orderNumber!=null&&!orderNumber.isEmpty()){
+            queryWrapper.clear();
+            queryWrapper.eq("order_number",orderNumber);
+            Order order=orderMapper.selectOne(queryWrapper);
+            queryWrapper.clear();
+            queryWrapper.eq("order_id",order.getId());
+            Refund refund = refundMapper.selectOne(queryWrapper);
+            Product product = productMapper.selectById(order.getProductId());
+
+            RefundOrderInfo rfoInfo= new RefundOrderInfo();
+            rfoInfo.setProductName(product.getName());
+            rfoInfo.setImagePath(product.getImagePath());
+            rfoInfo.setProductAttribute(skuMapper.selectById(order.getSkuId()).getProductAttribute());
+            rfoInfo.setRefundId(refund.getId());
+            rfoInfo.setOrderId(order.getId());
+            rfoInfo.setStoreId(order.getStoreId());
+            rfoInfo.setCustomerId(order.getCustomerId());
+            rfoInfo.setProductId(order.getProductId());
+            rfoInfo.setSkuId(order.getSkuId());
+            rfoInfo.setOrderNumber(order.getOrderNumber());
+            rfoInfo.setProductNum(order.getProductNum());
+            rfoInfo.setPrice(order.getPrice());
+            rfoInfo.setStatus(order.getStatus());
+            rfoInfo.setRefundStatus(order.getRefundStatus());
+            rfoInfo.setReceiveAddressId(order.getReceiveAddressId());
+            rfoInfo.setConsignee(order.getConsignee());
+            rfoInfo.setPhoneNumber(order.getPhoneNumber());
+            rfoInfo.setAddress(order.getAddress());
+            rfoInfo.setCouponId(order.getCouponId());
+            rfoInfo.setCouponDiscount(order.getCouponDiscount());
+            rfoInfo.setTotalPrice(order.getTotalPrice());
+            rfoInfo.setReason(refund.getReason());
+            rfoInfo.setRefundCreate(refund.getGmtCreate());
+            rfoInfo.setOrderCreate(order.getGmtCreate());
+
+            refundOrderInfos.add(rfoInfo);
+        }
+        else {
+            for (int i = 0; i < refunds.size(); i++) {
+
+                Order order = orderMapper.selectById(refunds.get(i).getOrderId());
+                Product product = productMapper.selectById(order.getProductId());
+                RefundOrderInfo rfoInfo= new RefundOrderInfo();
+
+                rfoInfo.setProductName(product.getName());
+                rfoInfo.setImagePath(product.getImagePath());
+                rfoInfo.setProductAttribute(skuMapper.selectById(order.getSkuId()).getProductAttribute());
+                rfoInfo.setRefundId(refunds.get(i).getId());
+                rfoInfo.setOrderId(order.getId());
+                rfoInfo.setStoreId(order.getStoreId());
+                rfoInfo.setCustomerId(order.getCustomerId());
+                rfoInfo.setProductId(order.getProductId());
+                rfoInfo.setSkuId(order.getSkuId());
+                rfoInfo.setOrderNumber(order.getOrderNumber());
+                rfoInfo.setProductNum(order.getProductNum());
+                rfoInfo.setPrice(order.getPrice());
+                rfoInfo.setStatus(order.getStatus());
+                rfoInfo.setRefundStatus(order.getRefundStatus());
+                rfoInfo.setReceiveAddressId(order.getReceiveAddressId());
+                rfoInfo.setConsignee(order.getConsignee());
+                rfoInfo.setPhoneNumber(order.getPhoneNumber());
+                rfoInfo.setAddress(order.getAddress());
+                rfoInfo.setCouponId(order.getCouponId());
+                rfoInfo.setCouponDiscount(order.getCouponDiscount());
+                rfoInfo.setTotalPrice(order.getTotalPrice());
+                rfoInfo.setReason(refunds.get(i).getReason());
+                rfoInfo.setRefundCreate(refunds.get(i).getGmtCreate());
+                rfoInfo.setOrderCreate(order.getGmtCreate());
+
+                refundOrderInfos.add(rfoInfo);
+            }
+        }
+
+        PageResponseVo<RefundOrderInfo>responseVo=new PageResponseVo(refundIPage);
+        responseVo.setData(refundOrderInfos);
+        return responseVo;
     }
+
+
+
 }
