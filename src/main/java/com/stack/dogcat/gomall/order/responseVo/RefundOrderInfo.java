@@ -36,9 +36,24 @@ public class RefundOrderInfo {
     private Integer productId;
 
     /**
+     * 商品名
+     */
+    private String productName;
+
+    /**
+     * 商品展示图片路径
+     */
+    private String imagePath;
+
+    /**
      * 商品SKUid
      */
     private Integer skuId;
+
+    /**
+     * 规格属性集合，json表示
+     */
+    private String productAttribute;
 
     /**
      * 订单编号
