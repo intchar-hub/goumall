@@ -139,15 +139,29 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
             throw new RuntimeException();
         }
         if(screenCondition == 1) { //1：查询已失效
-            queryWrapper.lt("deadline", now);
+//            queryWrapper.lt("deadline", now);
+            queryWrapper.eq("status", 1);
         } else if(screenCondition == 2) { //2：查询未失效
-            queryWrapper.gt("deadline", now);
+//            queryWrapper.gt("deadline", now);
+            queryWrapper.eq("status", 0);
         }
 
         Page<SalesPromotion> page = new Page(pageNum,pageSize);
         IPage<SalesPromotion> salesPromotionIPage = salesPromotionMapper.selectPage(page, queryWrapper);
         PageResponseVo<SalesPromotionQueryResponseVo> pageResponseVo = new PageResponseVo(salesPromotionIPage);
-        pageResponseVo.setData(CopyUtil.copyList(salesPromotionIPage.getRecords(), SalesPromotionQueryResponseVo.class));
+        List<SalesPromotionQueryResponseVo> vos = new ArrayList<>();
+
+        for (SalesPromotion record : salesPromotionIPage.getRecords()) {
+            Product productDB = productMapper.selectById(record.getProductId());
+
+            SalesPromotionQueryResponseVo vo = CopyUtil.copy(record, SalesPromotionQueryResponseVo.class);
+            vo.setProductName(productDB.getName());
+            vo.setImagePath(productDB.getImagePath());
+
+            vos.add(vo);
+        }
+
+        pageResponseVo.setData(vos);
 
         return pageResponseVo;
     }
