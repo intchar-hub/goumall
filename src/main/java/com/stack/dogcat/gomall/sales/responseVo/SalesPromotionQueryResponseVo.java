@@ -38,6 +38,16 @@ public class SalesPromotionQueryResponseVo {
     private Integer productId;
 
     /**
+     * 商品名
+     */
+    private String productName;
+
+    /**
+     * 商品图片
+     */
+    private String imagePath;
+
+    /**
      * 标题
      */
     private String title;
@@ -68,12 +78,30 @@ public class SalesPromotionQueryResponseVo {
                 "id=" + id +
                 ", storeId=" + storeId +
                 ", productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", imagePath='" + imagePath + '\'' +
                 ", title='" + title + '\'' +
                 ", discount=" + discount +
                 ", gmtCreate=" + gmtCreate +
                 ", startTime=" + startTime +
                 ", deadline=" + deadline +
                 '}';
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public Integer getId() {
