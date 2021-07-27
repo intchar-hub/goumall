@@ -26,6 +26,7 @@ import com.stack.dogcat.gomall.order.service.IRefundService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
+import com.stack.dogcat.gomall.product.mapper.SkuMapper;
 import com.stack.dogcat.gomall.utils.AppConst;
 import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
     @Autowired
     OrderServiceImpl orderService;
+
+    @Autowired
+    SkuMapper skuMapper;
 
     @Override
     @Transactional
@@ -281,7 +285,11 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
             queryWrapper.clear();
             queryWrapper.eq("order_id",order.getId());
             Refund refund = refundMapper.selectOne(queryWrapper);
+            Product product = productMapper.selectById(order.getProductId());
 
+            rfoInfo.setProductName(product.getName());
+            rfoInfo.setImagePath(product.getImagePath());
+            rfoInfo.setProductAttribute(skuMapper.selectById(order.getSkuId()).getProductAttribute());
             rfoInfo.setRefundId(refund.getId());
             rfoInfo.setOrderId(order.getId());
             rfoInfo.setStoreId(order.getStoreId());
