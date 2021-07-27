@@ -31,6 +31,12 @@ public class SalesPromotionSaveRequestVo {
     private String title;
 
     /**
+     * 限购数量
+     */
+    @NotNull(message = "商品限购数量不能为空")
+    private Integer purchasingAmount;
+
+    /**
      * 折扣
      */
     @NotNull(message = "商品折扣不能为空")
@@ -54,6 +60,7 @@ public class SalesPromotionSaveRequestVo {
                 "storeId=" + storeId +
                 ", productId=" + productId +
                 ", title='" + title + '\'' +
+                ",purchasingAmount="+purchasingAmount+
                 ", discount=" + discount +
                 ", startTime=" + startTime +
                 ", deadline=" + deadline +
