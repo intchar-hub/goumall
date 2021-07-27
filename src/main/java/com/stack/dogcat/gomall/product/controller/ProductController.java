@@ -217,6 +217,24 @@ public class ProductController {
     }
 
     /**
+     * 按商品id列表查看商品（和店铺）信息
+     * @param ids 商品ids，以英文逗号分隔
+     * @return
+     */
+    @GetMapping("/getProductWithStoreByIds")
+    public SysResult getProductWithStoreByIds(Integer customerId, String ids) {
+        List<ProductWithStoreQueryResponseVo> responseVos = null;
+        try {
+            responseVos = productService.getProductWithStoreByIds(ids);
+//            logger.info("click_pro->current_customer.id:{},click_pro.id:{},",new Object[]{customerId.toString(),id.toString()});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("获取商品及店铺失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
+    /**
      * 按id查看商品
      * @param id 商品id
      * @return

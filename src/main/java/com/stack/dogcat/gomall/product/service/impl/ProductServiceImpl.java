@@ -600,4 +600,26 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         return CopyUtil.copy(productDB, ProductQueryResponseVo.class);
     }
+
+    /**
+     * 按商品id列表查看商品（和店铺）信息
+     * @param ids 商品id，以英文逗号分隔
+     * @return
+     */
+    @Override
+    public List<ProductWithStoreQueryResponseVo> getProductWithStoreByIds(String ids) {
+        String[] idStrList = ids.split(",");
+        List<Integer> idList = new ArrayList<>();
+        for (int i = 0; i < idStrList.length; i++) {
+            idList.add(Integer.parseInt(idStrList[i]));
+        }
+
+        List<ProductWithStoreQueryResponseVo> responseVos = new ArrayList<>();
+        for (Integer id : idList) {
+            ProductWithStoreQueryResponseVo vo = getProductWithStoreById(id);
+
+            responseVos.add(vo);
+        }
+        return responseVos;
+    }
 }
