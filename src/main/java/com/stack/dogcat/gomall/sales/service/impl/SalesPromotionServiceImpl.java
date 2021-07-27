@@ -59,7 +59,7 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         if(deadline.isBefore(now) || startTime.isBefore(now)
                 || startTime.isAfter(deadline) || startTime.isEqual(deadline)) {
             LOG.error("活动起止时间不合理");
-            throw new RuntimeException();
+            throw new RuntimeException("活动起止时间不合理");
         }
 
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -67,9 +67,9 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         queryWrapper.gt("deadline", requestVo.getDeadline());
         queryWrapper.lt("start_time", requestVo.getDeadline());
         List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
-        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+        if(salesPromotionsDB != null&&salesPromotionsDB.size() > 0) {
             LOG.info("该商品在该时间段内已参加秒杀活动");
-            throw new RuntimeException();
+            throw new RuntimeException("该商品在该时间段内已参加秒杀活动");
         }
 
         queryWrapper = new QueryWrapper();
@@ -77,9 +77,9 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         queryWrapper.gt("deadline", requestVo.getStartTime());
         queryWrapper.lt("start_time", requestVo.getStartTime());
         salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
-        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+        if(salesPromotionsDB != null&&salesPromotionsDB.size() > 0) {
             LOG.info("该商品在该时间段内已参加秒杀活动");
-            throw new RuntimeException();
+            throw new RuntimeException("该商品在该时间段内已参加秒杀活动");
         }
 
         queryWrapper = new QueryWrapper();
@@ -87,9 +87,9 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         queryWrapper.gt("start_time", requestVo.getStartTime());
         queryWrapper.lt("deadline", requestVo.getDeadline());
         salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
-        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+        if(salesPromotionsDB != null&&salesPromotionsDB.size() > 0) {
             LOG.info("该商品在该时间段内已参加秒杀活动");
-            throw new RuntimeException();
+            throw new RuntimeException("该商品在该时间段内已参加秒杀活动");
         }
 
         queryWrapper = new QueryWrapper();
@@ -97,9 +97,9 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         queryWrapper.lt("start_time", requestVo.getStartTime());
         queryWrapper.gt("deadline", requestVo.getDeadline());
         salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
-        if(salesPromotionsDB != null || salesPromotionsDB.size() > 0) {
+        if(salesPromotionsDB != null&&salesPromotionsDB.size() > 0) {
             LOG.info("该商品在该时间段内已参加秒杀活动");
-            throw new RuntimeException();
+            throw new RuntimeException("该商品在该时间段内已参加秒杀活动");
         }
 
         /**
@@ -179,7 +179,17 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         }
 
         List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(null);
-        List<SalesPromotionQueryResponseVo> responseVos = CopyUtil.copyList(salesPromotionsDB, SalesPromotionQueryResponseVo.class);
+        List<SalesPromotionQueryResponseVo> responseVos = new ArrayList<>();
+        for (SalesPromotion record : salesPromotionsDB) {
+            Product productDB = productMapper.selectById(record.getProductId());
+
+            SalesPromotionQueryResponseVo vo = CopyUtil.copy(record, SalesPromotionQueryResponseVo.class);
+            vo.setProductName(productDB.getName());
+            vo.setImagePath(productDB.getImagePath());
+
+            responseVos.add(vo);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         if (screenCondition < 0 || screenCondition > 3) {
             LOG.error("筛选条件有误");
