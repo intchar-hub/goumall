@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -53,6 +54,12 @@ public class SalesPromotionQueryResponseVo {
     private String title;
 
     /**
+     * 限购数量
+     */
+    private Integer purchasingAmount;
+
+
+    /**
      * 折扣
      */
     private BigDecimal discount;
@@ -81,6 +88,7 @@ public class SalesPromotionQueryResponseVo {
                 ", productName='" + productName + '\'' +
                 ", imagePath='" + imagePath + '\'' +
                 ", title='" + title + '\'' +
+                ",purchasingAmount="+purchasingAmount+
                 ", discount=" + discount +
                 ", gmtCreate=" + gmtCreate +
                 ", startTime=" + startTime +

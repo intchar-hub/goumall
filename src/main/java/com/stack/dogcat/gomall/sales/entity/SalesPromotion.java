@@ -45,6 +45,11 @@ public class SalesPromotion implements Serializable {
     private String title;
 
     /**
+     * 限购数量
+     */
+    private Integer purchasingAmount;
+
+    /**
      * 折扣
      */
     private BigDecimal discount;
