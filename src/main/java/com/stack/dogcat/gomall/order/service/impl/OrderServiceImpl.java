@@ -20,6 +20,8 @@ import com.stack.dogcat.gomall.QrCode.QrCodeService;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.config.AlipayConfig;
+import com.stack.dogcat.gomall.message.entity.Comment;
+import com.stack.dogcat.gomall.message.mapper.CommentMapper;
 import com.stack.dogcat.gomall.order.RequestVo.OrderRequestVo;
 import com.stack.dogcat.gomall.order.controller.OrderController;
 import com.stack.dogcat.gomall.order.entity.Order;
@@ -91,6 +93,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     ReceiveAddressMapper receiveAddressMapper;
+
+    @Autowired
+    CommentMapper commentMapper;
 
     @Override
     @Transactional
@@ -202,6 +207,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         if(order.getCouponId()!=null){
             orderInfoResponseVo.setDiscount(couponMapper.selectById(order.getCouponId()).getDiscount());
+        }
+        if(order.getStatus()==6){
+            queryWrapper.clear();
+            queryWrapper.eq("order_id",orderId);
+            Comment comment = commentMapper.selectOne(queryWrapper);
+            orderInfoResponseVo.setLevel(comment.getLevel());
+            orderInfoResponseVo.setContent(comment.getContent());
         }
         return orderInfoResponseVo;
     }
