@@ -261,6 +261,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         if(refundStatus!=null){
             queryWrapper.eq("refund_status",refundStatus);
         }
+        if(refundStatus==null){
+            queryWrapper.ne("refund_status",0);
+        }
         if(gmtCreate!=null&&!gmtCreate.isEmpty()){
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
             Date date = sdf.parse(gmtCreate);
