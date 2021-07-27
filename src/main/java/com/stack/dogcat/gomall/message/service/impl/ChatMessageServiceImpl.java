@@ -119,34 +119,31 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     @Override
     public PageResponseVo<MessageResponseVo> getMessages(Integer chatUserLinkId, Integer senderType, Integer pageNum, Integer pageSize) {
         Page<ChatMessage> page = new Page<>(pageNum,pageSize);
-        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId).eq("sender_type",senderType));
+        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId));
         PageResponseVo<MessageResponseVo> responseVoPage= new PageResponseVo(chatMessagePage);
         List<ChatMessage> chatMessages = chatMessagePage.getRecords();
         List<MessageResponseVo> responseVos = new ArrayList<>();
-        //顾客获取数据
-        if(senderType==0){
-            for (ChatMessage chatMessage:chatMessages) {
-                MessageResponseVo responseVo = new MessageResponseVo();
-                Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getStoreId());
+
+        Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getStoreId());
+        Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getCustomerId());
+        //获取数据
+        for (ChatMessage chatMessage:chatMessages) {
+            MessageResponseVo responseVo = new MessageResponseVo();
+            if(chatMessage.getSenderType()==1){
                 responseVo.setReceiverName(store.getStoreName());
                 responseVo.setReceiverAvatarPath(store.getAvatarPath());
-                responseVo.setMessage(chatMessage.getContent());
-                responseVo.setGmtCreate(chatMessage.getGmtCreate());
-                responseVos.add(responseVo);
+                responseVo.setSenderType(1);
             }
-        }
-        //商家获取数据
-        else if(senderType==1){
-            for (ChatMessage chatMessage:chatMessages) {
-                MessageResponseVo responseVo = new MessageResponseVo();
-                Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getCustomerId());
+            else {
                 responseVo.setReceiverName(customer.getUserName());
                 responseVo.setReceiverAvatarPath(customer.getAvatorPath());
-                responseVo.setMessage(chatMessage.getContent());
-                responseVo.setGmtCreate(chatMessage.getGmtCreate());
-                responseVos.add(responseVo);
+                responseVo.setSenderType(0);
             }
+            responseVo.setMessage(chatMessage.getContent());
+            responseVo.setGmtCreate(chatMessage.getGmtCreate());
+            responseVos.add(responseVo);
         }
+
         Collections.sort(responseVos);
         responseVoPage.setData(responseVos);
         return responseVoPage;
