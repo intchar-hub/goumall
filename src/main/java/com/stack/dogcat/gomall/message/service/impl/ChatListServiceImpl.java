@@ -59,7 +59,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         for (ChatList chatList:chatLists) {
             CustomerChatListResponseVo responseVo = new CustomerChatListResponseVo();
             Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatList.getChatUserLinkId()).getStoreId());
-            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("sender_type",1));
+            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("latest",1));
             responseVo.setChatUserLinkId(chatList.getChatUserLinkId());
             responseVo.setUnreadNum(chatList.getUnreadNum());
             responseVo.setStoreName(store.getStoreName());
@@ -86,7 +86,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         for (ChatList chatList:chatLists) {
             StoreChatListResponseVo responseVo = new StoreChatListResponseVo();
             Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatList.getChatUserLinkId()).getCustomerId());
-            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("sender_type",0));
+            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("latest",1));
             responseVo.setChatUserLinkId(chatList.getChatUserLinkId());
             responseVo.setUnreadNum(chatList.getUnreadNum());
             responseVo.setCustomerName(customer.getUserName());

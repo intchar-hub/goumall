@@ -78,20 +78,14 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
             chatListMapper.insert(customerChatList);
 
             //插入一条空白消息（为了更好地联表查询数据）
-            ChatMessage customerChatMessage = new ChatMessage();
-            customerChatMessage.setChatUserLinkId(chatUserLink.getId());
-            customerChatMessage.setContent("");
-            customerChatMessage.setSenderType(0);
-            customerChatMessage.setGmtCreate(LocalDateTime.now());
-            customerChatMessage.setLatest(1);
-            chatMessageMapper.insert(customerChatMessage);
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setChatUserLinkId(chatUserLink.getId());
+            chatMessage.setContent("");
+            chatMessage.setSenderType(0);
+            chatMessage.setGmtCreate(LocalDateTime.now());
+            chatMessage.setLatest(1);
+            chatMessageMapper.insert(chatMessage);
             ChatMessage storeChatMessage = new ChatMessage();
-            storeChatMessage.setChatUserLinkId(chatUserLink.getId());
-            storeChatMessage.setContent("");
-            storeChatMessage.setSenderType(0);
-            storeChatMessage.setGmtCreate(LocalDateTime.now());
-            storeChatMessage.setLatest(1);
-            chatMessageMapper.insert(storeChatMessage);
 
             return chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId)).getId();
         }
