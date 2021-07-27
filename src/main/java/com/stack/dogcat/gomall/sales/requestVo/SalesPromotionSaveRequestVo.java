@@ -60,12 +60,21 @@ public class SalesPromotionSaveRequestVo {
                 "storeId=" + storeId +
                 ", productId=" + productId +
                 ", title='" + title + '\'' +
-                ",purchasingAmount="+purchasingAmount+
+                ", purchasingAmount=" + purchasingAmount +
                 ", discount=" + discount +
                 ", startTime=" + startTime +
                 ", deadline=" + deadline +
                 '}';
     }
+
+    public Integer getPurchasingAmount() {
+        return purchasingAmount;
+    }
+
+    public void setPurchasingAmount(Integer purchasingAmount) {
+        this.purchasingAmount = purchasingAmount;
+    }
+
 
     public Integer getStoreId() {
         return storeId;

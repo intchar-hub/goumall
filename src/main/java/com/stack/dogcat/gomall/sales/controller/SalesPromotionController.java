@@ -40,7 +40,7 @@ public class SalesPromotionController {
             salesPromotionService.savePromotion(requestVo);
         } catch (Exception e) {
             e.printStackTrace();
-            return SysResult.error("活动发布失败");
+            return SysResult.error(e.getMessage());
         }
         return SysResult.success();
     }

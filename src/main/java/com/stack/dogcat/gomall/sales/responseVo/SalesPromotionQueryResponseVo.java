@@ -58,7 +58,6 @@ public class SalesPromotionQueryResponseVo {
      */
     private Integer purchasingAmount;
 
-
     /**
      * 折扣
      */
