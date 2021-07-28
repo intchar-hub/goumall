@@ -117,7 +117,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
             //将顾客其余窗口和与其余商家窗口置为不在线
             UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.eq("chat_user_link_id",chatUserLinkId).set("customer_window",0);
+            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("customer_window",0);
             chatListMapper.update(null,wrapper_3);
         }
         //商家方更新
@@ -134,7 +134,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
             //将商家其余窗口和与其余顾客窗口置为不在线
             UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.eq("chat_user_link_id",chatUserLinkId).set("store_window",0);
+            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("store_window",0);
             chatListMapper.update(null,wrapper_3);
         }
     }
