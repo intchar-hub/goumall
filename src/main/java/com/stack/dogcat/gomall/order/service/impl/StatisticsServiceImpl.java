@@ -8,6 +8,7 @@ import com.stack.dogcat.gomall.order.mapper.RefundMapper;
 import com.stack.dogcat.gomall.order.mapper.StatisticsMapper;
 import com.stack.dogcat.gomall.order.responseVo.BasicStatisticsInfoQueryResponseVo;
 import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
+import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesNum;
 import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesVolume;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
@@ -229,6 +230,65 @@ public class StatisticsServiceImpl {
         thisMonthIncreaseFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
 
         /**
+         * 订单统计
+         */
+        Integer thisMonthOrderNum; // 本月订单数
+        BigDecimal monthOrderNumsIncreasingRate; // 同比上月订单数上涨率
+        Integer thisWeekOrderNum; // 本周订单数
+        BigDecimal weekOrderNumsIncreasingRate; // 同比上周订单数上涨率
+        BigDecimal thisMonthIncome; // 本月销售额
+        BigDecimal monthIncomeIncreasingRate; // 同比上月销售额上涨率
+        BigDecimal thisWeekIncome; // 本周销售额
+        BigDecimal weekIncomeIncreasingRate; // 同比上周销售额上涨率
+
+        orderQueryWrapper = new QueryWrapper();
+        orderQueryWrapper.eq("store_id", storeId);
+        orderQueryWrapper.eq("status", 3);
+        orderQueryWrapper.likeRight("gmt_create", now.toString().substring(0, 7));
+        thisMonthOrderNum = orderMapper.selectCount(orderQueryWrapper);
+
+        orderQueryWrapper = new QueryWrapper();
+        orderQueryWrapper.eq("store_id", storeId);
+        orderQueryWrapper.eq("status", 3);
+        orderQueryWrapper.likeRight("gmt_create", now.minusMonths(1).toString().substring(0, 7));
+        Integer lastMonthOrderNum = orderMapper.selectCount(orderQueryWrapper);
+        if(lastMonthOrderNum == 0) {
+            monthOrderNumsIncreasingRate = new BigDecimal(thisMonthOrderNum);
+        } else {
+            monthOrderNumsIncreasingRate = new BigDecimal((thisMonthOrderNum - lastMonthOrderNum) / lastMonthOrderNum);
+        }
+
+        thisWeekOrderNum = statisticsMapper.selectThisWeekOrderNum(storeId);
+        thisWeekOrderNum = (thisWeekOrderNum == null)? 0: thisWeekOrderNum;
+        Integer lastWeekOrderNum = statisticsMapper.selectLastWeekOrderNum(storeId);
+        lastWeekOrderNum = (lastWeekOrderNum == null)? 0: lastWeekOrderNum;
+        if(lastWeekOrderNum == 0) {
+            weekOrderNumsIncreasingRate = new BigDecimal(thisWeekOrderNum);
+        } else {
+            weekOrderNumsIncreasingRate = new BigDecimal((thisWeekOrderNum - lastWeekOrderNum) / lastWeekOrderNum);
+        }
+
+        thisMonthIncome = statisticsMapper.selectThisMonthIncome(storeId);
+        thisMonthIncome = (thisMonthIncome == null)? new BigDecimal(0): thisMonthIncome;
+        BigDecimal lastMonthIncome = statisticsMapper.selectLastMonthIncome(storeId);
+        lastMonthIncome = (lastMonthIncome == null)? new BigDecimal(0): lastMonthIncome;
+        if(lastMonthIncome.compareTo(new BigDecimal(0)) == 0) {
+            monthIncomeIncreasingRate = thisMonthIncome;
+        } else {
+            monthIncomeIncreasingRate = thisMonthIncome.subtract(lastMonthIncome).divide(lastMonthIncome);
+        }
+
+        thisWeekIncome = statisticsMapper.selectThisWeekIncome(storeId);
+        thisWeekIncome = (thisWeekIncome == null)? new BigDecimal(0): thisWeekIncome;
+        BigDecimal lastWeekIncome = statisticsMapper.selectLastWeekIncome(storeId);
+        lastWeekIncome = (lastWeekIncome == null)? new BigDecimal(0): lastWeekIncome;
+        if(lastWeekIncome.compareTo(new BigDecimal(0)) == 0) {
+            weekIncomeIncreasingRate = thisWeekIncome;
+        } else {
+            weekIncomeIncreasingRate = thisWeekIncome.subtract(lastWeekIncome).divide(lastWeekIncome);
+        }
+
+        /**
          * 年份
          */
         List<String> years = statisticsMapper.listOrderYears(storeId);
@@ -236,7 +296,12 @@ public class StatisticsServiceImpl {
         /**
          * 商品-销售额
          */
-        List<ProductWithSalesVolume> productWithSalesVolumes = statisticsMapper.listProdctSalesVolume(storeId);
+        List<ProductWithSalesVolume> productWithSalesVolumes = statisticsMapper.listProductSalesVolume(storeId);
+
+        /**
+         * 商品-销售量
+         */
+        List<ProductWithSalesNum> productWithSalesNums = statisticsMapper.listProductSalesNum(storeId);
 
 
         /**
@@ -264,9 +329,20 @@ public class StatisticsServiceImpl {
         responseVo.setThisMonthIncreaseFansNum(thisMonthIncreaseFansNum);
         responseVo.setTotalFansNum(totalFansNum);
 
+        responseVo.setThisMonthOrderNum(thisMonthOrderNum);
+        responseVo.setMonthOrderNumsIncreasingRate(monthOrderNumsIncreasingRate);
+        responseVo.setThisWeekOrderNum(thisWeekOrderNum);
+        responseVo.setWeekOrderNumsIncreasingRate(weekOrderNumsIncreasingRate);
+        responseVo.setThisMonthIncome(thisMonthIncome);
+        responseVo.setMonthIncomeIncreasingRate(monthIncomeIncreasingRate);
+        responseVo.setThisWeekIncome(thisWeekIncome);
+        responseVo.setWeekIncomeIncreasingRate(weekIncomeIncreasingRate);
+
         responseVo.setYears(years);
 
         responseVo.setProductWithSalesVolumes(productWithSalesVolumes);
+
+        responseVo.setProductWithSalesNums(productWithSalesNums);
 
         return responseVo;
     }
