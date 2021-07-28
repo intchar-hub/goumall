@@ -9,6 +9,7 @@ import com.stack.dogcat.gomall.message.entity.ChatMessage;
 import com.stack.dogcat.gomall.message.requestVo.MessageSaveRequestVo;
 import com.stack.dogcat.gomall.message.responseVo.MessageResponseVo;
 import com.stack.dogcat.gomall.message.service.IChatMessageService;
+import io.swagger.models.auth.In;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -16,6 +17,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Date;
@@ -29,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @Date 2021/7/17
  * @Descrition TODO
  */
-@ServerEndpoint(value = "/mms/chat/websocket",configurator= WebSocketConfig.class)
+@ServerEndpoint(value = "/mms/chat/websocket/{id}/{senderType}",configurator= WebSocketConfig.class)
 @Component
 public class MyWebSocket {
 
@@ -61,24 +63,30 @@ public class MyWebSocket {
      * 建立连接调用的方法
      */
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config) throws IOException {
+    public void onOpen(Session session, EndpointConfig config, @PathParam("id")Integer id, @PathParam("senderType")Integer senderType) throws IOException {
+        System.out.println("建立WebScoket连接 "+id+" "+senderType);
 
-        HttpSession httpSession= (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(httpSession.getServletContext());
+        try{
+            HttpSession httpSession= (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+            WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(httpSession.getServletContext());
 
-        this.applicationContext = applicationContext;
-        this.session = session;
-        this.senderType =(Integer) httpSession.getAttribute("senderType");
-        if(senderType==0){
-            this.id=(Integer) httpSession.getAttribute("customerId");
-            customerMap.put(id,session);
+            this.applicationContext = applicationContext;
+            this.session = session;
+            this.senderType =senderType;
+            this.id=id;
+            if(senderType==0){
+                customerMap.put(id,session);
+            }
+            else{
+                storeMap.put(id,session);
+            }
+            this.chatMessageService = (IChatMessageService) applicationContext.getBean("chatMessageServiceImpl");
+            webSocketSet.add(this);
         }
-        else{
-            this.id=(Integer) httpSession.getAttribute("storeId");
-            storeMap.put(id,session);
+        catch (Exception e){
+            e.printStackTrace();
         }
-        this.chatMessageService = (IChatMessageService) applicationContext.getBean("chatMessageService");
-        webSocketSet.add(this);
+
     }
 
     /**
@@ -88,6 +96,7 @@ public class MyWebSocket {
     public void onClose() {
         //从set中删除
         webSocketSet.remove(this);
+        System.out.println("WebScoket连接关闭");
     }
 
     /**

@@ -18,6 +18,7 @@ import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +103,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
      * 进入窗口后更新在线情况
      */
     @Override
+    @Transactional
     public void updateWindow(Integer chatUserLinkId, Integer senderType) {
         //顾客方更新
         if(senderType==0){

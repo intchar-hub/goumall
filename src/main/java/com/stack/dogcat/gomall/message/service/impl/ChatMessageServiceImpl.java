@@ -119,7 +119,7 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     @Override
     public PageResponseVo<MessageResponseVo> getMessages(Integer chatUserLinkId, Integer senderType, Integer pageNum, Integer pageSize) {
         Page<ChatMessage> page = new Page<>(pageNum,pageSize);
-        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId));
+        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId).orderByDesc("id"));
         PageResponseVo<MessageResponseVo> responseVoPage= new PageResponseVo(chatMessagePage);
         List<ChatMessage> chatMessages = chatMessagePage.getRecords();
         List<MessageResponseVo> responseVos = new ArrayList<>();
