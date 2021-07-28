@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Author Yang Jie
  * @Date 2021/7/17 16:27
@@ -31,14 +34,14 @@ public class StatisticsController {
      */
     @GetMapping("/listOrderNumAndIncomeByYear")
     public SysResult listOrderNumAndIncomeByYear(Integer storeId, String year) {
-        OrderNumAndIncomeQueryResponseVo responseVo;
+        List<OrderNumAndIncomeQueryResponseVo> responseVos = new ArrayList<>();
         try {
-            responseVo = statisticsService.listOrderNumAndIncomeByYear(storeId, year);
+            responseVos = statisticsService.listOrderNumAndIncomeByYear(storeId, year);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("年销售额统计信息获取失败");
         }
-        return SysResult.success(responseVo);
+        return SysResult.success(responseVos);
     }
 
     /**

@@ -30,6 +30,8 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     private Integer unReceivedOrderNum; // 待确认收货订单数
 
+    private Integer unHandleRefundNum; //待处理退款申请
+
 
     /**
      * 商品总览
@@ -49,7 +51,7 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     private Integer yesterdayIncreaseFansNum; // 昨日新增粉丝数
 
-    private Integer thismonthIncreaseFansNum; // 本月新增粉丝数
+    private Integer thisMonthIncreaseFansNum; // 本月新增粉丝数
 
     private Integer totalFansNum; // 总粉丝数
 
@@ -57,6 +59,20 @@ public class BasicStatisticsInfoQueryResponseVo {
      * 供商家选择可查看销售情况的年份
      */
     private List<String> years; // 店铺中的订单的所有年份（即该店铺从入驻至今）
+
+    /**
+     * 饼图 商品-销售额
+     * @return
+     */
+    private List<ProductWithSalesVolume> productWithSalesVolumes;
+
+    public Integer getUnHandleRefundNum() {
+        return unHandleRefundNum;
+    }
+
+    public void setUnHandleRefundNum(Integer unHandleRefundNum) {
+        this.unHandleRefundNum = unHandleRefundNum;
+    }
 
     @Override
     public String toString() {
@@ -68,16 +84,26 @@ public class BasicStatisticsInfoQueryResponseVo {
                 ", unpayOrderNum=" + unpayOrderNum +
                 ", unSendOrderNum=" + unSendOrderNum +
                 ", unReceivedOrderNum=" + unReceivedOrderNum +
+                ", unHandleRefundNum=" + unHandleRefundNum +
                 ", onSaleProductNum=" + onSaleProductNum +
                 ", stockLackProductNum=" + stockLackProductNum +
                 ", stockEmptyProductNum=" + stockEmptyProductNum +
                 ", allProductNum=" + allProductNum +
                 ", todayIncreaseFansNum=" + todayIncreaseFansNum +
                 ", yesterdayIncreaseFansNum=" + yesterdayIncreaseFansNum +
-                ", thismonthIncreaseFansNum=" + thismonthIncreaseFansNum +
+                ", thisMonthIncreaseFansNum=" + thisMonthIncreaseFansNum +
                 ", totalFansNum=" + totalFansNum +
                 ", years=" + years +
+                ", productWithSalesVolumes=" + productWithSalesVolumes +
                 '}';
+    }
+
+    public List<ProductWithSalesVolume> getProductWithSalesVolumes() {
+        return productWithSalesVolumes;
+    }
+
+    public void setProductWithSalesVolumes(List<ProductWithSalesVolume> productWithSalesVolumes) {
+        this.productWithSalesVolumes = productWithSalesVolumes;
     }
 
     public List<String> getYears() {
@@ -192,12 +218,12 @@ public class BasicStatisticsInfoQueryResponseVo {
         this.yesterdayIncreaseFansNum = yesterdayIncreaseFansNum;
     }
 
-    public Integer getThismonthIncreaseFansNum() {
-        return thismonthIncreaseFansNum;
+    public Integer getThisMonthIncreaseFansNum() {
+        return thisMonthIncreaseFansNum;
     }
 
-    public void setThismonthIncreaseFansNum(Integer thismonthIncreaseFansNum) {
-        this.thismonthIncreaseFansNum = thismonthIncreaseFansNum;
+    public void setThisMonthIncreaseFansNum(Integer thisMonthIncreaseFansNum) {
+        this.thisMonthIncreaseFansNum = thisMonthIncreaseFansNum;
     }
 
     public Integer getTotalFansNum() {

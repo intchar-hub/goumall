@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.order.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.stack.dogcat.gomall.order.entity.Order;
+import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesVolume;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -26,5 +27,20 @@ public interface StatisticsMapper extends BaseMapper<Order> {
             "group by gmt_create " +
             "order by order_year desc;")
     List<String> listOrderYears(@Param("storeId") Integer storeId);
+
+    /**
+     * 获取：店铺内各个商品名及对应的销售额
+     * @param storeId
+     * @return
+     */
+    @Select("select pms_product.name as name, sum(oms_order.total_price) as value " +
+            "from " +
+            "oms_order left join pms_product " +
+            "on " +
+            "oms_order.product_id = pms_product.id " +
+            "where " +
+            "(oms_order.status = 3 and oms_order.store_id = #{storeId})" +
+            "group by pms_product.id;")
+    List<ProductWithSalesVolume> listProdctSalesVolume(@Param("storeId") Integer storeId);
 
 }

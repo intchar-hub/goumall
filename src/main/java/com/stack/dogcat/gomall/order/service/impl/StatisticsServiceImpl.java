@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.stack.dogcat.gomall.content.mapper.StoreCollectionMapper;
 import com.stack.dogcat.gomall.order.entity.Order;
 import com.stack.dogcat.gomall.order.mapper.OrderMapper;
+import com.stack.dogcat.gomall.order.mapper.RefundMapper;
 import com.stack.dogcat.gomall.order.mapper.StatisticsMapper;
 import com.stack.dogcat.gomall.order.responseVo.BasicStatisticsInfoQueryResponseVo;
 import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
+import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesVolume;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,13 +51,16 @@ public class StatisticsServiceImpl {
     @Autowired
     StatisticsMapper statisticsMapper;
 
+    @Autowired
+    RefundMapper refundMapper;
+
     /**
      * 商家按年份查询每月的销售额
      * @param storeId
      * @param year
      * @return
      */
-    public OrderNumAndIncomeQueryResponseVo listOrderNumAndIncomeByYear(Integer storeId, String year) {
+    public List<OrderNumAndIncomeQueryResponseVo> listOrderNumAndIncomeByYear(Integer storeId, String year) {
         if(storeId == null || year == null || year.isEmpty()) {
             LOG.error("缺少请求参数");
             throw new RuntimeException();
@@ -79,11 +85,23 @@ public class StatisticsServiceImpl {
             income[order.getGmtCreate().getMonthValue() - 1] = income[order.getGmtCreate().getMonthValue() - 1].add(order.getTotalPrice());
         }
 
-        OrderNumAndIncomeQueryResponseVo responseVo = new OrderNumAndIncomeQueryResponseVo();
-        responseVo.setIncome(Arrays.asList(income));
-        responseVo.setOrderNum(Arrays.asList(orderNum));
+        List<OrderNumAndIncomeQueryResponseVo> responseVos = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            OrderNumAndIncomeQueryResponseVo vo = new OrderNumAndIncomeQueryResponseVo();
+            vo.setDate((i + 1) + "");
+            vo.setOrderCount(orderNum[i]);
+            vo.setOrderAmount(income[i]);
 
-        return responseVo;
+            responseVos.add(vo);
+        }
+
+        return responseVos;
+//
+//        OrderNumAndIncomeQueryResponseVo responseVo = new OrderNumAndIncomeQueryResponseVo();
+//        responseVo.setIncome(Arrays.asList(income));
+//        responseVo.setOrderNum(Arrays.asList(orderNum));
+
+//        return responseVo;
     }
 
     /**
@@ -133,6 +151,7 @@ public class StatisticsServiceImpl {
         Integer unpayOrderNum; // 待付款订单数
         Integer unSendOrderNum; // 待发货订单数
         Integer unReceivedOrderNum; // 待确认收货订单数
+        Integer unHandleRefundNum; //待处理退款申请
 
         orderQueryWrapper = new QueryWrapper();
         orderQueryWrapper.eq("store_id", storeId);
@@ -148,6 +167,11 @@ public class StatisticsServiceImpl {
         orderQueryWrapper.eq("store_id", storeId);
         orderQueryWrapper.eq("status", 1);
         unSendOrderNum = orderMapper.selectCount(orderQueryWrapper);
+
+        QueryWrapper refundQueryWrapper = new QueryWrapper();
+        refundQueryWrapper.eq("store_id", storeId);
+        refundQueryWrapper.eq("status", 1);
+        unHandleRefundNum = refundMapper.selectCount(refundQueryWrapper);
 
 
         /**
@@ -182,7 +206,7 @@ public class StatisticsServiceImpl {
          */
         Integer todayIncreaseFansNum; // 今日新增粉丝数
         Integer yesterdayIncreaseFansNum; // 昨日新增粉丝数
-        Integer thismonthIncreaseFansNum; // 本月新增粉丝数
+        Integer thisMonthIncreaseFansNum; // 本月新增粉丝数
         Integer totalFansNum; // 总粉丝数
 
         QueryWrapper storeCollectionQueryWrapper = new QueryWrapper();
@@ -202,12 +226,17 @@ public class StatisticsServiceImpl {
         storeCollectionQueryWrapper = new QueryWrapper();
         storeCollectionQueryWrapper.eq("store_id", storeId);
         storeCollectionQueryWrapper.likeRight("gmt_create", now.toString().substring(0, 7));
-        thismonthIncreaseFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
+        thisMonthIncreaseFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
 
         /**
          * 年份
          */
         List<String> years = statisticsMapper.listOrderYears(storeId);
+
+        /**
+         * 商品-销售额
+         */
+        List<ProductWithSalesVolume> productWithSalesVolumes = statisticsMapper.listProdctSalesVolume(storeId);
 
 
         /**
@@ -223,6 +252,7 @@ public class StatisticsServiceImpl {
         responseVo.setUnpayOrderNum(unpayOrderNum);
         responseVo.setUnSendOrderNum(unSendOrderNum);
         responseVo.setUnReceivedOrderNum(unReceivedOrderNum);
+        responseVo.setUnHandleRefundNum(unHandleRefundNum);
 
         responseVo.setOnSaleProductNum(onSaleProductNum);
         responseVo.setStockLackProductNum(stockLackProductNum);
@@ -231,10 +261,12 @@ public class StatisticsServiceImpl {
 
         responseVo.setTodayIncreaseFansNum(todayIncreaseFansNum);
         responseVo.setYesterdayIncreaseFansNum(yesterdayIncreaseFansNum);
-        responseVo.setThismonthIncreaseFansNum(thismonthIncreaseFansNum);
+        responseVo.setThisMonthIncreaseFansNum(thisMonthIncreaseFansNum);
         responseVo.setTotalFansNum(totalFansNum);
 
         responseVo.setYears(years);
+
+        responseVo.setProductWithSalesVolumes(productWithSalesVolumes);
 
         return responseVo;
     }
