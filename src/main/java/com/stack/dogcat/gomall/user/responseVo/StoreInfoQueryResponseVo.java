@@ -28,6 +28,8 @@ public class StoreInfoQueryResponseVo {
 
     private String  description;
 
+    private Integer status;
+
     /**
      * 创建时间
      */
@@ -35,7 +37,7 @@ public class StoreInfoQueryResponseVo {
 
     @Override
     public String toString() {
-        return "StorePwdLoginResponseVo{" +
+        return "StoreInfoQueryResponseVo{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
@@ -45,8 +47,17 @@ public class StoreInfoQueryResponseVo {
                 ", shipAddress='" + shipAddress + '\'' +
                 ", fansNum=" + fansNum +
                 ", description='" + description + '\'' +
+                ", status=" + status +
                 ", gmtCreate=" + gmtCreate +
                 '}';
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Integer getId() {
