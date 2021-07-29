@@ -208,6 +208,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         queryWrapper.eq("product_id", id);
         productCollectionMapper.delete(queryWrapper);
         cartItemMapper.delete(queryWrapper);
+        salesPromotionMapper.delete(queryWrapper);
     }
 
 //    /**

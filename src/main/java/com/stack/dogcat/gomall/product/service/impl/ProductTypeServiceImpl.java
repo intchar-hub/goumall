@@ -103,8 +103,9 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
         queryWrapper.eq("status", 1);
         List<Product> productsDB = productMapper.selectList(queryWrapper);
         if(productsDB == null || productsDB.size() == 0) {
-            LOG.info("店铺内商品获取失败");
-            throw new RuntimeException();
+            return new ArrayList<>();
+//            LOG.info("店铺内商品获取失败");
+//            throw new RuntimeException();
         }
 
         Set<Integer> set = new HashSet<>();

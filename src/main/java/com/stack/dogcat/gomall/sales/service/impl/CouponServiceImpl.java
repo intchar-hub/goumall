@@ -1,6 +1,7 @@
 package com.stack.dogcat.gomall.sales.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
@@ -149,5 +150,13 @@ public class CouponServiceImpl extends ServiceImpl<CouponMapper, Coupon> impleme
             couponInfoResponsePage.setData(responseVos);
             return couponInfoResponsePage;
         }
+    }
+
+    //用户使用优惠券
+    @Override
+    public void updateCouponStatus(Integer customerId, Integer couponId, Integer status) {
+        UpdateWrapper<UserCoupon> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("customer_id",customerId).eq("coupon_id",couponId).set("status",status);
+        userCouponMapper.update(null,updateWrapper);
     }
 }

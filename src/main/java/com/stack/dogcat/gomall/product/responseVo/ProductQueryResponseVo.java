@@ -68,6 +68,8 @@ public class ProductQueryResponseVo {
      */
     private Integer isOnsale;
 
+    private Integer status;
+
     @Override
     public String toString() {
         return "ProductQueryResponseVo{" +
@@ -84,7 +86,16 @@ public class ProductQueryResponseVo {
                 ", highestPrice=" + highestPrice +
                 ", lowestPrice=" + lowestPrice +
                 ", isOnsale=" + isOnsale +
+                ", status=" + status +
                 '}';
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Integer getId() {

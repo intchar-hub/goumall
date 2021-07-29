@@ -21,5 +21,6 @@ public interface ICouponService extends IService<Coupon> {
     void saveCoupon(CouponSaveRequestVo requestVo);
     PageResponseVo<CouponInfoResponseVo> listCouponByStore(Integer storeId,Integer screenCondition,Integer pageNum,Integer pageSize);
     PageResponseVo<CouponInfoResponseVo> listCoupon(Integer  customerId,Integer screenCondition, Integer pageNum, Integer pageSize);
+    void updateCouponStatus(Integer customerId,Integer couponId,Integer status);
 
 }
