@@ -3,6 +3,7 @@ package com.stack.dogcat.gomall.order.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.stack.dogcat.gomall.order.entity.Order;
+import com.stack.dogcat.gomall.order.responseVo.OrderNumAndIncomeQueryResponseVo;
 import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesNum;
 import com.stack.dogcat.gomall.order.responseVo.ProductWithSalesVolume;
 import org.apache.ibatis.annotations.Param;
@@ -127,5 +128,19 @@ public interface StatisticsMapper extends BaseMapper<Order> {
             "where " +
             "(status = 3 and store_id = #{storeId} and YEARWEEK(DATE_FORMAT(gmt_create,'%Y-%m-%d %H:%i:%s')) = YEARWEEK(NOW()) - 1);")
     BigDecimal selectLastWeekIncome(@Param("storeId") Integer storeId);
+
+    /**
+     * 按月获取：店铺内每天的销售额
+     * @param storeId
+     * @return
+     */
+    @Select("select left(gmt_create, 10) as date, sum(total_price) as order_amount, count(id) as order_count " +
+            "from " +
+            "oms_order " +
+            "where " +
+            "gmt_create like #{month} and status = 3 and store_id = #{storeId} " +
+            "group by left(gmt_create, 10) " +
+            "order by left(gmt_create, 10) asc;")
+    List<OrderNumAndIncomeQueryResponseVo> selectOrderNumAndIncomeByMonth(@Param("storeId") Integer storeId, @Param("month") String month);
 
 }

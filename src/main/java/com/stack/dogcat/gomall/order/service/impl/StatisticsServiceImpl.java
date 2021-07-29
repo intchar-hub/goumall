@@ -106,6 +106,23 @@ public class StatisticsServiceImpl {
     }
 
     /**
+     * 商家按月份查询每天的销售额
+     * @param storeId
+     * @param month
+     * @return
+     */
+    public List<OrderNumAndIncomeQueryResponseVo> listOrderNumAndIncomeByMonth(Integer storeId, String month) {
+        if(storeId == null || month == null || month.isEmpty()) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
+        List<OrderNumAndIncomeQueryResponseVo> responseVos = statisticsMapper.selectOrderNumAndIncomeByMonth(storeId, month + "%");
+
+        return responseVos;
+    }
+
+    /**
      * 商家查看各项基本统计信息
      * @param storeId
      * @return
