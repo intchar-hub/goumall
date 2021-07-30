@@ -15,6 +15,8 @@ public class MessageResponseVo implements Comparable<MessageResponseVo> {
 
     private LocalDateTime gmtCreate;
 
+    private Integer senderType;
+
     @Override
     public int compareTo(MessageResponseVo o) {
         return this.gmtCreate.compareTo(o.getGmtCreate());

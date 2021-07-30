@@ -68,7 +68,8 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
         chatMessageMapper.update(null,wrapper);
 
         //查看是否在同一窗口,更新未读数
-        ChatList chatList = chatListMapper.selectOne(new QueryWrapper<ChatList>().eq("chat_user_link_id",chatMessage.getChatUserLinkId()).eq("sender_type",chatMessage.getSenderType()));
+        int senderType=1-chatMessage.getSenderType();
+        ChatList chatList = chatListMapper.selectOne(new QueryWrapper<ChatList>().eq("chat_user_link_id",chatMessage.getChatUserLinkId()).eq("sender_type",senderType));
         int i = chatList.getCustomerWindow()+chatList.getStoreWindow();
         if(i==1){
             chatList.setUnreadNum(chatList.getUnreadNum()+1);
@@ -119,34 +120,34 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     @Override
     public PageResponseVo<MessageResponseVo> getMessages(Integer chatUserLinkId, Integer senderType, Integer pageNum, Integer pageSize) {
         Page<ChatMessage> page = new Page<>(pageNum,pageSize);
-        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId).eq("sender_type",senderType));
+        IPage<ChatMessage> chatMessagePage= chatMessageMapper.selectPage(page,new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatUserLinkId).orderByDesc("id"));
         PageResponseVo<MessageResponseVo> responseVoPage= new PageResponseVo(chatMessagePage);
         List<ChatMessage> chatMessages = chatMessagePage.getRecords();
         List<MessageResponseVo> responseVos = new ArrayList<>();
-        //顾客获取数据
-        if(senderType==0){
-            for (ChatMessage chatMessage:chatMessages) {
-                MessageResponseVo responseVo = new MessageResponseVo();
-                Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getStoreId());
+        System.out.println(chatUserLinkId+"这是获得的斤斤计较急急急急急急急急急急急急急急急");
+        System.out.println(chatUserLinkId);
+        System.out.println(chatUserLinkMapper.selectById(chatUserLinkId));
+        System.out.println(chatUserLinkMapper.selectById(chatUserLinkId).getStoreId());
+        Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getStoreId());
+        Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getCustomerId());
+        //获取数据
+        for (ChatMessage chatMessage:chatMessages) {
+            MessageResponseVo responseVo = new MessageResponseVo();
+            if(chatMessage.getSenderType()==1){
                 responseVo.setReceiverName(store.getStoreName());
                 responseVo.setReceiverAvatarPath(store.getAvatarPath());
-                responseVo.setMessage(chatMessage.getContent());
-                responseVo.setGmtCreate(chatMessage.getGmtCreate());
-                responseVos.add(responseVo);
+                responseVo.setSenderType(1);
             }
-        }
-        //商家获取数据
-        else if(senderType==1){
-            for (ChatMessage chatMessage:chatMessages) {
-                MessageResponseVo responseVo = new MessageResponseVo();
-                Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatUserLinkId).getCustomerId());
+            else {
                 responseVo.setReceiverName(customer.getUserName());
                 responseVo.setReceiverAvatarPath(customer.getAvatorPath());
-                responseVo.setMessage(chatMessage.getContent());
-                responseVo.setGmtCreate(chatMessage.getGmtCreate());
-                responseVos.add(responseVo);
+                responseVo.setSenderType(0);
             }
+            responseVo.setMessage(chatMessage.getContent());
+            responseVo.setGmtCreate(chatMessage.getGmtCreate());
+            responseVos.add(responseVo);
         }
+
         Collections.sort(responseVos);
         responseVoPage.setData(responseVos);
         return responseVoPage;

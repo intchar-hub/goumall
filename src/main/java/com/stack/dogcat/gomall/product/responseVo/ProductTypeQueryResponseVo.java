@@ -1,5 +1,6 @@
 package com.stack.dogcat.gomall.product.responseVo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -13,16 +14,38 @@ public class ProductTypeQueryResponseVo {
 
     private String name;
 
-    private List<ProductTypeChild> children;
+    private Integer parentId;
+
+    private LocalDateTime gmtCreate;
 
     @Override
     public String toString() {
         return "ProductTypeQueryResponseVo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", parentId=" + parentId +
+                ", gmtCreate=" + gmtCreate +
                 ", children=" + children +
                 '}';
     }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+
+    public LocalDateTime getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(LocalDateTime gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    private List<ProductTypeChild> children;
 
     public Integer getId() {
         return id;

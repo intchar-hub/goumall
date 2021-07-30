@@ -74,5 +74,18 @@ public class CouponController {
             return SysResult.error(e.getMessage());
         }
     }
-
+    /**
+     * 顾客使用优惠券
+     */
+    @PostMapping("/updateCouponStatus")
+    public SysResult updateCouponStatus(Integer customerId, Integer couponId, Integer status){
+        try{
+            couponService.updateCouponStatus(customerId,couponId,status);
+            return SysResult.success();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return SysResult.error("未知错误");
+        }
+    }
 }

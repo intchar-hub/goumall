@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Author Yang Jie
  * @Date 2021/7/17 16:27
@@ -24,6 +27,24 @@ public class StatisticsController {
     StatisticsServiceImpl statisticsService;
 
     /**
+     * 商家按月份查看每天的销售额
+     * @param storeId
+     * @param month
+     * @return
+     */
+    @GetMapping("/listOrderNumAndIncomeByMonth")
+    public SysResult listOrderNumAndIncomeByMonth(Integer storeId, String month) {
+        List<OrderNumAndIncomeQueryResponseVo> responseVos = new ArrayList<>();
+        try {
+            responseVos = statisticsService.listOrderNumAndIncomeByMonth(storeId, month);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("月销售额统计信息获取失败");
+        }
+        return SysResult.success(responseVos);
+    }
+
+    /**
      * 商家按年份查看每月的销售额
      * @param storeId
      * @param year
@@ -31,14 +52,14 @@ public class StatisticsController {
      */
     @GetMapping("/listOrderNumAndIncomeByYear")
     public SysResult listOrderNumAndIncomeByYear(Integer storeId, String year) {
-        OrderNumAndIncomeQueryResponseVo responseVo;
+        List<OrderNumAndIncomeQueryResponseVo> responseVos = new ArrayList<>();
         try {
-            responseVo = statisticsService.listOrderNumAndIncomeByYear(storeId, year);
+            responseVos = statisticsService.listOrderNumAndIncomeByYear(storeId, year);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("年销售额统计信息获取失败");
         }
-        return SysResult.success(responseVo);
+        return SysResult.success(responseVos);
     }
 
     /**

@@ -30,6 +30,8 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     private Integer unReceivedOrderNum; // 待确认收货订单数
 
+    private Integer unHandleRefundNum; //待处理退款申请
+
 
     /**
      * 商品总览
@@ -49,44 +51,45 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     private Integer yesterdayIncreaseFansNum; // 昨日新增粉丝数
 
-    private Integer thismonthIncreaseFansNum; // 本月新增粉丝数
+    private Integer thisMonthIncreaseFansNum; // 本月新增粉丝数
 
     private Integer totalFansNum; // 总粉丝数
+
+    /**
+     * 订单统计
+     */
+    private Integer thisMonthOrderNum; // 本月订单数
+
+    private BigDecimal monthOrderNumsIncreasingRate; // 同比上月订单数上涨率
+
+    private Integer thisWeekOrderNum; // 本周订单数
+
+    private BigDecimal weekOrderNumsIncreasingRate; // 同比上周订单数上涨率
+
+    private BigDecimal thisMonthIncome; // 本月销售额
+
+    private BigDecimal monthIncomeIncreasingRate; // 同比上月销售额上涨率
+
+    private BigDecimal thisWeekIncome; // 本周销售额
+
+    private BigDecimal weekIncomeIncreasingRate; // 同比上周销售额上涨率
 
     /**
      * 供商家选择可查看销售情况的年份
      */
     private List<String> years; // 店铺中的订单的所有年份（即该店铺从入驻至今）
 
-    @Override
-    public String toString() {
-        return "BasicStatisticsInfoQueryResponseVo{" +
-                "todayOrderNum=" + todayOrderNum +
-                ", yesterdayOrderNum=" + yesterdayOrderNum +
-                ", todayIncome=" + todayIncome +
-                ", yesterdayIncome=" + yesterdayIncome +
-                ", unpayOrderNum=" + unpayOrderNum +
-                ", unSendOrderNum=" + unSendOrderNum +
-                ", unReceivedOrderNum=" + unReceivedOrderNum +
-                ", onSaleProductNum=" + onSaleProductNum +
-                ", stockLackProductNum=" + stockLackProductNum +
-                ", stockEmptyProductNum=" + stockEmptyProductNum +
-                ", allProductNum=" + allProductNum +
-                ", todayIncreaseFansNum=" + todayIncreaseFansNum +
-                ", yesterdayIncreaseFansNum=" + yesterdayIncreaseFansNum +
-                ", thismonthIncreaseFansNum=" + thismonthIncreaseFansNum +
-                ", totalFansNum=" + totalFansNum +
-                ", years=" + years +
-                '}';
-    }
+    /**
+     * 饼图 商品-销售额
+     * @return
+     */
+    private List<ProductWithSalesVolume> productWithSalesVolumes;
 
-    public List<String> getYears() {
-        return years;
-    }
-
-    public void setYears(List<String> years) {
-        this.years = years;
-    }
+    /**
+     * 饼图 商品-销售量
+     * @return
+     */
+    private List<ProductWithSalesNum> productWithSalesNums;
 
     public Integer getTodayOrderNum() {
         return todayOrderNum;
@@ -144,6 +147,14 @@ public class BasicStatisticsInfoQueryResponseVo {
         this.unReceivedOrderNum = unReceivedOrderNum;
     }
 
+    public Integer getUnHandleRefundNum() {
+        return unHandleRefundNum;
+    }
+
+    public void setUnHandleRefundNum(Integer unHandleRefundNum) {
+        this.unHandleRefundNum = unHandleRefundNum;
+    }
+
     public Integer getOnSaleProductNum() {
         return onSaleProductNum;
     }
@@ -192,12 +203,12 @@ public class BasicStatisticsInfoQueryResponseVo {
         this.yesterdayIncreaseFansNum = yesterdayIncreaseFansNum;
     }
 
-    public Integer getThismonthIncreaseFansNum() {
-        return thismonthIncreaseFansNum;
+    public Integer getThisMonthIncreaseFansNum() {
+        return thisMonthIncreaseFansNum;
     }
 
-    public void setThismonthIncreaseFansNum(Integer thismonthIncreaseFansNum) {
-        this.thismonthIncreaseFansNum = thismonthIncreaseFansNum;
+    public void setThisMonthIncreaseFansNum(Integer thisMonthIncreaseFansNum) {
+        this.thisMonthIncreaseFansNum = thisMonthIncreaseFansNum;
     }
 
     public Integer getTotalFansNum() {
@@ -206,5 +217,126 @@ public class BasicStatisticsInfoQueryResponseVo {
 
     public void setTotalFansNum(Integer totalFansNum) {
         this.totalFansNum = totalFansNum;
+    }
+
+    public Integer getThisMonthOrderNum() {
+        return thisMonthOrderNum;
+    }
+
+    public void setThisMonthOrderNum(Integer thisMonthOrderNum) {
+        this.thisMonthOrderNum = thisMonthOrderNum;
+    }
+
+    public BigDecimal getMonthOrderNumsIncreasingRate() {
+        return monthOrderNumsIncreasingRate;
+    }
+
+    public void setMonthOrderNumsIncreasingRate(BigDecimal monthOrderNumsIncreasingRate) {
+        this.monthOrderNumsIncreasingRate = monthOrderNumsIncreasingRate;
+    }
+
+    public Integer getThisWeekOrderNum() {
+        return thisWeekOrderNum;
+    }
+
+    public void setThisWeekOrderNum(Integer thisWeekOrderNum) {
+        this.thisWeekOrderNum = thisWeekOrderNum;
+    }
+
+    public BigDecimal getWeekOrderNumsIncreasingRate() {
+        return weekOrderNumsIncreasingRate;
+    }
+
+    public void setWeekOrderNumsIncreasingRate(BigDecimal weekOrderNumsIncreasingRate) {
+        this.weekOrderNumsIncreasingRate = weekOrderNumsIncreasingRate;
+    }
+
+    public BigDecimal getThisMonthIncome() {
+        return thisMonthIncome;
+    }
+
+    public void setThisMonthIncome(BigDecimal thisMonthIncome) {
+        this.thisMonthIncome = thisMonthIncome;
+    }
+
+    public BigDecimal getMonthIncomeIncreasingRate() {
+        return monthIncomeIncreasingRate;
+    }
+
+    public void setMonthIncomeIncreasingRate(BigDecimal monthIncomeIncreasingRate) {
+        this.monthIncomeIncreasingRate = monthIncomeIncreasingRate;
+    }
+
+    public BigDecimal getThisWeekIncome() {
+        return thisWeekIncome;
+    }
+
+    public void setThisWeekIncome(BigDecimal thisWeekIncome) {
+        this.thisWeekIncome = thisWeekIncome;
+    }
+
+    public BigDecimal getWeekIncomeIncreasingRate() {
+        return weekIncomeIncreasingRate;
+    }
+
+    public void setWeekIncomeIncreasingRate(BigDecimal weekIncomeIncreasingRate) {
+        this.weekIncomeIncreasingRate = weekIncomeIncreasingRate;
+    }
+
+    public List<String> getYears() {
+        return years;
+    }
+
+    public void setYears(List<String> years) {
+        this.years = years;
+    }
+
+    public List<ProductWithSalesVolume> getProductWithSalesVolumes() {
+        return productWithSalesVolumes;
+    }
+
+    public void setProductWithSalesVolumes(List<ProductWithSalesVolume> productWithSalesVolumes) {
+        this.productWithSalesVolumes = productWithSalesVolumes;
+    }
+
+    public List<ProductWithSalesNum> getProductWithSalesNums() {
+        return productWithSalesNums;
+    }
+
+    public void setProductWithSalesNums(List<ProductWithSalesNum> productWithSalesNums) {
+        this.productWithSalesNums = productWithSalesNums;
+    }
+
+    @Override
+    public String toString() {
+        return "BasicStatisticsInfoQueryResponseVo{" +
+                "todayOrderNum=" + todayOrderNum +
+                ", yesterdayOrderNum=" + yesterdayOrderNum +
+                ", todayIncome=" + todayIncome +
+                ", yesterdayIncome=" + yesterdayIncome +
+                ", unpayOrderNum=" + unpayOrderNum +
+                ", unSendOrderNum=" + unSendOrderNum +
+                ", unReceivedOrderNum=" + unReceivedOrderNum +
+                ", unHandleRefundNum=" + unHandleRefundNum +
+                ", onSaleProductNum=" + onSaleProductNum +
+                ", stockLackProductNum=" + stockLackProductNum +
+                ", stockEmptyProductNum=" + stockEmptyProductNum +
+                ", allProductNum=" + allProductNum +
+                ", todayIncreaseFansNum=" + todayIncreaseFansNum +
+                ", yesterdayIncreaseFansNum=" + yesterdayIncreaseFansNum +
+                ", thisMonthIncreaseFansNum=" + thisMonthIncreaseFansNum +
+                ", totalFansNum=" + totalFansNum +
+                ", thisMonthOrderNum=" + thisMonthOrderNum +
+                ", monthOrderNumsIncreasingRate=" + monthOrderNumsIncreasingRate +
+                ", thisWeekOrderNum=" + thisWeekOrderNum +
+                ", weekOrderNumsIncreasingRate=" + weekOrderNumsIncreasingRate +
+                ", thisMonthIncome=" + thisMonthIncome +
+                ", monthIncomeIncreasingRate=" + monthIncomeIncreasingRate +
+                ", thisWeekIncome=" + thisWeekIncome +
+                ", weekIncomeIncreasingRate=" + weekIncomeIncreasingRate +
+                ", years=" + years +
+                ", productWithSalesVolumes=" + productWithSalesVolumes +
+                ", productWithSalesNums=" + productWithSalesNums +
+                '}';
     }
 }

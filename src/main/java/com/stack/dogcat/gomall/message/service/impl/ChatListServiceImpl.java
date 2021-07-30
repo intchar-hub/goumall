@@ -18,6 +18,7 @@ import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         for (ChatList chatList:chatLists) {
             CustomerChatListResponseVo responseVo = new CustomerChatListResponseVo();
             Store store = storeMapper.selectById(chatUserLinkMapper.selectById(chatList.getChatUserLinkId()).getStoreId());
-            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("sender_type",1));
+            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("latest",1));
             responseVo.setChatUserLinkId(chatList.getChatUserLinkId());
             responseVo.setUnreadNum(chatList.getUnreadNum());
             responseVo.setStoreName(store.getStoreName());
@@ -86,7 +87,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
         for (ChatList chatList:chatLists) {
             StoreChatListResponseVo responseVo = new StoreChatListResponseVo();
             Customer customer = customerMapper.selectById(chatUserLinkMapper.selectById(chatList.getChatUserLinkId()).getCustomerId());
-            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("sender_type",0));
+            ChatMessage chatMessage = chatMessageMapper.selectOne(new QueryWrapper<ChatMessage>().eq("chat_user_link_id",chatList.getChatUserLinkId()).eq("latest",1));
             responseVo.setChatUserLinkId(chatList.getChatUserLinkId());
             responseVo.setUnreadNum(chatList.getUnreadNum());
             responseVo.setCustomerName(customer.getUserName());
@@ -102,6 +103,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
      * 进入窗口后更新在线情况
      */
     @Override
+    @Transactional
     public void updateWindow(Integer chatUserLinkId, Integer senderType) {
         //顾客方更新
         if(senderType==0){
@@ -117,7 +119,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
             //将顾客其余窗口和与其余商家窗口置为不在线
             UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.eq("chat_user_link_id",chatUserLinkId).set("customer_window",0);
+            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("customer_window",0);
             chatListMapper.update(null,wrapper_3);
         }
         //商家方更新
@@ -134,7 +136,7 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
 
             //将商家其余窗口和与其余顾客窗口置为不在线
             UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.eq("chat_user_link_id",chatUserLinkId).set("store_window",0);
+            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("store_window",0);
             chatListMapper.update(null,wrapper_3);
         }
     }

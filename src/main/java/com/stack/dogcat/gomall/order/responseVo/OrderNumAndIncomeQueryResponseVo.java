@@ -10,31 +10,42 @@ import java.util.List;
  */
 public class OrderNumAndIncomeQueryResponseVo {
 
-    private List<Integer> orderNum;
+    private String date;
 
-    private List<BigDecimal> income;
+    private Integer orderCount;
+
+    private BigDecimal orderAmount;
 
     @Override
     public String toString() {
-        return "SaleNumAndIncomeQueryResponseVo{" +
-                "saleNum=" + orderNum +
-                ", income=" + income +
+        return "OrderNumAndIncomeQueryResponseVo{" +
+                "date='" + date + '\'' +
+                ", orderCount=" + orderCount +
+                ", orderAmount=" + orderAmount +
                 '}';
     }
 
-    public List<Integer> getOrderNum() {
-        return orderNum;
+    public String getDate() {
+        return date;
     }
 
-    public void setOrderNum(List<Integer> orderNum) {
-        this.orderNum = orderNum;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public List<BigDecimal> getIncome() {
-        return income;
+    public Integer getOrderCount() {
+        return orderCount;
     }
 
-    public void setIncome(List<BigDecimal> income) {
-        this.income = income;
+    public void setOrderCount(Integer orderCount) {
+        this.orderCount = orderCount;
+    }
+
+    public BigDecimal getOrderAmount() {
+        return orderAmount;
+    }
+
+    public void setOrderAmount(BigDecimal orderAmount) {
+        this.orderAmount = orderAmount;
     }
 }

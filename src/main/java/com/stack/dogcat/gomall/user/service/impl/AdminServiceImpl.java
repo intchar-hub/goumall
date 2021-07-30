@@ -144,6 +144,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
             message.setFrom("w741008w@163.com");
             message.setTo(email);
             mailSender.send(message);
+            LOG.info("管理员" + email + "验证码：" + emailServiceCode);
 
             //判断是否有之前的验证码
             VerifyCode exitVerifyCode=verifyCodeMapper.selectOne(new QueryWrapper<VerifyCode>().eq("mark_string","admin_email"));
@@ -176,6 +177,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
         response.setHeader("Pragma", "No-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expire", 0);
+        LOG.info("管理员字符验证码：" + lineCaptcha.getCode());
 //        return lineCaptcha.getImageBase64();
         try {
             lineCaptcha.write(response.getOutputStream());

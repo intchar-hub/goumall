@@ -125,6 +125,11 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
          * 商品表
          */
         Product productDB = productMapper.selectById(requestVo.getProductId());
+        //判断库存是否合理
+        if(productDB.getStockNum()<requestVo.getPurchasingAmount()){
+            LOG.info("该商品库存不够");
+            throw new RuntimeException("该商品库存不够");
+        }
         productDB.setIsOnsale(1);
         productMapper.updateById(productDB);
 

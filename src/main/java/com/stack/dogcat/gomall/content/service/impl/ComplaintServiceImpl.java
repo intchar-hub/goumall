@@ -11,6 +11,16 @@ import com.stack.dogcat.gomall.content.responseVo.ComplaintQueryResponseVo;
 import com.stack.dogcat.gomall.content.responseVo.ComplaintResponseVo;
 import com.stack.dogcat.gomall.content.service.IComplaintService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.order.entity.CartItem;
+import com.stack.dogcat.gomall.order.mapper.CartItemMapper;
+import com.stack.dogcat.gomall.product.entity.Product;
+import com.stack.dogcat.gomall.product.mapper.ProductMapper;
+import com.stack.dogcat.gomall.sales.entity.Coupon;
+import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
+import com.stack.dogcat.gomall.sales.entity.UserCoupon;
+import com.stack.dogcat.gomall.sales.mapper.CouponMapper;
+import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
+import com.stack.dogcat.gomall.sales.mapper.UserCouponMapper;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.mapper.CustomerMapper;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
@@ -42,6 +52,21 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
 
     @Autowired
     private ComplaintMapper complaintMapper;
+
+    @Autowired
+    private ProductMapper productMapper;
+
+    @Autowired
+    private CouponMapper couponMapper;
+
+    @Autowired
+    private UserCouponMapper userCouponMapper;
+
+    @Autowired
+    private SalesPromotionMapper salesPromotionMapper;
+
+    @Autowired
+    private CartItemMapper cartItemMapper;
     
     /**
      * 管理员查看所有投诉
@@ -82,6 +107,23 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
             UpdateWrapper<Store> storeUpdateWrapper = new UpdateWrapper<>();
             storeUpdateWrapper.eq("id",storeId).set("status",3);
             int i = storeMapper.update(null,storeUpdateWrapper);
+
+            UpdateWrapper<Product> productUpdateWrapper=new UpdateWrapper<>();
+            productUpdateWrapper.eq("store_id",storeId).set("status",0);
+            productMapper.update(null,productUpdateWrapper);
+
+            List<Coupon> coupons=couponMapper.selectList(new QueryWrapper<Coupon>().eq("store_id",storeId));
+            for (Coupon coupon:coupons) {
+                userCouponMapper.delete(new QueryWrapper<UserCoupon>().eq("coupon_id",coupon.getId()));
+            }
+            couponMapper.delete(new QueryWrapper<Coupon>().eq("store_id",storeId));
+
+            salesPromotionMapper.delete(new QueryWrapper<SalesPromotion>().eq("store_id",storeId));
+
+            List<Product> products = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",storeId));
+            for (Product product:products) {
+                cartItemMapper.delete(new QueryWrapper<CartItem>().eq("product_id",product.getId()));
+            }
 
             UpdateWrapper<Complaint> complaintUpdateWrapper = new UpdateWrapper<>();
             complaintUpdateWrapper.eq("id",complaintId).set("status",1);

@@ -208,6 +208,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         queryWrapper.eq("product_id", id);
         productCollectionMapper.delete(queryWrapper);
         cartItemMapper.delete(queryWrapper);
+        salesPromotionMapper.delete(queryWrapper);
     }
 
 //    /**
@@ -361,6 +362,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             responseVo.setName(product.getName());
             responseVo.setDescription(product.getDescription());
             responseVo.setGmtCreate(product.getGmtCreate());
+            responseVo.setStockNum(product.getStockNum());
             responseVo.setCommentNum(commentMapper.selectCount(new QueryWrapper<Comment>().eq("product_id",product.getId())));
             responseVoList.add(responseVo);
         }
@@ -439,6 +441,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("type_id", typeId);
         queryWrapper.eq("status", 1);
+        queryWrapper.orderByDesc("sales_num");
 
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
