@@ -35,4 +35,9 @@ public class ProductWithCommentResponseVo {
      */
     private Integer CommentNum;
 
+    /**
+     * 商品库存
+     */
+    private Integer stockNum;
+
 }

@@ -118,11 +118,13 @@ public class MyWebSocket {
 
                 //声明一个map，封装直接发送信息数据返回前端
                 Map<String, Object> resultMap = new HashMap<>();
-                resultMap=chatMessageService.getOneMessage(messageVo);
+                resultMap.put("chatUserLinkId",messageVo.getChatUserLinkId());
+                resultMap.put("content",messageVo.getContent());
+                resultMap.put("senderType",messageVo.getSenderType());
                 JSONObject json = new JSONObject(resultMap);
 
                 //发送回前端
-                fromSession.getAsyncRemote().sendText(json.toString());
+                //fromSession.getAsyncRemote().sendText(json.toString());
 
                 // 1.判断接收方的toSession是否为null
                 // 2.判断在聊天页面 ==> 直接发送 其他都是存储在数据库中
@@ -143,11 +145,13 @@ public class MyWebSocket {
 
                 //声明一个map，封装直接发送信息数据返回前端
                 Map<String, Object> resultMap = new HashMap<>();
-                resultMap=chatMessageService.getOneMessage(messageVo);
+                resultMap.put("chatUserLinkId",messageVo.getChatUserLinkId());
+                resultMap.put("content",messageVo.getContent());
+                resultMap.put("senderType",messageVo.getSenderType());
                 JSONObject json = new JSONObject(resultMap);
 
                 //发送回前端
-                fromSession.getAsyncRemote().sendText(json.toString());
+                //fromSession.getAsyncRemote().sendText(json.toString());
 
                 // 1.判断接收方的toSession是否为null
                 // 2.判断在聊天页面 ==> 直接发送 其他都是存储在数据库中
