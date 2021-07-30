@@ -1,19 +1,25 @@
 package com.stack.dogcat.gomall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.entity.ProductType;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.product.mapper.ProductTypeMapper;
+import com.stack.dogcat.gomall.product.responseVo.FirstLevelTypeQueryResponseVo;
 import com.stack.dogcat.gomall.product.responseVo.ProductTypeChild;
 import com.stack.dogcat.gomall.product.responseVo.ProductTypeQueryResponseVo;
 import com.stack.dogcat.gomall.product.service.IProductTypeService;
+import com.stack.dogcat.gomall.utils.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -36,7 +42,7 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     ProductMapper productMapper;
 
     /**
-     * 用户查看商品分类
+     * 用户查看商品分类，不分页
      * @return
      */
     @Override
@@ -88,7 +94,7 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     }
 
     /**
-     * 商家查看商品分类
+     * 商家查看自家商品分类，不分页
      * @return
      */
     @Override
@@ -181,5 +187,89 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
             throw new RuntimeException();
         }
         return productTypeDB.getParentId();
+    }
+
+    /**
+     * 查看所有分类（分页）
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResponseVo<ProductTypeQueryResponseVo> listTypesByPage(Integer pageNum, Integer pageSize) {
+        Page<ProductType> page = new Page<>(pageNum, pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("parent_id", 0);
+        IPage<ProductType> iPage = productTypeMapper.selectPage(page,queryWrapper);
+        PageResponseVo<ProductTypeQueryResponseVo> pageResponseVo = new PageResponseVo(iPage);
+
+        List<Integer> parentIds = new ArrayList<>();
+        for (ProductType record : iPage.getRecords()) {
+            parentIds.add(record.getId());
+        }
+
+        queryWrapper = new QueryWrapper();
+        queryWrapper.in("parent_id", parentIds);
+        List<ProductType> productTypesDB = productTypeMapper.selectList(queryWrapper);
+
+        List<ProductTypeQueryResponseVo> responseVos = new ArrayList<>();
+        for (ProductType record : iPage.getRecords()) {
+            ProductTypeQueryResponseVo vo = new ProductTypeQueryResponseVo();
+            List<ProductTypeChild> children = new ArrayList<>();
+            vo.setId(record.getId());
+            vo.setName(record.getName());
+            vo.setParentId(0);
+            vo.setGmtCreate(record.getGmtCreate());
+
+            //已归类的分类
+            List<ProductType> classified = new ArrayList<>();
+
+            for (ProductType productType : productTypesDB) {
+                if(productType.getParentId() == record.getId()) {
+                    ProductTypeChild child = new ProductTypeChild();
+                    child.setId(productType.getId());
+                    child.setName(productType.getName());
+                    child.setParentId(productType.getParentId());
+                    child.setGmtCreate(productType.getGmtCreate());
+
+                    children.add(child);
+                    classified.add(productType);
+                }
+            }
+            vo.setChildren(children);
+            responseVos.add(vo);
+            productTypesDB.removeAll(classified);
+        }
+
+        pageResponseVo.setData(responseVos);
+
+        return pageResponseVo;
+    }
+
+    /**
+     * 查询所有一级分类（不分页）
+     * @return
+     */
+    @Override
+    public List<FirstLevelTypeQueryResponseVo> listFirstLevelTypes() {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("parent_id", 0);
+        List<ProductType> productTypesDB = productTypeMapper.selectList(queryWrapper);
+        List<FirstLevelTypeQueryResponseVo> responseVos = CopyUtil.copyList(productTypesDB, FirstLevelTypeQueryResponseVo.class);
+        return responseVos;
+    }
+
+    /**
+     * 添加分类
+     * @param name
+     * @param parentId
+     */
+    @Override
+    public void saveProductType(String name, Integer parentId) {
+        ProductType productType = new ProductType();
+        productType.setGmtCreate(LocalDateTime.now());
+        productType.setName(name);
+        productType.setParentId(parentId);
+        productTypeMapper.insert(productType);
     }
 }

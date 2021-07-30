@@ -440,6 +440,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("type_id", typeId);
         queryWrapper.eq("status", 1);
+        queryWrapper.orderByDesc("sales_num");
 
         Page<Product> page = new Page<>(pageNum, pageSize);
         IPage<Product> productIPage = productMapper.selectPage(page, queryWrapper);
