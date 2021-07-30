@@ -362,6 +362,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             responseVo.setName(product.getName());
             responseVo.setDescription(product.getDescription());
             responseVo.setGmtCreate(product.getGmtCreate());
+            responseVo.setStockNum(product.getStockNum());
             responseVo.setCommentNum(commentMapper.selectCount(new QueryWrapper<Comment>().eq("product_id",product.getId())));
             responseVoList.add(responseVo);
         }
