@@ -96,4 +96,19 @@ public class SalesPromotionController {
         return SysResult.success(responseVos);
     }
 
+    /**
+     * 顾客参加指定商品秒杀活动
+     * @return
+     */
+    @PostMapping("/rushSalesByProductId")
+    public SysResult rushSalesByProductId(Integer customerId,Integer productId){
+
+        try {
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("参与秒杀活动失败");
+        }
+        return SysResult.success();
+    }
 }

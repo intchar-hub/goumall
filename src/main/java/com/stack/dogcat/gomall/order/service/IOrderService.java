@@ -12,6 +12,7 @@ import com.stack.dogcat.gomall.order.responseVo.OrderInfoResponseVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +27,9 @@ public interface IOrderService extends IService<Order> {
 
     /**新建订单**/
     SysResult saveOrder(Integer customerId, OrderRequestVo orderRequestVo);
+
+    /**新建多个订单并支付**/
+    List<SysResult> payForOrders(Integer customerId, String ordersString, HttpServletResponse servletResponse);
 
     /**查询单个订单**/
     OrderInfoResponseVo getOrderInfo(Integer orderId,Integer customer_visible);
@@ -45,6 +49,15 @@ public interface IOrderService extends IService<Order> {
     /**支付订单Wap**/
     String payOrderByWap (Integer orderId);
 
+    /**Precreate*/
+    String payOrderPrecreate (Integer orderId);
+
+    /**Merge*/
+    String payOrderMerge (String pre_order_no);
+
+    /**支付状态*/
+    Integer getPayStatus(Integer orderId);
+
 
 
     /**
@@ -53,6 +66,13 @@ public interface IOrderService extends IService<Order> {
      * @return String
      */
     String aliNotify(Map<String, String> conversionParams);
+
+    /**
+     * 支付宝异步回调
+     * @param conversionParams conversionParams
+     * @return String
+     */
+    String payOrdersNotify(Map<String, String> conversionParams);
 
     /**商家按条件查询订单（与退款相关除外，即refund_status需为0），所有筛选条件下，均有：refund_status=0**/
     PageResponseVo<OrderInfoResponseVo> listOrdersByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer status, String gmtCreate) throws ParseException;
