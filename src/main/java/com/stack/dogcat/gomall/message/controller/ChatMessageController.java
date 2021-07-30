@@ -33,7 +33,7 @@ public class ChatMessageController {
         }
         catch (Exception e){
             e.printStackTrace();
-            return SysResult.error("未知错误");
+            return SysResult.error("发生未知错误");
         }
     }
 
