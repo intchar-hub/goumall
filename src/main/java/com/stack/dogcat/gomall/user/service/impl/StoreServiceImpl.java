@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
+import com.stack.dogcat.gomall.product.entity.Product;
+import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.user.entity.Store;
 import com.stack.dogcat.gomall.user.entity.VerifyCode;
 import com.stack.dogcat.gomall.user.mapper.StoreMapper;
@@ -31,10 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * <p>
@@ -57,6 +56,9 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
 
     @Autowired
     VerifyCodeMapper verifyCodeMapper;
+
+    @Autowired
+    ProductMapper productMapper;
 
     /**
      * 向商家发送邮箱验证码（四位数）
@@ -327,7 +329,40 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         Page<Store> page = new Page<>(pageNum, pageSize);
         IPage<Store> storeIPage = storeMapper.selectPage(page, queryWrapper);
         PageResponseVo<StoreQueryResponseVo> responseVo = new PageResponseVo(storeIPage);
-        responseVo.setData(CopyUtil.copyList(storeIPage.getRecords(), StoreQueryResponseVo.class));
+        List<StoreQueryResponseVo> storeQueryResponseVos = new ArrayList<>();
+
+        for (Store record : storeIPage.getRecords()) {
+            queryWrapper = new QueryWrapper();
+            queryWrapper.eq("status", 1);
+            queryWrapper.eq("store_id", record.getId());
+            queryWrapper.orderByDesc("sales_num");
+            List<Product> productsDB = productMapper.selectList(queryWrapper);
+
+            List<String> imagePaths = new ArrayList<>();
+            if(productsDB.size() >= 3) {
+                for (int i = 0; i < 3; i++) {
+                    imagePaths.add(productsDB.get(i).getImagePath());
+                }
+            } else {
+                String[] paths = {"http://qwmwlt898.hd-bkt.clouddn.com/Ft12snMfhT-a_alm4Pst41Sgqu1H",
+                "http://qwmwlt898.hd-bkt.clouddn.com/Fg-sBXH95t3a9CiDuhsLUJ9jtoQb",
+                "http://qwmwlt898.hd-bkt.clouddn.com/FodHvEC2_8F2You0Wpe1PmS0OvHi"};
+                for (int i = 0; i < productsDB.size(); i++) {
+                    imagePaths.add(productsDB.get(i).getImagePath());
+                }
+                for (int i = 0; i < 3 - productsDB.size(); i++) {
+                    imagePaths.add(paths[i]);
+                }
+            }
+
+            StoreQueryResponseVo vo = new StoreQueryResponseVo();
+            vo = CopyUtil.copy(record, StoreQueryResponseVo.class);
+            vo.setImagePaths(imagePaths);
+
+            storeQueryResponseVos.add(vo);
+        }
+
+        responseVo.setData(storeQueryResponseVos);
 
         return responseVo;
     }
