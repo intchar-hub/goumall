@@ -140,6 +140,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }else {
                 order.setPrice(sku.getPrice());
             }
+            System.out.println("price:"+order.getTotalPrice());
             ReceiveAddress receiveAddress = receiveAddressMapper.selectById(orderRequestVo.getReceiveAddressId());
             order.setReceiveAddressId(orderRequestVo.getReceiveAddressId());
             order.setConsignee(receiveAddress.getConsignee());
@@ -160,6 +161,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             /**减库存**/
             sku.setStockNum(sku.getStockNum()-orderRequestVo.getProductNum());
             skuMapper.updateById(sku);
+            product.setStockNum(product.getStockNum()-orderRequestVo.getProductNum());
+            productMapper.updateById(product);
 
             QueryWrapper queryWrapper1 = new QueryWrapper();
             queryWrapper1.eq("order_number",randNum);
@@ -210,7 +213,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             if(j!=results.size()-1){
                 subject=subject+"+";
             }
-            total_amount.add(orderInfo.getTotalPrice());
+            total_amount=total_amount.add(orderInfo.getTotalPrice());
         }
 
         //获得初始化的 AlipayClient
@@ -230,7 +233,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             //model.setQuitUrl("https://www.hao123.com/");
             //（2）设置请求参数
             //alipayRequest.setReturnUrl();
-            alipayRequest.setNotifyUrl("http://kgz9qj.natappfree.cc/order/order/payOrdersNotify");
+            alipayRequest.setNotifyUrl(" http://bqwi84.natappfree.cc/order/order/payOrdersNotify");
             //alipayRequest.setReturnUrl("https://www.hao123.com/");
             alipayRequest.setBizModel(model);
             //（3）请求
@@ -500,7 +503,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             //model.setQuitUrl("https://www.hao123.com/");
             //（2）设置请求参数
             //alipayRequest.setReturnUrl();
-            alipayRequest.setNotifyUrl("http://kgz9qj.natappfree.cc/order/order/payNotify");
+            alipayRequest.setNotifyUrl(" http://bqwi84.natappfree.cc/order/order/payNotify");
             //alipayRequest.setReturnUrl("https://www.hao123.com/");
             alipayRequest.setBizModel(model);
             //（3）请求
