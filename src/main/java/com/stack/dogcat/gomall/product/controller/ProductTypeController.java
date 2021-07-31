@@ -51,7 +51,7 @@ public class ProductTypeController {
      * @return
      */
     @GetMapping("/listTypesByPage")
-    public SysResult listTypesByStore(Integer pageNum, Integer pageSize) {
+    public SysResult listTypesByPage(Integer pageNum, Integer pageSize) {
         PageResponseVo<ProductTypeQueryResponseVo> responseVos = null;
         try {
             responseVos = productTypeService.listTypesByPage(pageNum, pageSize);

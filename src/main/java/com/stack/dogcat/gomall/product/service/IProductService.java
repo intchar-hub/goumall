@@ -45,4 +45,6 @@ public interface IProductService extends IService<Product> {
     ProductQueryResponseVo getProductById(Integer id);
 
     List<ProductWithStoreQueryResponseVo> getProductWithStoreByIds(String ids);
+
+    PageResponseVo<ProductQueryResponseVo> listNewProducts(Integer pageNum, Integer pageSize);
 }
