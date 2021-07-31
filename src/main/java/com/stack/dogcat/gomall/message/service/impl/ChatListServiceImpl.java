@@ -118,9 +118,9 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
             chatListMapper.update(null,wrapper_2);
 
             //将顾客其余窗口和与其余商家窗口置为不在线
-            UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("customer_window",0);
-            chatListMapper.update(null,wrapper_3);
+//            UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
+//            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("customer_window",0);
+//            chatListMapper.update(null,wrapper_3);
         }
         //商家方更新
         else if(senderType==1){
@@ -135,14 +135,14 @@ public class ChatListServiceImpl extends ServiceImpl<ChatListMapper, ChatList> i
             chatListMapper.update(null,wrapper_2);
 
             //将商家其余窗口和与其余顾客窗口置为不在线
-            UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
-            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("store_window",0);
-            chatListMapper.update(null,wrapper_3);
+//            UpdateWrapper<ChatList> wrapper_3 = new UpdateWrapper<ChatList>();
+//            wrapper_3.ne("chat_user_link_id",chatUserLinkId).set("store_window",0);
+//            chatListMapper.update(null,wrapper_3);
         }
     }
 
     /**
-     * 离开所有窗口更新在线情况
+     * 离开窗口更新在线情况
      */
     @Override
     public void resetWindow(Integer chatUserLinkId, Integer senderType) {
