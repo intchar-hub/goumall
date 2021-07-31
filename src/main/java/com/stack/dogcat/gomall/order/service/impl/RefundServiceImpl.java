@@ -126,6 +126,8 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
             if(aliPayRefundQuery(order.getOrderNumber())){
                 refund.setStatus(2);
                 refundMapper.updateById(refund);
+                order.setRefundStatus(2);
+                orderMapper.updateById(order);
                 return refundResponse;
             }else{
                 return "退款未执行成功，请重新请求";
