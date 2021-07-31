@@ -625,4 +625,27 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         return responseVos;
     }
+
+    /**
+     * 查看新品
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageResponseVo<ProductQueryResponseVo> listNewProducts(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageSize == null) {
+            LOG.error("缺少请求参数");
+            throw new RuntimeException();
+        }
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", 1);
+        queryWrapper.orderByDesc("gmt_create");
+        IPage<Product> iPage = productMapper.selectPage(page, queryWrapper);
+        PageResponseVo<ProductQueryResponseVo> pageResponseVo = new PageResponseVo(iPage);
+        pageResponseVo.setData(CopyUtil.copyList(iPage.getRecords(), ProductQueryResponseVo.class));
+        return pageResponseVo;
+    }
 }
