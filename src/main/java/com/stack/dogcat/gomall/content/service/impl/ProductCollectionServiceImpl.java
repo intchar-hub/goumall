@@ -61,16 +61,18 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
         List<ProductCollection> collections = collectionPage.getRecords();
         List<ProductCollectionResponseVo> collectionResponseVos = new ArrayList<>();
         for (ProductCollection productCollection:collections) {
-            ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
-            Product product=productMapper.selectById(productCollection.getProductId());
-            responseVo.setProductCollectionId(productCollection.getId());
-            responseVo.setProductId(productCollection.getProductId());
-            responseVo.setProductName(product.getName());
-            responseVo.setImagePath(product.getImagePath());
-            responseVo.setDescription(product.getDescription());
-            responseVo.setHighestPrice(product.getHighestPrice());
-            responseVo.setLowestPrice(product.getLowestPrice());
-            collectionResponseVos.add(responseVo);
+            if(productCollection.getStatus()==1){
+                ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
+                Product product=productMapper.selectById(productCollection.getProductId());
+                responseVo.setProductCollectionId(productCollection.getId());
+                responseVo.setProductId(productCollection.getProductId());
+                responseVo.setProductName(product.getName());
+                responseVo.setImagePath(product.getImagePath());
+                responseVo.setDescription(product.getDescription());
+                responseVo.setHighestPrice(product.getHighestPrice());
+                responseVo.setLowestPrice(product.getLowestPrice());
+                collectionResponseVos.add(responseVo);
+            }
         }
         //封装PageResponseVo
         PageResponseVo<ProductCollectionResponseVo> responseVos = new PageResponseVo(collectionPage);
