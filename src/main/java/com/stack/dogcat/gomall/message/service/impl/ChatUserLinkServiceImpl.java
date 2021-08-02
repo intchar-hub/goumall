@@ -7,8 +7,11 @@ import com.stack.dogcat.gomall.message.entity.ChatUserLink;
 import com.stack.dogcat.gomall.message.mapper.ChatListMapper;
 import com.stack.dogcat.gomall.message.mapper.ChatMessageMapper;
 import com.stack.dogcat.gomall.message.mapper.ChatUserLinkMapper;
+import com.stack.dogcat.gomall.message.responseVo.ChatUserLinkResponseVo;
 import com.stack.dogcat.gomall.message.service.IChatUserLinkService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stack.dogcat.gomall.user.entity.Store;
+import com.stack.dogcat.gomall.user.mapper.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,9 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
     @Autowired
     ChatMessageMapper chatMessageMapper;
 
+    @Autowired
+    StoreMapper storeMapper;
+
     @Override
     public Integer selectAssociation(Integer customerId, Integer storeId) {
         //查询连接id
@@ -48,9 +54,13 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int CheckFirstChat(Integer customerId, Integer storeId) {
+    public ChatUserLinkResponseVo CheckFirstChat(Integer customerId, Integer storeId) {
         //判断是否为第一次连接
         Integer linkId = this.selectAssociation(customerId,storeId);
+        ChatUserLinkResponseVo responseVo = new ChatUserLinkResponseVo();
+        Store store = storeMapper.selectById(storeId);
+        responseVo.setStoreName(store.getStoreName());
+        responseVo.setStoreAvatar(store.getAvatarPath());
         if(linkId==-1){
             //添加连接
             ChatUserLink chatUserLink=new ChatUserLink();
@@ -85,12 +95,12 @@ public class ChatUserLinkServiceImpl extends ServiceImpl<ChatUserLinkMapper, Cha
             chatMessage.setGmtCreate(LocalDateTime.now());
             chatMessage.setLatest(1);
             chatMessageMapper.insert(chatMessage);
-            ChatMessage storeChatMessage = new ChatMessage();
 
-            return chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId)).getId();
+            responseVo.setChatUserLink(chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId)).getId());
         }
         else{
-            return -1;
+            responseVo.setChatUserLink(chatUserLinkMapper.selectOne(new QueryWrapper<ChatUserLink>().eq("customer_id",customerId).eq("store_id",storeId)).getId());
         }
+        return responseVo;
     }
 }

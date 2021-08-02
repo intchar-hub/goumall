@@ -2,6 +2,7 @@ package com.stack.dogcat.gomall.message.service;
 
 import com.stack.dogcat.gomall.message.entity.ChatUserLink;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stack.dogcat.gomall.message.responseVo.ChatUserLinkResponseVo;
 
 /**
  * <p>
@@ -23,5 +24,5 @@ public interface IChatUserLinkService extends IService<ChatUserLink> {
      * 是否第一次聊天
      * @return
      */
-    int CheckFirstChat(Integer customerId, Integer storeId);
+    ChatUserLinkResponseVo CheckFirstChat(Integer customerId, Integer storeId);
 }
