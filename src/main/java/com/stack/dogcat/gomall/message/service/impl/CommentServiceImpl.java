@@ -132,7 +132,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public PageResponseVo<CommentQueryByStoreResponseVo> listCommentByStore(Integer storeId, Integer pageNum, Integer pageSize) {
         Page<Product> page = new Page<>(pageNum,pageSize);
-        IPage<Product> productPage = productMapper.selectPage(page,new QueryWrapper<Product>().eq("store_id",storeId));
+        IPage<Product> productPage = productMapper.selectPage(page,new QueryWrapper<Product>().eq("store_id",storeId).eq("status",1));
         List<Product> products=productPage.getRecords();
         List<CommentQueryByStoreResponseVo> responseVos = new ArrayList<>();
         for (Product product:products) {
