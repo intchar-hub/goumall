@@ -278,6 +278,13 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         }
 
         StoreInfoQueryResponseVo responseVo = CopyUtil.copy(storeDB, StoreInfoQueryResponseVo.class);
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("store_id", id);
+        queryWrapper.eq("status", 1);
+        Integer productNum = productMapper.selectCount(queryWrapper);
+        responseVo.setProductNum(productNum);
+
         return responseVo;
     }
 
