@@ -4,6 +4,7 @@ package com.stack.dogcat.gomall.message.controller;
 import com.stack.dogcat.gomall.annotation.CurrentUser;
 import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
+import com.stack.dogcat.gomall.message.responseVo.ChatUserLinkResponseVo;
 import com.stack.dogcat.gomall.message.service.IChatUserLinkService;
 import com.stack.dogcat.gomall.user.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,9 @@ public class ChatUserLinkController {
     @PostMapping("/firstChat")
     public SysResult firstChat(Integer customerId, Integer storeId){
         try{
-            int i=chatUserLinkService.CheckFirstChat(customerId,storeId);
+            ChatUserLinkResponseVo responseVo =chatUserLinkService.CheckFirstChat(customerId,storeId);
             //不是第一次建立连接
-            if(i==-1){
-                return SysResult.success(chatUserLinkService.selectAssociation(customerId,storeId));
-            }
-            //第一次建立连接
-            else{
-                return SysResult.success(i);
-            }
+            return SysResult.success(responseVo);
         }
         catch (Exception e){
             e.printStackTrace();
