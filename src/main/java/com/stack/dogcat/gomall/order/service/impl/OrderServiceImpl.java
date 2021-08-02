@@ -756,5 +756,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
     }
 
+    @Override
+    public void cancelOrder(Integer orderId){
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status",0);
+        queryWrapper.eq("id",orderId);
+
+        Order order = orderMapper.selectOne(queryWrapper);
+        order.setStatus(4);
+        orderMapper.updateById(order);
+
+    }
 
 }
