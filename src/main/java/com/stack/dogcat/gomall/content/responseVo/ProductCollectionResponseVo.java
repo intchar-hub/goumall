@@ -33,4 +33,9 @@ public class ProductCollectionResponseVo {
      * 商品描述
      */
     private String description;
+
+    /**
+     * 销量
+     */
+    private Integer salesNum;
 }

@@ -65,10 +65,8 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
 
     @Override
     public PageResponseVo<StoreCollectionResponseVo> listStoreCollection(Integer customerId,Integer pageNum,Integer pageSize) {
-        QueryWrapper wrapper=new QueryWrapper();
-        wrapper.eq("customer_id",customerId);
         Page<StoreCollection> page =new Page<>(pageNum,pageSize);
-        IPage<StoreCollection> collectionPage = storeCollectionMapper.selectPage(page,wrapper);
+        IPage<StoreCollection> collectionPage = storeCollectionMapper.selectPage(page,new QueryWrapper<StoreCollection>().eq("customer_id",customerId).eq("status",1));
         //补充返回vo需要的内容
         List<StoreCollection> collections=collectionPage.getRecords();
         List<StoreCollectionResponseVo> collectionResponseVos = new ArrayList<>();

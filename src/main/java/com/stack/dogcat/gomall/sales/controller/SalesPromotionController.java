@@ -1,12 +1,15 @@
 package com.stack.dogcat.gomall.sales.controller;
 
 
+import com.stack.dogcat.gomall.annotation.CurrentUser;
+import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesProductQueryResponseVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.sales.service.ISalesPromotionService;
+import com.stack.dogcat.gomall.user.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,14 +104,17 @@ public class SalesPromotionController {
      * @return
      */
     @PostMapping("/rushSalesByProductId")
-    public SysResult rushSalesByProductId(Integer customerId,Integer productId){
+    @Token.UserLoginToken
+    public SysResult rushSalesByProductId(@CurrentUser Customer current_customer, Integer productId){
 
+        String msg;
         try {
+            msg=salesPromotionService.secKill(current_customer.getId(),productId);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return SysResult.error("参与秒杀活动失败");
+            return SysResult.error("参与秒杀活动失败"+e.getMessage());
         }
-        return SysResult.success();
+        return SysResult.success(msg);
     }
 }

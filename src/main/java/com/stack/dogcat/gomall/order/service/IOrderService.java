@@ -82,4 +82,7 @@ public interface IOrderService extends IService<Order> {
 
     /**订单收货*/
     String confirmReceipt(Integer orderId);
+
+    /**取消订单*/
+    void cancelOrder(Integer orderId);
 }

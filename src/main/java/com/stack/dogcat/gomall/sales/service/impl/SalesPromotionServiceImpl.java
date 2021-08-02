@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.config.RabbitmqConfig;
+import com.stack.dogcat.gomall.config.RedisConfig;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.stack.dogcat.gomall.sales.mapper.SalesPromotionMapper;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
+import com.stack.dogcat.gomall.sales.requestVo.SecKillVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesProductQueryResponseVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 import com.stack.dogcat.gomall.sales.service.ISalesPromotionService;
@@ -24,10 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -286,9 +291,10 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
      */
     @Override
     @RabbitListener(queues = RabbitmqConfig.ORDER_QUEUE)
-    public String rushSalesByProductId(Map<String,Integer>map){
+    @SendTo
+    public String rushSalesByProductId(SecKillVo secKillVo){
 
-        LOG.info("收到秒杀请求消息，秒杀请求用户id为：{}，商品id为：{}", map.get("customerId"), map.get("productId"));
+        LOG.info("收到秒杀请求消息，秒杀请求用户id为：{}，商品id为：{}", secKillVo.getCustomerId(), secKillVo.getProductId());
 
 
         return "秒杀成功";
@@ -327,7 +333,7 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         queryWrapper.eq("product_id",productId);
 
         SalesPromotion salesPromotion = salesPromotionMapper.selectOne(queryWrapper);
-        if(salesPromotion.getPurchasingAmount()>=0) {
+        if(salesPromotion.getPurchasingAmount()>0) {
             salesPromotion.setPurchasingAmount(salesPromotion.getPurchasingAmount() - 1);
             salesPromotionMapper.updateById(salesPromotion);
         }
@@ -338,6 +344,14 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
     @Autowired
     SalesPromotionServiceImpl salesPromotionService;
 
+
+
+    @Autowired
+    private ValueOperations<String, Object> valueOperations;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     /**
      * 秒杀活动
      * @return
@@ -345,30 +359,29 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
     @Override
     public String secKill(Integer customerId,Integer productId){
 
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
 
-        redisTemplate.opsForValue().set(productId.toString(),salesPromotionService.hasStock(productId),60, TimeUnit.MINUTES);
+        valueOperations.set(productId.toString(),salesPromotionService.hasStock(productId),60, TimeUnit.MINUTES);
 
         LOG.info("参加秒杀用户id为：{}，商品id为：{}", customerId, productId);
 
         String message = null;
         //调用redis给相应商品库存量减一
-        Long decrByResult = redisTemplate.opsForValue().decrement(productId.toString());
-        if (decrByResult >= 0) {
+        Long decrByResult = valueOperations.decrement(productId.toString());
+        if (decrByResult > 0) {
             /**
              * 说明该商品的库存量有剩余，可以进行下订单操作
              */
             LOG.info("用户：{}秒杀该商品：{}库存有余，可以进行下订单操作", customerId, productId);
             //发消息给库存消息队列，将库存数据减一
-            RabbitTemplate rabbitTemplate =new RabbitTemplate();
+
             rabbitTemplate.convertAndSend(RabbitmqConfig.STORY_EXCHANGE, RabbitmqConfig.STORY_ROUTING_KEY, productId);
 
             //发消息给订单消息队列，创建订单
 
-            Map<String,Integer>map = new HashMap<>();
-            map.put("customerId",customerId);
-            map.put("productId",productId);
-            rabbitTemplate.convertAndSend(RabbitmqConfig.ORDER_EXCHANGE, RabbitmqConfig.ORDER_ROUTING_KEY, map);
+            SecKillVo secKillVo=new SecKillVo();
+            secKillVo.setCustomerId(customerId);
+            secKillVo.setProductId(productId);
+            rabbitTemplate.convertAndSend(RabbitmqConfig.ORDER_EXCHANGE, RabbitmqConfig.ORDER_ROUTING_KEY, secKillVo);
             message = "用户" + customerId + "秒杀" + productId + "成功";
         } else {
             /**
@@ -376,6 +389,7 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
              */
             LOG.info("用户：{}秒杀时商品的库存量没有剩余,秒杀结束", productId);
             message = "用户："+ productId + "商品的库存量没有剩余,秒杀结束";
+            throw new RuntimeException(message);
         }
         return message;
 

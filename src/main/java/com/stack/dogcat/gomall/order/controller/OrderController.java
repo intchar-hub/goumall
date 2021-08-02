@@ -306,29 +306,6 @@ public class OrderController {
 
     }
 
-/**
-    @RequestMapping(value="/toPay",method = RequestMethod.GET)
-    @ResponseBody
-    public String doPost (HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException{
-
-        AlipayClient alipayClient = new DefaultAlipayClient( AlipayConfig.gatewayUrl , AlipayConfig.app_id, AlipayConfig.merchant_private_key, AlipayConfig.format, AlipayConfig.charset, AlipayConfig.alipay_public_key, AlipayConfig.sign_type);
-
-        AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest(); //创建API对应的request
-        alipayRequest.setReturnUrl( "http://domain.com/CallBack/return_url.jsp" );
-        alipayRequest.setNotifyUrl( "http://domain.com/CallBack/notify_url.jsp" );
-        alipayRequest.setBizContent( "{" + " \"out_trade_no\":\"20150320010101002\"," + " \"product_code\":\"FAST_INSTANT_TRADE_PAY\"," + " \"total_amount\":88.88," + " \"subject\":\"Iphone6 16G\"," + " \"body\":\"Iphone6 16G\"," + " \"passback_params\":\"merchantBizType%3d3C%26merchantBizNo%3d2016010101111\"," + " \"extend_params\":{" + " \"sys_service_provider_id\":\"2088511833207846\"" + " }" + " }" );
-        String form= "" ;
-        try {
-            form = alipayClient.pageExecute(alipayRequest).getBody();
-            //调用SDK 生成表单
-             } catch (AlipayApiException e) { e.printStackTrace(); }
-        return  form;
-        }
-
-    @RequestMapping(value="/pay")
-    public String toPay(){
-        return "pay"; //进入支付页面 }
-    }*/
 
     /**
      * 商家按条件查询订单（与退款相关除外，即refund_status需为0），所有筛选条件下，均有：refund_status=0
@@ -350,6 +327,7 @@ public class OrderController {
 
         }catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
+            e.printStackTrace();
             return result;
         }
         return SysResult.success(orderPage);
@@ -372,6 +350,7 @@ public class OrderController {
 
         }catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
+            e.printStackTrace();
             return result;
         }
         return SysResult.success(msg);
@@ -399,6 +378,26 @@ public class OrderController {
         return SysResult.success(msg);
     }
 
+
+    /**
+     * 订单收货
+     * @param orderId
+     * @return
+     */
+    @PostMapping("/cancelOrder")
+    @ResponseBody
+    @Token.UserLoginToken
+    public SysResult cancelOrder(Integer orderId){
+
+        try{
+            orderService.cancelOrder(orderId);
+
+        }catch (Exception e){
+            SysResult result=SysResult.error(e.getMessage());
+            return result;
+        }
+        return SysResult.success();
+    }
 }
 
 

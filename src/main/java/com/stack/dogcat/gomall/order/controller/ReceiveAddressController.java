@@ -41,8 +41,7 @@ public class ReceiveAddressController {
     @PostMapping("/saveReceiveAddress")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String consignee,String address,String phoneNumber)
-    {
+    public SysResult saveReceiveAddress(@CurrentUser Customer current_customer, String consignee,String address,String phoneNumber) {
         try{
             Integer customerId =current_customer.getId();
             receiveAddressService.insertReceiveAddressByCustomerId(customerId,consignee,address,phoneNumber);

@@ -53,10 +53,8 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
 
     @Override
     public PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie){
-        QueryWrapper wrapper=new QueryWrapper();
-        wrapper.eq("customer_id",customerId);
         Page<ProductCollection> page =new Page<>(pageNum,pageSzie);
-        IPage<ProductCollection> collectionPage=productCollectionMapper.selectPage(page,wrapper);
+        IPage<ProductCollection> collectionPage=productCollectionMapper.selectPage(page,new QueryWrapper<ProductCollection>().eq("customer_id",customerId).eq("status",1));
         //补充返回vo需要的内容
         List<ProductCollection> collections = collectionPage.getRecords();
         List<ProductCollectionResponseVo> collectionResponseVos = new ArrayList<>();
@@ -70,6 +68,7 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
             responseVo.setDescription(product.getDescription());
             responseVo.setHighestPrice(product.getHighestPrice());
             responseVo.setLowestPrice(product.getLowestPrice());
+            responseVo.setSalesNum(product.getSalesNum());
             collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
