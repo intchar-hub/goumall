@@ -53,27 +53,23 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
 
     @Override
     public PageResponseVo<ProductCollectionResponseVo> listProductCollection(Integer customerId, Integer pageNum, Integer pageSzie){
-        QueryWrapper wrapper=new QueryWrapper();
-        wrapper.eq("customer_id",customerId);
         Page<ProductCollection> page =new Page<>(pageNum,pageSzie);
-        IPage<ProductCollection> collectionPage=productCollectionMapper.selectPage(page,wrapper);
+        IPage<ProductCollection> collectionPage=productCollectionMapper.selectPage(page,new QueryWrapper<ProductCollection>().eq("customer_id",customerId).eq("status",1));
         //补充返回vo需要的内容
         List<ProductCollection> collections = collectionPage.getRecords();
         List<ProductCollectionResponseVo> collectionResponseVos = new ArrayList<>();
         for (ProductCollection productCollection:collections) {
-            if(productCollection.getStatus()==1){
-                ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
-                Product product=productMapper.selectById(productCollection.getProductId());
-                responseVo.setProductCollectionId(productCollection.getId());
-                responseVo.setProductId(productCollection.getProductId());
-                responseVo.setProductName(product.getName());
-                responseVo.setImagePath(product.getImagePath());
-                responseVo.setDescription(product.getDescription());
-                responseVo.setHighestPrice(product.getHighestPrice());
-                responseVo.setLowestPrice(product.getLowestPrice());
-                responseVo.setSalesNum(product.getSalesNum());
-                collectionResponseVos.add(responseVo);
-            }
+            ProductCollectionResponseVo responseVo= new ProductCollectionResponseVo();
+            Product product=productMapper.selectById(productCollection.getProductId());
+            responseVo.setProductCollectionId(productCollection.getId());
+            responseVo.setProductId(productCollection.getProductId());
+            responseVo.setProductName(product.getName());
+            responseVo.setImagePath(product.getImagePath());
+            responseVo.setDescription(product.getDescription());
+            responseVo.setHighestPrice(product.getHighestPrice());
+            responseVo.setLowestPrice(product.getLowestPrice());
+            responseVo.setSalesNum(product.getSalesNum());
+            collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
         PageResponseVo<ProductCollectionResponseVo> responseVos = new PageResponseVo(collectionPage);
