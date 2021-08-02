@@ -34,9 +34,9 @@ public class BrowserHistoryController {
      * @return
      */
     @PostMapping("/saveBrowserHistory")
-    public SysResult saveBrowserHistory(Integer customerId, Integer productId) {
+    public SysResult saveBrowserHistory(String customerId, String productId) {
         try {
-            browserHistoryService.saveBrowserHistory(customerId, productId);
+            browserHistoryService.saveBrowserHistory(Integer.valueOf(customerId), Integer.valueOf(productId));
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("浏览记录保存失败");
