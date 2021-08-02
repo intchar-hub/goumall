@@ -78,7 +78,7 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
             responseVo.setStoreName(store.getStoreName());
             responseVo.setAvatarPath(store.getAvatarPath());
             responseVo.setDescription(store.getDescription());
-            List<Product> productList = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",store.getId()));
+            List<Product> productList = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",store.getId()).eq("status",1));
             List<String> imagePaths = new ArrayList<>();
             for (Product product:productList) {
                 if(imagePaths.size()<3){
