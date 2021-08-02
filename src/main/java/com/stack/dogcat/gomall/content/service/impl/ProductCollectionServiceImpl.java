@@ -70,6 +70,7 @@ public class ProductCollectionServiceImpl extends ServiceImpl<ProductCollectionM
             responseVo.setDescription(product.getDescription());
             responseVo.setHighestPrice(product.getHighestPrice());
             responseVo.setLowestPrice(product.getLowestPrice());
+            responseVo.setSalesNum(product.getSalesNum());
             collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
