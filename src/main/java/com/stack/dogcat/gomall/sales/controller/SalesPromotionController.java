@@ -88,10 +88,10 @@ public class SalesPromotionController {
      * @return
      */
     @GetMapping("/listPromotionProducts")
-    public SysResult listPromotionProducts() {
-        List<SalesProductQueryResponseVo> responseVos = null;
+    public SysResult listPromotionProducts(Integer pageNum, Integer pageSize) {
+        PageResponseVo<SalesProductQueryResponseVo> responseVos = null;
         try {
-            responseVos = salesPromotionService.listPromotionProducts();
+            responseVos = salesPromotionService.listPromotionProducts(pageNum, pageSize);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("秒杀活动获取失败");
