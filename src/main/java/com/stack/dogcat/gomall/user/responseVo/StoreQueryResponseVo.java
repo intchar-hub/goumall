@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 商店信息（供顾客查询）
@@ -26,6 +27,8 @@ public class StoreQueryResponseVo {
 
     private LocalDateTime gmtCreate;
 
+    private List<String> imagePaths;
+
     @Override
     public String toString() {
         return "StoreQueryResponseVo{" +
@@ -36,7 +39,16 @@ public class StoreQueryResponseVo {
                 ", fansNum=" + fansNum +
                 ", description='" + description + '\'' +
                 ", gmtCreate=" + gmtCreate +
+                ", imagePaths=" + imagePaths +
                 '}';
+    }
+
+    public List<String> getImagePaths() {
+        return imagePaths;
+    }
+
+    public void setImagePaths(List<String> imagePaths) {
+        this.imagePaths = imagePaths;
     }
 
     public Integer getId() {
