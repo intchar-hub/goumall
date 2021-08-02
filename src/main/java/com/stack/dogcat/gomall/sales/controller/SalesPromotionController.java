@@ -103,12 +103,14 @@ public class SalesPromotionController {
     @PostMapping("/rushSalesByProductId")
     public SysResult rushSalesByProductId(Integer customerId,Integer productId){
 
+        String msg;
         try {
+            msg=salesPromotionService.secKill(customerId,productId);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return SysResult.error("参与秒杀活动失败");
+            return SysResult.error("参与秒杀活动失败"+e.getMessage());
         }
-        return SysResult.success();
+        return SysResult.success(msg);
     }
 }

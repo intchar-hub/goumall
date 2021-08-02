@@ -5,6 +5,7 @@ import com.stack.dogcat.gomall.commonResponseVo.SysResult;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stack.dogcat.gomall.sales.requestVo.SalesPromotionSaveRequestVo;
+import com.stack.dogcat.gomall.sales.requestVo.SecKillVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesProductQueryResponseVo;
 import com.stack.dogcat.gomall.sales.responseVo.SalesPromotionQueryResponseVo;
 
@@ -30,7 +31,7 @@ public interface ISalesPromotionService extends IService<SalesPromotion> {
     List<SalesProductQueryResponseVo> listPromotionProducts();
 
     /**顾客参加秒杀活动*/
-    String rushSalesByProductId(Map<String,Integer> map);
+    String rushSalesByProductId(SecKillVo secKillVo);
 
     /**秒杀活动判断是否有商品秒杀库存*/
     Integer hasStock(Integer productId);
