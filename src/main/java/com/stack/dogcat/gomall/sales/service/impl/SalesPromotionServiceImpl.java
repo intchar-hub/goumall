@@ -244,7 +244,7 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
      * @return
      */
     @Override
-    @Cacheable(key = "'listProducts'")
+//    @Cacheable(key = "'listProducts'")
     public List<SalesProductQueryResponseVo> listPromotionProducts() {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("is_onsale", 1);
@@ -253,11 +253,32 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
         List<SalesProductQueryResponseVo> responseVos = new ArrayList<>();
         for (Product product : productsDB) {
             SalesProductQueryResponseVo vo = new SalesProductQueryResponseVo();
-            vo.setProductId(product.getId());
             vo.setProductImagepath(product.getImagePath());
+            vo.setProductId(product.getId());
+            vo.setClickNum(product.getClickNum());
+            vo.setDescription(product.getDescription());
+            vo.setGmtCreate(product.getGmtCreate());
+            vo.setHighestPrice(product.getHighestPrice());
+            vo.setIsOnsale(product.getIsOnsale());
+            vo.setLowestPrice(product.getLowestPrice());
+            vo.setName(product.getName());
+            vo.setSalesNum(product.getSalesNum());
+            vo.setStatus(product.getStatus());
+            vo.setStockNum(product.getStockNum());
+            vo.setStoreId(product.getStoreId());
+            vo.setTypeId(product.getTypeId());
 
             responseVos.add(vo);
         }
+
+        for (Product product : productsDB) {
+            System.out.println(product);
+        }
+
+        for (SalesProductQueryResponseVo responseVo : responseVos) {
+            System.out.println(responseVo);
+        }
+
         return responseVos;
     }
 

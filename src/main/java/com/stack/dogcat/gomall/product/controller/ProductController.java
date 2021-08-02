@@ -251,4 +251,20 @@ public class ProductController {
         return SysResult.success(responseVo);
     }
 
+    /**
+     * 查看新品
+     * @return
+     */
+    @GetMapping("/listNewProducts")
+    public SysResult listNewProducts(Integer pageNum, Integer pageSize) {
+        PageResponseVo<ProductQueryResponseVo> responseVo = null;
+        try {
+            responseVo = productService.listNewProducts(pageNum, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return SysResult.error("获取新品失败");
+        }
+        return SysResult.success(responseVo);
+    }
+
 }

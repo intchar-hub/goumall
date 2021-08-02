@@ -73,26 +73,28 @@ public class StoreCollectionServiceImpl extends ServiceImpl<StoreCollectionMappe
         List<StoreCollection> collections=collectionPage.getRecords();
         List<StoreCollectionResponseVo> collectionResponseVos = new ArrayList<>();
         for (StoreCollection storeCollection:collections) {
-            StoreCollectionResponseVo responseVo= new StoreCollectionResponseVo();
-            Store store=storeMapper.selectById(storeCollection.getStoreId());
-            responseVo.setStoreCollectionId(storeCollection.getId());
-            responseVo.setStoreId(storeCollection.getStoreId());
-            responseVo.setStoreName(store.getStoreName());
-            responseVo.setAvatarPath(store.getAvatarPath());
-            responseVo.setDescription(store.getDescription());
-            List<Product> productList = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",store.getId()));
-            List<String> imagePaths = new ArrayList<>();
-            for (Product product:productList) {
-                if(imagePaths.size()<3){
-                    imagePaths.add(product.getImagePath());
+            if(storeCollection.getStatus()==1){
+                StoreCollectionResponseVo responseVo= new StoreCollectionResponseVo();
+                Store store=storeMapper.selectById(storeCollection.getStoreId());
+                responseVo.setStoreCollectionId(storeCollection.getId());
+                responseVo.setStoreId(storeCollection.getStoreId());
+                responseVo.setStoreName(store.getStoreName());
+                responseVo.setAvatarPath(store.getAvatarPath());
+                responseVo.setDescription(store.getDescription());
+                List<Product> productList = productMapper.selectList(new QueryWrapper<Product>().eq("store_id",store.getId()));
+                List<String> imagePaths = new ArrayList<>();
+                for (Product product:productList) {
+                    if(imagePaths.size()<3){
+                        imagePaths.add(product.getImagePath());
+                    }
+                    else break;
                 }
-                else break;
+                while (imagePaths.size()<3){
+                    imagePaths.add("https://img1.baidu.com/it/u=429168432,2347606957&fm=26&fmt=auto&gp=0.jpg");
+                }
+                responseVo.setImagePaths(imagePaths);
+                collectionResponseVos.add(responseVo);
             }
-            while (imagePaths.size()<3){
-                imagePaths.add("https://img1.baidu.com/it/u=429168432,2347606957&fm=26&fmt=auto&gp=0.jpg");
-            }
-            responseVo.setImagePaths(imagePaths);
-            collectionResponseVos.add(responseVo);
         }
         //封装PageResponseVo
         PageResponseVo<StoreCollectionResponseVo> responseVos=new PageResponseVo(collectionPage);

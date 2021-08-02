@@ -1,7 +1,6 @@
 package com.stack.dogcat.gomall.job;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.stack.dogcat.gomall.product.entity.Product;
 import com.stack.dogcat.gomall.product.mapper.ProductMapper;
 import com.stack.dogcat.gomall.sales.entity.SalesPromotion;
@@ -38,20 +37,24 @@ public class OnSaleProductsCheckJob {
         queryWrapper.lt("deadline", LocalDateTime.now());
         List<SalesPromotion> salesPromotionsDB = salesPromotionMapper.selectList(queryWrapper);
         for (SalesPromotion salesPromotion : salesPromotionsDB) {
-            /**
-             * 更新秒杀活动表中的status字段
-             */
-            salesPromotion.setStatus(1);
-            salesPromotionMapper.updateById(salesPromotion);
+            alterTable(salesPromotion);
+        }
+    }
 
-            /**
-             * 更新商品表中的is_onsale字段
-             */
-            Product productDB = productMapper.selectById(salesPromotion.getProductId());
-            if(productDB.getStatus() == 1) {
-                productDB.setIsOnsale(0);
-                productMapper.updateById(productDB);
-            }
+    public void alterTable(SalesPromotion salesPromotion) {
+        /**
+         * 更新秒杀活动表中的status字段
+         */
+        salesPromotion.setStatus(1);
+        salesPromotionMapper.updateById(salesPromotion);
+
+        /**
+         * 更新商品表中的is_onsale字段
+         */
+        Product productDB = productMapper.selectById(salesPromotion.getProductId());
+        if(productDB.getStatus() == 1) {
+            productDB.setIsOnsale(0);
+            productMapper.updateById(productDB);
         }
     }
 
