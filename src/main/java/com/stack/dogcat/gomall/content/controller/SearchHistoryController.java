@@ -33,9 +33,9 @@ public class SearchHistoryController {
      * @return
      */
     @PostMapping("/saveSearchHistory")
-    public SysResult saveSearchHistory(Integer customerId, String content) {
+    public SysResult saveSearchHistory(String customerId, String content) {
         try {
-            searchHistoryService.saveSearchHistory(customerId, content);
+            searchHistoryService.saveSearchHistory(Integer.valueOf(customerId), content);
         } catch (Exception e) {
             e.printStackTrace();
             return SysResult.error("搜索记录保存失败");
