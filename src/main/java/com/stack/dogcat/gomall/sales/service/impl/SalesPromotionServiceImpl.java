@@ -245,13 +245,15 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
      */
     @Override
 //    @Cacheable(key = "'listProducts'")
-    public List<SalesProductQueryResponseVo> listPromotionProducts() {
+    public PageResponseVo<SalesProductQueryResponseVo> listPromotionProducts(Integer pageNum, Integer pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("is_onsale", 1);
         queryWrapper.eq("status", 1);
-        List<Product> productsDB = productMapper.selectList(queryWrapper);
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        IPage<Product> iPage = productMapper.selectPage(page, queryWrapper);
+
         List<SalesProductQueryResponseVo> responseVos = new ArrayList<>();
-        for (Product product : productsDB) {
+        for (Product product : iPage.getRecords()) {
             SalesProductQueryResponseVo vo = new SalesProductQueryResponseVo();
             vo.setProductImagepath(product.getImagePath());
             vo.setProductId(product.getId());
@@ -271,15 +273,10 @@ public class SalesPromotionServiceImpl extends ServiceImpl<SalesPromotionMapper,
             responseVos.add(vo);
         }
 
-        for (Product product : productsDB) {
-            System.out.println(product);
-        }
+        PageResponseVo<SalesProductQueryResponseVo> pageResponseVo = new PageResponseVo(iPage);
+        pageResponseVo.setData(responseVos);
 
-        for (SalesProductQueryResponseVo responseVo : responseVos) {
-            System.out.println(responseVo);
-        }
-
-        return responseVos;
+        return pageResponseVo;
     }
 
 

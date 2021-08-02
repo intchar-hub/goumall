@@ -27,7 +27,7 @@ public interface ISalesPromotionService extends IService<SalesPromotion> {
 
     List<SalesPromotionQueryResponseVo> listPromotion(Integer screenCondition);
 
-    List<SalesProductQueryResponseVo> listPromotionProducts();
+    PageResponseVo<SalesProductQueryResponseVo> listPromotionProducts(Integer pageNum, Integer pageSize);
 
     /**顾客参加秒杀活动*/
     String rushSalesByProductId(Map<String,Integer> map);
