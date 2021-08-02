@@ -30,10 +30,7 @@ public class StoreInfoQueryResponseVo {
 
     private Integer status;
 
-    /**
-     * 创建时间
-     */
-    private LocalDateTime gmtCreate;
+    private Integer productNum; //店铺内商品数量
 
     @Override
     public String toString() {
@@ -48,9 +45,23 @@ public class StoreInfoQueryResponseVo {
                 ", fansNum=" + fansNum +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", productNum=" + productNum +
                 ", gmtCreate=" + gmtCreate +
                 '}';
     }
+
+    public Integer getProductNum() {
+        return productNum;
+    }
+
+    public void setProductNum(Integer productNum) {
+        this.productNum = productNum;
+    }
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime gmtCreate;
 
     public Integer getStatus() {
         return status;
