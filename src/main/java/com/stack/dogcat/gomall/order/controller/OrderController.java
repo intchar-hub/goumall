@@ -124,7 +124,7 @@ public class OrderController {
 
         OrderInfoResponseVo orderInfoResponseVo ;
         try{
-            orderInfoResponseVo =orderService.getOrderInfo(orderId,1);
+            orderInfoResponseVo =orderService.getOrderInfo(orderId);
 
         }catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
@@ -150,7 +150,7 @@ public class OrderController {
 
         PageResponseVo<OrderInfoResponseVo>orderInfoResponseVoPageResponseVo;
         try{
-            orderInfoResponseVoPageResponseVo = orderService.listOrderByCustomer(current_customer.getId(),status,pageNum,pageSize);
+            orderInfoResponseVoPageResponseVo = orderService.listOrderByCustomer(current_customer.getId(),1,status,pageNum,pageSize);
 
         }catch (Exception e){
             SysResult result=SysResult.error(e.getMessage());
@@ -176,6 +176,7 @@ public class OrderController {
             orderService.deleteOrder(current_customer.getId(),orderId);
 
         }catch (Exception e){
+            e.printStackTrace();
             SysResult result=SysResult.error(e.getMessage());
             return result;
         }
@@ -372,6 +373,7 @@ public class OrderController {
             msg=orderService.confirmReceipt(orderId);
 
         }catch (Exception e){
+            e.printStackTrace();
             SysResult result=SysResult.error(e.getMessage());
             return result;
         }
@@ -380,7 +382,7 @@ public class OrderController {
 
 
     /**
-     * 订单收货
+     * 取消订单
      * @param orderId
      * @return
      */
@@ -393,6 +395,7 @@ public class OrderController {
             orderService.cancelOrder(orderId);
 
         }catch (Exception e){
+            e.printStackTrace();
             SysResult result=SysResult.error(e.getMessage());
             return result;
         }
