@@ -99,12 +99,20 @@ public class ReceiveAddressServiceImpl extends ServiceImpl<ReceiveAddressMapper,
             queryWrapper.eq("default_address", 1);
 
             ReceiveAddress old_default_address = receiveAddressMapper.selectOne(queryWrapper);
-            old_default_address.setDefaultAddress(0);
-            receiveAddressMapper.updateById(old_default_address);
+            if(old_default_address!=null)
+            {
+                old_default_address.setDefaultAddress(0);
+                receiveAddressMapper.updateById(old_default_address);
 
-            ReceiveAddress receiveAddress = receiveAddressMapper.selectById(receiveAddressId);
-            receiveAddress.setDefaultAddress(1);
-            receiveAddressMapper.updateById(receiveAddress);
+                ReceiveAddress receiveAddress = receiveAddressMapper.selectById(receiveAddressId);
+                receiveAddress.setDefaultAddress(1);
+                receiveAddressMapper.updateById(receiveAddress);
+            }
+            else {
+                ReceiveAddress receiveAddress = receiveAddressMapper.selectById(receiveAddressId);
+                receiveAddress.setDefaultAddress(1);
+                receiveAddressMapper.updateById(receiveAddress);
+            }
         }
 
 
