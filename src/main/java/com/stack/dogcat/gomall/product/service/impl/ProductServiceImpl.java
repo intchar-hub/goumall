@@ -497,7 +497,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.like("store_id", storeId);
+        queryWrapper.eq("store_id", storeId);
         queryWrapper.eq("status", 1);
 
         Page<Product> page = new Page<>(pageNum, pageSize);
