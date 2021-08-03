@@ -32,10 +32,10 @@ public interface IOrderService extends IService<Order> {
     List<SysResult> payForOrders(Integer customerId, String ordersString, HttpServletResponse servletResponse);
 
     /**查询单个订单**/
-    OrderInfoResponseVo getOrderInfo(Integer orderId,Integer customer_visible);
+    OrderInfoResponseVo getOrderInfo(Integer orderId);
 
     /**消费者分页查询各状态订单**/
-    PageResponseVo<OrderInfoResponseVo>listOrderByCustomer(Integer customerId,Integer status,Integer pageNum,Integer pageSize);
+    PageResponseVo<OrderInfoResponseVo>listOrderByCustomer(Integer customerId,Integer customer_visible,Integer status,Integer pageNum,Integer pageSize);
 
     /**消费者删除订单**/
     void deleteOrder(Integer customerId,Integer orderId);

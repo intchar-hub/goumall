@@ -248,7 +248,7 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
     @Override
     public OrderInfoResponseVo getRefundOrderInfo(Integer refundId){
 
-        OrderInfoResponseVo refundOrderInfo=orderService.getOrderInfo(refundMapper.selectById(refundId).getOrderId(),1);
+        OrderInfoResponseVo refundOrderInfo=orderService.getOrderInfo(refundMapper.selectById(refundId).getOrderId());
         return refundOrderInfo;
     }
 
