@@ -207,7 +207,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         BigDecimal total_amount=new BigDecimal(0);
         for(int j=0;j<results.size();j++){
             SysResult result=results.get(j);
-            OrderInfoResponseVo orderInfo=orderService.getOrderInfo((Integer) result.getData(),1);
+            OrderInfoResponseVo orderInfo=orderService.getOrderInfo((Integer) result.getData());
             out_trade_no+=orderInfo.getOrderNumber();
             subject+=orderInfo.getProductName();
             if(j!=results.size()-1){
@@ -328,15 +328,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional
-    public OrderInfoResponseVo getOrderInfo(Integer orderId,Integer customer_visible){
+    public OrderInfoResponseVo getOrderInfo(Integer orderId){
 
         OrderInfoResponseVo  orderInfoResponseVo  = new OrderInfoResponseVo ();
 
         QueryWrapper queryWrapper =new QueryWrapper();
         queryWrapper.eq("id",orderId);
-        if(customer_visible == 1) {
-            queryWrapper.eq("customer_visible", 1);
-        }
+
         Order order = orderMapper.selectOne(queryWrapper);
 
         orderInfoResponseVo.setTotalPrice(order.getTotalPrice());
@@ -384,9 +382,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional
-    public PageResponseVo<OrderInfoResponseVo> listOrderByCustomer(Integer customerId, Integer status, Integer pageNum, Integer pageSize){
+    public PageResponseVo<OrderInfoResponseVo> listOrderByCustomer(Integer customerId,Integer customer_visible, Integer status, Integer pageNum, Integer pageSize){
 
         QueryWrapper queryWrapper =new QueryWrapper();
+        if (customer_visible==1)
+        {
+            queryWrapper.eq("customer_visible",1);
+        }
         if(status==5){
             queryWrapper.eq("customer_id",customerId);
         }else {
@@ -403,7 +405,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderInfoResponseVo>orderInfoResponseVos=new ArrayList<>();
         for(int i=0; i<orders.size(); i++){
             Order order=orders.get(i);
-            OrderInfoResponseVo orderInfoResponseVo=getOrderInfo(order.getId(),1);
+            OrderInfoResponseVo orderInfoResponseVo=getOrderInfo(order.getId());
             orderInfoResponseVos.add(orderInfoResponseVo);
         }
 
@@ -484,7 +486,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public String payOrder (Integer orderId,HttpServletResponse servletResponse) {
 
         Order order = orderMapper.selectById(orderId);
-        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId);
 
         //获得初始化的 AlipayClient
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
@@ -531,7 +533,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public String payOrderByApp (Integer orderId){
 
         Order order = orderMapper.selectById(orderId);
-        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId);
 
         //获得初始化的 AlipayClient
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
@@ -571,7 +573,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public String payOrderByWap (Integer orderId){
 
         Order order = orderMapper.selectById(orderId);
-        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId);
 
         //获得初始化的 AlipayClient
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
@@ -609,7 +611,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public String payOrderPrecreate (Integer orderId) {
 
         Order order = orderMapper.selectById(orderId);
-        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId, 1);
+        OrderInfoResponseVo orderInfoResponseVo = orderService.getOrderInfo(orderId);
 
         //获得初始化的 AlipayClient
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AppConst.APP_ID, AppConst.APP_PRIVATE_KEY, AppConst.FORMAT, AppConst.CHARSET, AppConst.ALIPAY_PUBLIC_KEY, AppConst.SIGN_TYPE);
@@ -720,7 +722,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderInfoResponseVo>orderInfoResponseVos=new ArrayList<>();
         for(int i=0; i<orders.size(); i++){
             Order order=orders.get(i);
-            OrderInfoResponseVo orderInfoResponseVo=getOrderInfo(order.getId(),1);
+            OrderInfoResponseVo orderInfoResponseVo=getOrderInfo(order.getId());
             orderInfoResponseVos.add(orderInfoResponseVo);
         }
 
