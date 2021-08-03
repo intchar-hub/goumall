@@ -16,6 +16,11 @@ public class OrderInfoResponseVo {
     private Integer orderId;
 
     /**
+     * 商家id
+     */
+    private Integer storeId;
+
+    /**
      * 商品id
      */
     private Integer productId;

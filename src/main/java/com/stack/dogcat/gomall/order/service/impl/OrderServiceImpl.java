@@ -354,6 +354,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Store store=storeMapper.selectById(order.getStoreId());
         if(store!=null) {
             orderInfoResponseVo.setStoreName(store.getStoreName());
+            orderInfoResponseVo.setStoreId(store.getId());
         }
 
         Product product = productMapper.selectById(order.getProductId());
