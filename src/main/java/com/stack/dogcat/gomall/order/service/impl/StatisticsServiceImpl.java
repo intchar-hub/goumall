@@ -227,11 +227,9 @@ public class StatisticsServiceImpl {
         Integer thisMonthIncreaseFansNum; // 本月新增粉丝数
         Integer totalFansNum; // 总粉丝数
 
-        QueryWrapper storeCollectionQueryWrapper = new QueryWrapper();
-        storeCollectionQueryWrapper.eq("store_id", storeId);
-        totalFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
+        totalFansNum = storeMapper.selectById(storeId).getFansNum();
 
-        storeCollectionQueryWrapper = new QueryWrapper();
+        QueryWrapper storeCollectionQueryWrapper = new QueryWrapper();
         storeCollectionQueryWrapper.eq("store_id", storeId);
         storeCollectionQueryWrapper.likeRight("gmt_create", now.toString().substring(0, 10));
         todayIncreaseFansNum = storeCollectionMapper.selectCount(storeCollectionQueryWrapper);
