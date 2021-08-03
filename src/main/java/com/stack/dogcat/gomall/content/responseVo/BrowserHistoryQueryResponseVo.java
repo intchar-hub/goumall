@@ -20,6 +20,52 @@ public class BrowserHistoryQueryResponseVo {
 
     private String imagePath;
 
+    private String description;
+
+    private Integer salesNum;
+
+    private Integer storeId;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getSalesNum() {
+        return salesNum;
+    }
+
+    public void setSalesNum(Integer salesNum) {
+        this.salesNum = salesNum;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
+    }
+
+    @Override
+    public String toString() {
+        return "BrowserHistoryQueryResponseVo{" +
+                "browserHistoryId=" + browserHistoryId +
+                ", productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", gmtCreate=" + gmtCreate +
+                ", imagePath='" + imagePath + '\'' +
+                ", description='" + description + '\'' +
+                ", salesNum=" + salesNum +
+                ", storeId=" + storeId +
+                ", highestPrice=" + highestPrice +
+                ", lowestPrice=" + lowestPrice +
+                '}';
+    }
+
     /**
      * 商品最高价格（规格不同，价格不同）
      */
@@ -30,19 +76,6 @@ public class BrowserHistoryQueryResponseVo {
      * 商品最低价格（规格不同，价格不同）
      */
     private BigDecimal lowestPrice;
-
-    @Override
-    public String toString() {
-        return "BrowserHistoryQueryResponseVo{" +
-                "browserHistoryId=" + browserHistoryId +
-                ", productId=" + productId +
-                ", productName='" + productName + '\'' +
-                ", gmtCreate=" + gmtCreate +
-                ", imagePath='" + imagePath + '\'' +
-                ", highestPrice=" + highestPrice +
-                ", lowestPrice=" + lowestPrice +
-                '}';
-    }
 
     public BigDecimal getHighestPrice() {
         return highestPrice;
