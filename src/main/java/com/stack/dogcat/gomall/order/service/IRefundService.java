@@ -44,7 +44,7 @@ public interface IRefundService extends IService<Refund> {
     PageResponseVo<RefundListInfo> listRefundByCustomerId(Integer customerId,Integer pageNum,Integer pageSize);
 
     /**消费者查看退款订单详情*/
-    OrderInfoResponseVo getRefundOrderInfo(Integer refundId);
+    OrderInfoResponseVo getRefundOrderInfo(Integer orderId);
 
     /**商家按条件查询退款相关订单（即refund_status不为0）**/
     PageResponseVo<RefundOrderInfo>listRefundByScreenConditions(Integer storeId, Integer pageNum, Integer pageSize, String orderNumber, Integer refundStatus, String gmtCreate) throws ParseException;

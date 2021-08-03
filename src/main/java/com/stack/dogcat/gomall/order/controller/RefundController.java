@@ -101,16 +101,16 @@ public class RefundController {
 
     /**
      * 消费者撤销退款申请
-     * @param refundId
+     * @param orderId
      * @return
      */
     @PostMapping("/cancelRefund")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult cancelRefund(Integer refundId){
+    public SysResult cancelRefund(Integer orderId){
 
         try{
-           refundService.cancelRefund(refundId);
+           refundService.cancelRefund(orderId);
 
         }catch (Exception e){
             return SysResult.error(e.getMessage());

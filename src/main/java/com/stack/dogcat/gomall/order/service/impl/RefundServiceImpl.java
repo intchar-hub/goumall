@@ -197,12 +197,15 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
     @Override
     @Transactional
-    public void cancelRefund(Integer refundId){
+    public void cancelRefund(Integer orderId){
 
-        Refund refund = refundMapper.selectById(refundId);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("order_id",orderId);
+
+        Refund refund = refundMapper.selectOne(queryWrapper);
         refund.setStatus(3);
 
-        Order order = orderMapper.selectById(refund.getOrderId());
+        Order order = orderMapper.selectById(orderId);
         order.setRefundStatus(3);
 
         refundMapper.updateById(refund);
