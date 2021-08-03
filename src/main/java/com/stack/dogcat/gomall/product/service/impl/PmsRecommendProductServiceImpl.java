@@ -4,6 +4,7 @@ import com.alipay.api.domain.IpAddrLbsInfo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stack.dogcat.gomall.annotation.Token;
 import com.stack.dogcat.gomall.commonResponseVo.PageResponseVo;
 import com.stack.dogcat.gomall.product.entity.PmsRecommendProduct;
 import com.stack.dogcat.gomall.product.entity.Product;
@@ -37,12 +38,13 @@ public class PmsRecommendProductServiceImpl extends ServiceImpl<PmsRecommendProd
     ProductMapper productMapper;
 
     @Override
+    @Token.UserLoginToken
     public PageResponseVo<ProductQueryResponseVo> listRecommendProductByCustomer(Integer customerId, Integer pageNum, Integer pageSize) {
         PmsRecommendProduct pmsRecommendProduct = pmsRecommendProductMapper.selectOne(new QueryWrapper<PmsRecommendProduct>().eq("customer_id",customerId));
         List<String> productIds = Arrays.asList(pmsRecommendProduct.getProductIds().split(","));
         Page<Product> page = new Page<>(pageNum,pageSize);
-        IPage<Product> total = productMapper.selectPage(page,new QueryWrapper<Product>().eq("status",1));
-        int totalPage=(int)total.getPages();
+        IPage<Product> total = productMapper.selectPage(page,new QueryWrapper<Product>().eq("status",1).notIn("id",productIds));
+        int totalPage=(int)total.getPages()+1;
         int totalCount=(int)total.getTotal();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("status", 1);
