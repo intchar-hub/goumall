@@ -143,17 +143,17 @@ public class RefundController {
 
     /**
      * 消费者查看退款订单详情
-     * @param refundId
+     * @param orderId
      * @return
      */
     @GetMapping("/getRefundOrderInfo")
     @ResponseBody
     @Token.UserLoginToken
-    public SysResult getRefundOrderInfo(Integer refundId){
+    public SysResult getRefundOrderInfo(Integer orderId){
 
         OrderInfoResponseVo refundOrderInfo;
         try{
-            refundOrderInfo = refundService.getRefundOrderInfo(refundId);
+            refundOrderInfo = refundService.getRefundOrderInfo(orderId);
 
         }catch (Exception e){
             return SysResult.error(e.getMessage());
