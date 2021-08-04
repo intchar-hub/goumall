@@ -143,7 +143,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store> implements
         store.setGmtCreate(LocalDateTime.now());
         store.setStatus(0);
         store.setFansNum(0);
-        store.setAvatarPath("https://baomidou.com/img/logo.svg");
+        store.setAvatarPath("http://qwmwlt898.hd-bkt.clouddn.com/FmEmO4rdEza4WlJkUSrV-XNSNfC5");
 
         storeMapper.insert(store);
     }
