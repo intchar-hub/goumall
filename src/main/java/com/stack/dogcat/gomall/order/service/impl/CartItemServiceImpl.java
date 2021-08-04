@@ -57,6 +57,7 @@ public class CartItemServiceImpl extends ServiceImpl<CartItemMapper, CartItem> i
         Sku sku = skuMapper.selectOne(queryWrapper);
 
         queryWrapper.clear();
+        queryWrapper.eq("customer_id",customerId);
         queryWrapper.eq("sku_id",sku.getId());
         CartItem cartItem1 = cartItemMapper.selectOne(queryWrapper);
         if (cartItem1 != null) {
