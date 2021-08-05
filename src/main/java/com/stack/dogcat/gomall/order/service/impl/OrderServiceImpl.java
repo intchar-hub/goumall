@@ -233,7 +233,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             //model.setQuitUrl("https://www.hao123.com/");
             //（2）设置请求参数
             //alipayRequest.setReturnUrl();
-            alipayRequest.setNotifyUrl(" http://bqwi84.natappfree.cc/order/order/payOrdersNotify");
+            alipayRequest.setNotifyUrl("http://121.36.58.203:8081/order/order/payOrdersNotify");
             //alipayRequest.setReturnUrl("https://www.hao123.com/");
             alipayRequest.setBizModel(model);
             //（3）请求
@@ -506,7 +506,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             //model.setQuitUrl("https://www.hao123.com/");
             //（2）设置请求参数
             //alipayRequest.setReturnUrl();
-            alipayRequest.setNotifyUrl(" http://bqwi84.natappfree.cc/order/order/payNotify");
+            alipayRequest.setNotifyUrl("http://121.36.58.203:8081/order/order/payNotify");
             //alipayRequest.setReturnUrl("https://www.hao123.com/");
             alipayRequest.setBizModel(model);
             //（3）请求
